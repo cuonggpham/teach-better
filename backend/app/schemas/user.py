@@ -1,15 +1,15 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, EmailStr, Field
+from app.models.user import UserRole, UserStatus
 
 
 class UserBase(BaseModel):
     """
     Base user schema
     """
+    name: str
     email: EmailStr
-    username: str
-    full_name: Optional[str] = None
 
 
 class UserCreate(UserBase):
@@ -17,15 +17,16 @@ class UserCreate(UserBase):
     User creation schema
     """
     password: str = Field(..., min_length=6)
+    avatar_url: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
     """
     User update schema
     """
+    name: Optional[str] = None
     email: Optional[EmailStr] = None
-    username: Optional[str] = None
-    full_name: Optional[str] = None
+    avatar_url: Optional[str] = None
     password: Optional[str] = Field(None, min_length=6)
 
 
@@ -34,8 +35,10 @@ class UserInDB(UserBase):
     User in database schema
     """
     id: str = Field(..., alias="_id")
-    is_active: bool = True
-    is_superuser: bool = False
+    avatar_url: Optional[str] = None
+    role: UserRole
+    status: UserStatus
+    bookmarked_post_ids: List[str] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime
 
@@ -64,6 +67,7 @@ class Token(BaseModel):
     """
     access_token: str
     token_type: str = "bearer"
+    user: User
 
 
 class TokenData(BaseModel):

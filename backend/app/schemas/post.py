@@ -1,0 +1,80 @@
+from datetime import datetime
+from typing import Optional, List
+from pydantic import BaseModel, Field
+from app.models.post import PostStatus
+
+
+class VotesSchema(BaseModel):
+    """
+    Votes schema
+    """
+    upvoted_by: List[str] = Field(default_factory=list)
+    downvoted_by: List[str] = Field(default_factory=list)
+    score: int = 0
+
+
+class PostBase(BaseModel):
+    """
+    Base post schema
+    """
+    title: str
+    content: str
+    tag_ids: List[str] = Field(default_factory=list, max_length=5)
+
+
+class PostCreate(PostBase):
+    """
+    Post creation schema
+    """
+    pass
+
+
+class PostUpdate(BaseModel):
+    """
+    Post update schema
+    """
+    title: Optional[str] = None
+    content: Optional[str] = None
+    tag_ids: Optional[List[str]] = Field(None, max_length=5)
+    status: Optional[PostStatus] = None
+
+
+class PostInDB(PostBase):
+    """
+    Post in database schema
+    """
+    id: str = Field(..., alias="_id")
+    author_id: str
+    status: PostStatus
+    votes: VotesSchema
+    answer_count: int
+    view_count: int
+    is_deleted: bool
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        populate_by_name = True
+
+
+class Post(PostInDB):
+    """
+    Post response schema
+    """
+    pass
+
+
+class PostWithAuthor(Post):
+    """
+    Post with author info
+    """
+    author: Optional[dict] = None
+    tags: List[dict] = Field(default_factory=list)
+
+
+class PostVote(BaseModel):
+    """
+    Post vote action schema
+    """
+    vote_type: str = Field(..., pattern="^(upvote|downvote|remove)$")
+

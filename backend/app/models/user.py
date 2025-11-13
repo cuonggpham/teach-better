@@ -1,7 +1,8 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, EmailStr, Field
 from bson import ObjectId
+from enum import Enum
 
 
 class PyObjectId(ObjectId):
@@ -23,17 +24,28 @@ class PyObjectId(ObjectId):
         field_schema.update(type="string")
 
 
+class UserRole(str, Enum):
+    USER = "user"
+    ADMIN = "admin"
+
+
+class UserStatus(str, Enum):
+    ACTIVE = "active"
+    LOCKED = "locked"
+
+
 class UserModel(BaseModel):
     """
     User database model
     """
     id: Optional[PyObjectId] = Field(default=None, alias="_id")
-    email: EmailStr
-    username: str
-    hashed_password: str
-    full_name: Optional[str] = None
-    is_active: bool = True
-    is_superuser: bool = False
+    name: str
+    email: EmailStr = Field(..., index=True)
+    password: str  # hashed password
+    avatar_url: Optional[str] = None
+    role: UserRole = Field(default=UserRole.USER)
+    status: UserStatus = Field(default=UserStatus.ACTIVE)
+    bookmarked_post_ids: List[PyObjectId] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
