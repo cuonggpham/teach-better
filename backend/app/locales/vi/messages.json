@@ -1,0 +1,49 @@
+{
+  "messages": {
+    "welcome": "Xin chào",
+    "goodbye": "Tạm biệt"
+  },
+  "errors": {
+    "not_found": "Không tìm thấy",
+    "unauthorized": "Không có quyền truy cập",
+    "forbidden": "Bị cấm",
+    "internal_server_error": "Lỗi máy chủ nội bộ",
+    "bad_request": "Yêu cầu không hợp lệ",
+    "validation_error": "Lỗi xác thực dữ liệu"
+  },
+  "auth": {
+    "login_success": "Đăng nhập thành công",
+    "login_failed": "Đăng nhập thất bại",
+    "logout_success": "Đăng xuất thành công",
+    "register_success": "Đăng ký thành công",
+    "register_failed": "Đăng ký thất bại",
+    "token_invalid": "Token không hợp lệ",
+    "token_expired": "Token đã hết hạn",
+    "password_incorrect": "Mật khẩu không đúng",
+    "email_exists": "Email đã tồn tại",
+    "user_not_found": "Không tìm thấy người dùng"
+  },
+  "user": {
+    "created": "Tạo người dùng thành công",
+    "updated": "Cập nhật người dùng thành công",
+    "deleted": "Xóa người dùng thành công",
+    "not_found": "Không tìm thấy người dùng",
+    "profile_updated": "Cập nhật hồ sơ thành công"
+  },
+  "validation": {
+    "required": "Trường này là bắt buộc",
+    "email_invalid": "Email không hợp lệ",
+    "password_min_length": "Mật khẩu phải có ít nhất {min} ký tự",
+    "password_max_length": "Mật khẩu không được vượt quá {max} ký tự",
+    "string_too_short": "Chuỗi quá ngắn (tối thiểu {min} ký tự)",
+    "string_too_long": "Chuỗi quá dài (tối đa {max} ký tự)"
+  },
+  "common": {
+    "success": "Thành công",
+    "error": "Lỗi",
+    "created": "Đã tạo",
+    "updated": "Đã cập nhật",
+    "deleted": "Đã xóa",
+    "saved": "Đã lưu"
+  }
+}
