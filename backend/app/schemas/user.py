@@ -19,6 +19,15 @@ class UserCreate(UserBase):
     password: str = Field(..., min_length=6)
 
 
+class UserSignup(BaseModel):
+    """
+    User signup schema with password confirmation
+    """
+    email: EmailStr
+    password: str = Field(..., min_length=8)
+    password_confirm: str = Field(..., min_length=8)
+
+
 class UserUpdate(BaseModel):
     """
     User update schema

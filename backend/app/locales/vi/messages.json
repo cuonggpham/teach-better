@@ -15,13 +15,18 @@
     "login_success": "Đăng nhập thành công",
     "login_failed": "Đăng nhập thất bại",
     "logout_success": "Đăng xuất thành công",
-    "register_success": "Đăng ký thành công",
+    "register_success": "Đăng ký tài khoản thành công",
     "register_failed": "Đăng ký thất bại",
     "token_invalid": "Token không hợp lệ",
     "token_expired": "Token đã hết hạn",
     "password_incorrect": "Mật khẩu không đúng",
-    "email_exists": "Email đã tồn tại",
-    "user_not_found": "Không tìm thấy người dùng"
+    "email_exists": "Địa chỉ email này đã được đăng ký",
+    "user_not_found": "Không tìm thấy người dùng",
+    "email_invalid": "Địa chỉ email không đúng định dạng",
+    "password_weak": "Mật khẩu phải bao gồm ít nhất hai trong ba loại ký tự: chữ cái, số, hoặc ký hiệu",
+    "password_min_length": "Mật khẩu phải có ít nhất 8 ký tự",
+    "password_mismatch": "Mật khẩu xác nhận không trùng khớp",
+    "password_invalid_chars": "Mật khẩu không được chứa ký tự \" hoặc '"
   },
   "user": {
     "created": "Tạo người dùng thành công",

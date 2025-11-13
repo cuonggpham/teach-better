@@ -15,13 +15,18 @@
     "login_success": "ログインに成功しました",
     "login_failed": "ログインに失敗しました",
     "logout_success": "ログアウトに成功しました",
-    "register_success": "登録に成功しました",
+    "register_success": "アカウント登録に成功しました",
     "register_failed": "登録に失敗しました",
     "token_invalid": "トークンが無効です",
     "token_expired": "トークンの有効期限が切れています",
     "password_incorrect": "パスワードが正しくありません",
-    "email_exists": "メールアドレスは既に存在します",
-    "user_not_found": "ユーザーが見つかりません"
+    "email_exists": "このメールアドレスは既に登録されています",
+    "user_not_found": "ユーザーが見つかりません",
+    "email_invalid": "メールアドレスの形式が正しくありません",
+    "password_weak": "パスワードは、文字、数字、記号のうち少なくとも2種類を含む必要があります",
+    "password_min_length": "パスワードは8文字以上である必要があります",
+    "password_mismatch": "確認用パスワードが一致しません",
+    "password_invalid_chars": "パスワードに\" または 'を含めることはできません"
   },
   "user": {
     "created": "ユーザーを作成しました",

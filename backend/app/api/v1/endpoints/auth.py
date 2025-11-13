@@ -1,12 +1,11 @@
-from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.database import get_database
-from app.core.config import settings
-from app.core.security import create_access_token
-from app.schemas.user import UserCreate, User, UserLogin, Token
+from app.schemas.user import UserCreate, UserSignup
 from app.services.user_service import UserService
+from app.utils.helpers import validate_email_format, validate_password_strength
+from app.i18n.dependencies import get_translator, Translator
 
 router = APIRouter()
 
@@ -18,67 +17,66 @@ def get_user_service(db: AsyncIOMotorDatabase = Depends(get_database)) -> UserSe
     return UserService(db)
 
 
-@router.post("/register", response_model=User, status_code=status.HTTP_201_CREATED)
-async def register(
-    user_data: UserCreate,
-    user_service: UserService = Depends(get_user_service)
+@router.post("/signup", response_model=dict, status_code=status.HTTP_201_CREATED)
+async def signup(
+    user_data: UserSignup,
+    user_service: UserService = Depends(get_user_service),
+    t: Translator = Depends(get_translator)
 ):
     """
-    Register a new user
+    Signup a new user with enhanced validation
+    
+    Requirements:
+    - Email must be in valid format (contain @ and valid domain)
+    - Password must be at least 8 characters
+    - Password must contain at least 2 of 3 types: letters, numbers, symbols
+    - Password must not contain " or ' characters
+    - Password and password_confirm must match
+    - Email must not be already registered
     """
+    # Validate email format
+    if not validate_email_format(user_data.email):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=t("auth.email_invalid")
+        )
+    
+    # Validate password strength
+    is_valid, error_key = validate_password_strength(user_data.password)
+    if not is_valid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=t(error_key)
+        )
+    
+    # Check if passwords match
+    if user_data.password != user_data.password_confirm:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=t("auth.password_mismatch")
+        )
+    
     # Check if user already exists
     existing_user = await user_service.get_user_by_email(user_data.email)
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
+            detail=t("auth.email_exists")
         )
     
-    existing_username = await user_service.get_user_by_username(user_data.username)
-    if existing_username:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already taken"
-        )
-    
-    # Create user
-    user = await user_service.create_user(user_data)
-    
-    # Convert to response model
-    user_dict = user.model_dump(by_alias=True)
-    user_dict["_id"] = str(user_dict["_id"])
-    
-    return User(**user_dict)
-
-
-@router.post("/login", response_model=Token)
-async def login(
-    credentials: UserLogin,
-    user_service: UserService = Depends(get_user_service)
-):
-    """
-    Login and get access token
-    """
-    user = await user_service.authenticate_user(credentials.email, credentials.password)
-    
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    
-    if not user.is_active:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Inactive user"
-        )
-    
-    # Create access token
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.email},
-        expires_delta=access_token_expires
+    # Create user (username will be the email prefix for now)
+    username = user_data.email.split('@')[0]
+    user_create = UserCreate(
+        email=user_data.email,
+        username=username,
+        password=user_data.password
     )
     
-    return Token(access_token=access_token)
+    # Create user in database
+    user = await user_service.create_user(user_create)
+    
+    return {
+        "message": t("auth.register_success"),
+        "email": user.email,
+        "redirect": "/login"
+    }
