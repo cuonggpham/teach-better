@@ -1,0 +1,54 @@
+{
+  "messages": {
+    "welcome": "こんにちは",
+    "goodbye": "さようなら"
+  },
+  "errors": {
+    "not_found": "見つかりません",
+    "unauthorized": "認証されていません",
+    "forbidden": "禁止されています",
+    "internal_server_error": "内部サーバーエラー",
+    "bad_request": "無効なリクエスト",
+    "validation_error": "検証エラー"
+  },
+  "auth": {
+    "login_success": "ログインに成功しました",
+    "login_failed": "ログインに失敗しました",
+    "logout_success": "ログアウトに成功しました",
+    "register_success": "アカウント登録に成功しました",
+    "register_failed": "登録に失敗しました",
+    "token_invalid": "トークンが無効です",
+    "token_expired": "トークンの有効期限が切れています",
+    "password_incorrect": "パスワードが正しくありません",
+    "email_exists": "このメールアドレスは既に登録されています",
+    "user_not_found": "ユーザーが見つかりません",
+    "email_invalid": "メールアドレスの形式が正しくありません",
+    "password_weak": "パスワードは、文字、数字、記号のうち少なくとも2種類を含む必要があります",
+    "password_min_length": "パスワードは8文字以上である必要があります",
+    "password_mismatch": "確認用パスワードが一致しません",
+    "password_invalid_chars": "パスワードに\" または 'を含めることはできません"
+  },
+  "user": {
+    "created": "ユーザーを作成しました",
+    "updated": "ユーザーを更新しました",
+    "deleted": "ユーザーを削除しました",
+    "not_found": "ユーザーが見つかりません",
+    "profile_updated": "プロフィールを更新しました"
+  },
+  "validation": {
+    "required": "この項目は必須です",
+    "email_invalid": "メールアドレスが無効です",
+    "password_min_length": "パスワードは{min}文字以上である必要があります",
+    "password_max_length": "パスワードは{max}文字以下である必要があります",
+    "string_too_short": "文字列が短すぎます（最小{min}文字）",
+    "string_too_long": "文字列が長すぎます（最大{max}文字）"
+  },
+  "common": {
+    "success": "成功",
+    "error": "エラー",
+    "created": "作成されました",
+    "updated": "更新されました",
+    "deleted": "削除されました",
+    "saved": "保存されました"
+  }
+}

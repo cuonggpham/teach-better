@@ -1,6 +1,47 @@
 from datetime import datetime
 from typing import Any, Dict
 from bson import ObjectId
+import re
+
+
+def validate_email_format(email: str) -> bool:
+    """
+    Validate email format
+    Email must contain @ and have a valid domain after it
+    """
+    pattern = r'^[^@]+@[^@]+\.[^@]+$'
+    return bool(re.match(pattern, email))
+
+
+def validate_password_strength(password: str) -> tuple[bool, str]:
+    """
+    Validate password strength according to requirements:
+    - Minimum 8 characters
+    - Must not contain " or ' characters
+    - Must include at least 2 of 3 character types: letters, numbers, symbols
+    
+    Returns:
+        tuple: (is_valid, error_message)
+    """
+    # Check minimum length
+    if len(password) < 8:
+        return False, "auth.password_min_length"
+    
+    # Check for forbidden characters
+    if '"' in password or "'" in password:
+        return False, "auth.password_invalid_chars"
+    
+    # Count character types
+    has_letter = bool(re.search(r'[a-zA-Z]', password))
+    has_digit = bool(re.search(r'\d', password))
+    has_symbol = bool(re.search(r'[^a-zA-Z0-9"\']', password))
+    
+    character_types = sum([has_letter, has_digit, has_symbol])
+    
+    if character_types < 2:
+        return False, "auth.password_weak"
+    
+    return True, ""
 
 
 def serialize_object_id(obj: Any) -> Any:
