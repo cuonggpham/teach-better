@@ -106,11 +106,22 @@ class UserService:
     
     async def authenticate_user(self, email: str, password: str) -> Optional[UserModel]:
         """
-        Authenticate user
+        Authenticate user with email and password
+        Returns None if authentication fails (email not found or password incorrect)
         """
         user = await self.get_user_by_email(email)
         if not user:
             return None
-        if not verify_password(password, user.hashed_password):
+        
+        # Check if user has hashed_password field
+        hashed_password = user.password if hasattr(user, 'password') else None
+        if not hashed_password and hasattr(user, 'hashed_password'):
+            hashed_password = user.hashed_password
+            
+        if not hashed_password:
             return None
+            
+        if not verify_password(password, hashed_password):
+            return None
+            
         return user

@@ -14,6 +14,8 @@
   "auth": {
     "login_success": "ログインに成功しました",
     "login_failed": "ログインに失敗しました",
+    "invalid_credentials": "メールアドレスまたはパスワードが正しくありません",
+    "account_locked": "アカウントがロックされています。管理者にお問い合わせください",
     "logout_success": "ログアウトに成功しました",
     "register_success": "アカウント登録に成功しました",
     "register_failed": "登録に失敗しました",
@@ -26,7 +28,8 @@
     "password_weak": "パスワードは、文字、数字、記号のうち少なくとも2種類を含む必要があります",
     "password_min_length": "パスワードは8文字以上である必要があります",
     "password_mismatch": "確認用パスワードが一致しません",
-    "password_invalid_chars": "パスワードに\" または 'を含めることはできません"
+    "password_invalid_chars": "パスワードに\" または 'を含めることはできません",
+    "rate_limit_exceeded": "リクエストが多すぎます。しばらくしてから再試行してください"
   },
   "user": {
     "created": "ユーザーを作成しました",

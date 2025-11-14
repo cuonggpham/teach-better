@@ -29,6 +29,14 @@ class UserSignup(BaseModel):
     password_confirm: str = Field(..., min_length=8)
 
 
+class UserSignin(BaseModel):
+    """
+    User signin schema
+    """
+    email: EmailStr
+    password: str = Field(..., min_length=8)
+
+
 class UserUpdate(BaseModel):
     """
     User update schema
