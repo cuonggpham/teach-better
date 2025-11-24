@@ -1,20 +1,31 @@
-import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import LanguageSwitcher from "../LanguageSwitcher";
-import "./Navbar.css";
+import { useTranslation } from 'react-i18next';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { signout } from '../../api/authApi';
+import { Button } from '../ui';
+import { NotificationBell } from '../forum';
+import LanguageSwitcher from '../LanguageSwitcher';
+import './Navbar.css';
 
 /**
  * Component Navbar - Thanh điều hướng chính
  */
 const Navbar = () => {
   const { t } = useTranslation();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { user, isAuthenticated, logout, token } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/"); // về IntroPage
+  const handleLogout = async () => {
+    if (window.confirm(t('auth.logout_confirm'))) {
+      try {
+        await signout(token);
+        logout();
+        navigate('/');
+      } catch (error) {
+        logout();
+        navigate('/');
+      }
+    }
   };
 
   return (
@@ -23,58 +34,42 @@ const Navbar = () => {
 
         {/* Logo */}
         <div className="navbar-brand">
-          <Link to="/">{t("app_title")}</Link>
+          <Link to="/">{t('app_title', 'Teach Better')}</Link>
         </div>
 
-        {/* Menu */}
         <ul className="navbar-menu">
-          <li><Link to="/">{t("navigation.home")}</Link></li>
-
-          {/* Courses / Todo Items Page */}
-          <li><Link to="/courses">{t("navigation.courses")}</Link></li>
-
-          {/* Bookmark Page */}
-          {isAuthenticated() && (
-            <li><Link to="/bookmark">⭐ {t("navigation.bookmark")}</Link></li>
-          )}
-
-          {/* Profile + Settings */}
-          {isAuthenticated() && (
-            <>
-              <li><Link to="/profile">{t("navigation.profile")}</Link></li>
-              <li><Link to="/settings">{t("navigation.settings")}</Link></li>
-            </>
+          <li>
+            <Link to="/">{t('navigation.home')}</Link>
+          </li>
+          <li>
+            <Link to="/forum">{t('navigation.forum')}</Link>
+          </li>
+          {isAuthenticated && (
+            <li>
+              <Link to="/profile">{t('navigation.profile')}</Link>
+            </li>
           )}
         </ul>
 
-        {/* Right side */}
         <div className="navbar-actions">
           <LanguageSwitcher />
-
-          {/* Login Button */}
-          {!isAuthenticated() ? (
-            <Link
-              to="/login"
-              className="navbar-login-btn"
-              data-testid="navbar-login-button"
-            >
-              {t("auth.login")}
-            </Link>
+          {isAuthenticated ? (
+            <>
+              <NotificationBell />
+              <span className="navbar-user">{user?.name || user?.email}</span>
+              <Button variant="danger" size="small" onClick={handleLogout}>
+                {t('navigation.logout')}
+              </Button>
+            </>
           ) : (
-            <div className="navbar-user" data-testid="navbar-user-menu">
-              <span className="navbar-username">
-                {user?.name || user?.email}
-              </span>
-
-              {/* LOGOUT button */}
-              <button
-                className="navbar-logout-btn"
-                onClick={handleLogout}
-                data-testid="navbar-logout-button"
-              >
-                {t("auth.logout")}
-              </button>
-            </div>
+            <>
+              <Button as={Link} to="/signin" variant="ghost" size="small">
+                {t('auth.login')}
+              </Button>
+              <Button as={Link} to="/signup" variant="primary" size="small">
+                {t('auth.register')}
+              </Button>
+            </>
           )}
         </div>
       </div>

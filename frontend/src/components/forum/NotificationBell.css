@@ -1,0 +1,127 @@
+.notification-bell-container {
+  position: relative;
+}
+
+.notification-bell-button {
+  position: relative;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.notification-bell-button:hover {
+  transform: scale(1.1);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--error-color);
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.notification-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  width: 350px;
+  max-height: 500px;
+  z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.notification-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification-header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.unread-count {
+  font-size: 0.875rem;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.notification-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notification-item:hover {
+  background-color: var(--background-light);
+}
+
+.notification-item.unread {
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-message {
+  margin: 0 0 0.25rem 0;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.notification-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.notification-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  margin-left: 0.5rem;
+}
+
+.notification-loading,
+.notification-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .notification-dropdown {
+    width: 300px;
+    right: -50px;
+  }
+}
+

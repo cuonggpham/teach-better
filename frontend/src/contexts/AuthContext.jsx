@@ -1,99 +1,65 @@
-import { createContext, useContext, useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import axios from "../api/axiosConfig";
+import { createContext, useContext, useState, useEffect } from 'react';
+import { getCurrentUser } from '../api/authApi';
 
 const AuthContext = createContext(null);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within AuthProvider");
+    throw new Error('useAuth must be used within AuthProvider');
   }
   return context;
 };
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('access_token'));
   const [loading, setLoading] = useState(true);
 
-  // Load from localStorage when app starts
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
-
-    if (storedToken) {
-      setToken(storedToken);
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${storedToken}`;
-    }
-
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch {
-        localStorage.removeItem("user");
+    // Check if user is logged in on mount
+    const checkAuth = async () => {
+      if (token) {
+        try {
+          const userData = await getCurrentUser(token);
+          setUser(userData);
+        } catch (error) {
+          // Token is invalid, clear it
+          localStorage.removeItem('access_token');
+          setToken(null);
+        }
       }
-    }
+      setLoading(false);
+    };
 
-    setLoading(false);
-  }, []);
+    checkAuth();
+  }, [token]);
 
-  // Login function
-  const login = (userData, accessToken) => {
-    setUser(userData);
+  const login = (accessToken, userData) => {
+    localStorage.setItem('access_token', accessToken);
     setToken(accessToken);
-
-    // Save to localStorage
-    localStorage.setItem("token", accessToken);
-    localStorage.setItem("user", JSON.stringify(userData));
-
-    // Attach token to axios for authenticated requests
-    axios.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${accessToken}`;
+    setUser(userData);
   };
 
-  // Logout
   const logout = () => {
-    setUser(null);
+    localStorage.removeItem('access_token');
     setToken(null);
-
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    delete axios.defaults.headers.common["Authorization"];
+    setUser(null);
   };
 
   const updateUser = (userData) => {
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
   };
 
-  const isAuthenticated = () => {
-    return !!token && !!user;
+  const value = {
+    user,
+    token,
+    loading,
+    login,
+    logout,
+    updateUser,
+    isAuthenticated: !!user,
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        loading,
-        login,
-        logout,
-        updateUser,
-        isAuthenticated,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-AuthProvider.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
-export default AuthContext;

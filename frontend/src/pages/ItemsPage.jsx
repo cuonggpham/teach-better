@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useAuth } from "../contexts/AuthContext";
-import { getBookmarks, toggleBookmark } from "../api/bookmarkApi";
-import "./ItemsPage.css";
+import { useTranslation } from 'react-i18next';
+import { Container, Card } from '../components/ui';
+import './ItemsPage.css';
 
+/**
+ * Component ItemsPage - Trang khóa học/Todo List
+ */
 const ItemsPage = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -42,27 +43,22 @@ const ItemsPage = () => {
 
   return (
     <div className="items-page">
-      <h1>{t("navigation.courses")}</h1>
+      <Container size="large">
+        <div className="items-header">
+          <h1>{t('navigation.courses')}</h1>
+          <p className="items-subtitle">
+            {t('courses.subtitle')}
+          </p>
+        </div>
 
-      <div className="items-grid">
-        {courses.map((course) => (
-          <div key={course.id} className="item-card">
-            <div className="item-header">
-              <h3>{course.title}</h3>
-
-              {/* Bookmark button */}
-              <button
-                className="bookmark-btn"
-                onClick={() => handleBookmark(course)}
-              >
-                {isBookmarked(course.id) ? "⭐" : "☆"}
-              </button>
-            </div>
-
-            <p className="item-desc">{course.description}</p>
+        <Card variant="elevated" padding="large" className="coming-soon-card">
+          <div className="coming-soon-content">
+            <div className="coming-soon-icon">🚀</div>
+              <h2>{t('common.coming_soon')}</h2>
+              <p>{t('courses.coming_soon_desc')}</p>
           </div>
-        ))}
-      </div>
+        </Card>
+      </Container>
     </div>
   );
 };

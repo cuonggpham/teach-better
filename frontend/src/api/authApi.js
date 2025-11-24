@@ -1,46 +1,92 @@
-import axios from "./axiosConfig";
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
 /**
- * LOGIN (chuẩn backend)
- * POST /auth/login
- * Body: { email, password }
+ * Sign up a new user
  */
-export const login = async (email, password) => {
-  const res = await axios.post("/auth/login", {
-    email,
-    password,
+export const signup = async (email, password, passwordConfirm) => {
+  const response = await fetch(`${API_URL}/auth/signup`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email,
+      password,
+      password_confirm: passwordConfirm,
+    }),
   });
-  return res.data; // { user, access_token }
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Signup failed');
+  }
+
+  return data;
 };
 
 /**
- * SIGNUP
- * POST /auth/signup
+ * Sign in a user
  */
-export const signup = async (data) => {
-  const res = await axios.post("/auth/signup", data);
-  return res.data;
-};
-
-/**
- * LOGOUT — backend chưa có nên mock tạm
- */
-export const logout = async () => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        success: true,
-        message: "Đăng xuất thành công",
-      });
-    }, 300);
+export const signin = async (email, password) => {
+  const response = await fetch(`${API_URL}/auth/signin`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      email,
+      password,
+    }),
   });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Signin failed');
+  }
+
+  return data;
 };
 
 /**
- * GET CURRENT USER
- * GET /users/me
+ * Sign out a user
  */
-export const getCurrentUser = async () => {
-  const res = await axios.get("/users/me");
-  return res.data;
+export const signout = async (token) => {
+  const response = await fetch(`${API_URL}/auth/signout`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Signout failed');
+  }
+
+  return data;
+};
+
+/**
+ * Get current user info
+ */
+export const getCurrentUser = async (token) => {
+  const response = await fetch(`${API_URL}/users/me`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Failed to get user info');
+  }
+
+  return data;
 };

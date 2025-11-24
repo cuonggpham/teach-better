@@ -78,3 +78,11 @@ class PostVote(BaseModel):
     """
     vote_type: str = Field(..., pattern="^(upvote|downvote|remove)$")
 
+
+class PostList(BaseModel):
+    """
+    List of posts
+    """
+    posts: List[Post]
+    total: int
+

@@ -1,10 +1,11 @@
 {
-  "welcome": "Xin chào",
+  "welcome": "Chào mừng đến với Teach Better",
   "app_title": "Teach Better - Nền tảng giáo dục",
 
   "navigation": {
     "home": "Trang chủ",
     "courses": "Khóa học",
+    "forum": "Diễn đàn",
     "bookmark": "Đã lưu",
     "profile": "Hồ sơ",
     "settings": "Cài đặt",
@@ -16,11 +17,22 @@
     "register": "Đăng ký",
     "email": "Email",
     "password": "Mật khẩu",
+    "password_confirm": "Xác nhận mật khẩu",
+    "email_placeholder": "Nhập email của bạn",
+    "password_placeholder": "Nhập mật khẩu của bạn",
+    "password_confirm_placeholder": "Nhập lại mật khẩu",
+    "password_hint": "Tối thiểu 8 ký tự, bao gồm chữ và số",
     "forgot_password": "Quên mật khẩu?",
     "remember_me": "Ghi nhớ đăng nhập",
     "login_success": "Đăng nhập thành công!",
     "login_error": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
     "register_success": "Đăng ký thành công!",
+    "register_error": "Đăng ký thất bại. Vui lòng thử lại.",
+    "logout_confirm": "Bạn có chắc muốn đăng xuất?",
+    "password_weak": "Mật khẩu phải bao gồm ít nhất hai trong ba loại: chữ cái, số, ký hiệu",
+    "password_invalid_chars": "Mật khẩu không được chứa ký tự \" hoặc '",
+    "already_have_account": "Đã có tài khoản?",
+    "no_account": "Chưa có tài khoản?"
     "logout_confirm": "Bạn có chắc muốn đăng xuất?",
     "no_account": "Chưa có tài khoản?",
     "have_account": "Đã có tài khoản?"
@@ -41,6 +53,9 @@
     "previous": "Trước",
     "submit": "Gửi",
     "close": "Đóng",
+    "not_set": "Chưa cập nhật",
+    "anonymous": "Ẩn danh",
+    "coming_soon": "Sắp ra mắt"
     "remove": "Xóa"
   },
 
@@ -52,10 +67,21 @@
   },
 
   "user": {
-    "profile": "Thông tin cá nhân",
-    "name": "Họ và tên",
+    "profile": "Thông tin",
+    "personal_info": "Thông tin cá nhân",
+    "name": "Tên",
     "phone": "Số điện thoại",
     "address": "Địa chỉ",
+    "role": "Vai trò",
+    "role": {
+      "admin": "Quản trị viên",
+      "user": "Người dùng"
+    },
+    "joined_date": "Ngày tham gia",
+    "my_posts": "Bài viết của tôi",
+    "bookmarks": "Đã lưu",
+    "no_posts": "Bạn chưa có bài viết nào",
+    "no_bookmarks": "Bạn chưa lưu bài viết nào",
     "update_profile": "Cập nhật thông tin",
     "change_password": "Đổi mật khẩu"
   },
@@ -69,7 +95,9 @@
     "enroll": "Đăng ký học",
     "start_learning": "Bắt đầu học",
     "my_courses": "Khóa học của tôi",
-    "all_courses": "Tất cả khóa học"
+    "all_courses": "Tất cả khóa học",
+    "subtitle": "Khám phá các khóa học và tài liệu học tập",
+    "coming_soon_desc": "Trang khóa học đang được phát triển và sẽ sớm ra mắt"
   },
 
   "validation": {
@@ -78,6 +106,106 @@
     "password_min": "Mật khẩu phải có ít nhất 8 ký tự",
     "password_mismatch": "Mật khẩu không khớp"
   },
+  "forum": {
+    "title": "Diễn đàn",
+    "create_post": "Đăng bài mới",
+    "create_first_post": "Tạo bài viết đầu tiên",
+    "no_posts": "Chưa có bài viết nào",
+    "sort": {
+      "newest": "Mới nhất",
+      "most_voted": "Nhiều vote nhất",
+      "most_answers": "Nhiều câu trả lời nhất",
+      "most_views": "Nhiều lượt xem nhất"
+    }
+  },
+  "post": {
+    "title": "Tiêu đề",
+    "content": "Nội dung",
+    "create": "Đăng bài mới",
+    "publish": "Đăng bài",
+    "title_placeholder": "Nhập tiêu đề bài viết (tối thiểu 10 ký tự)",
+    "content_placeholder": "Viết nội dung bài viết của bạn (tối thiểu 20 ký tự)",
+    "title_min": "Tiêu đề phải có ít nhất 10 ký tự",
+    "content_min": "Nội dung phải có ít nhất 20 ký tự",
+    "create_error": "Không thể tạo bài viết",
+    "status": {
+      "open": "Chưa giải quyết",
+      "closed": "Đã giải quyết"
+    },
+    "answers": "câu trả lời",
+    "views": "lượt xem",
+    "points": "điểm",
+    "bookmark": "Lưu",
+    "vote_up": "Hữu ích",
+    "vote_down": "Không hữu ích"
+  },
+  "answer": {
+    "create": "Viết câu trả lời",
+    "submit": "Gửi câu trả lời",
+    "placeholder": "Viết câu trả lời của bạn...",
+    "list": "Câu trả lời",
+    "no_answers": "Chưa có câu trả lời nào. Hãy là người đầu tiên trả lời!",
+    "by": "Bởi"
+  },
+  "comment": {
+    "title": "Bình luận",
+    "placeholder": "Viết bình luận...",
+    "submit": "Gửi",
+    "no_comments": "Chưa có bình luận nào",
+    "anonymous": "Ẩn danh",
+    "delete_confirm": "Bạn có chắc muốn xóa bình luận này?"
+  },
+  "notification": {
+    "title": "Thông báo",
+    "unread": "chưa đọc",
+    "no_notifications": "Không có thông báo",
+    "just_now": "Vừa xong",
+    "minutes_ago": "phút trước",
+    "hours_ago": "giờ trước",
+    "days_ago": "ngày trước"
+  },
+  "errors": {
+    "not_found": "Không tìm thấy bài viết"
+  },
+  "home": {
+    "badge": "Nền tảng giáo dục số 1",
+    "subtitle": "Nền tảng học tập và chia sẻ kiến thức tốt nhất. Học mọi lúc, mọi nơi với cộng đồng hàng nghìn người.",
+    "features": {
+      "title": "Tính năng nổi bật",
+      "subtitle": "Mọi thứ bạn cần để học tập hiệu quả",
+      "learn": {
+        "title": "Học tập hiệu quả",
+        "desc": "Truy cập các khóa học và tài liệu chất lượng cao từ các chuyên gia hàng đầu"
+      },
+      "community": {
+        "title": "Cộng đồng sôi động",
+        "desc": "Tham gia thảo luận, đặt câu hỏi và chia sẻ kiến thức với hàng nghìn thành viên"
+      },
+      "practice": {
+        "title": "Luyện tập thực tế",
+        "desc": "Làm bài tập, kiểm tra kiến thức và theo dõi tiến độ học tập của bạn"
+      },
+      "quality": {
+        "title": "Chất lượng cao",
+        "desc": "Nội dung được kiểm duyệt kỹ lưỡng, đảm bảo tính chính xác và cập nhật"
+      }
+    },
+    "stats": {
+      "users": "Người dùng",
+      "courses": "Khóa học",
+      "posts": "Bài viết",
+      "satisfaction": "Hài lòng"
+    },
+    "cta": {
+      "title": "Sẵn sàng bắt đầu hành trình học tập?",
+      "desc": "Tham gia cùng hàng nghìn người dùng đang học tập và phát triển mỗi ngày. Miễn phí đăng ký!"
+    }
+  },
+  "footer": {
+    "description": "Nền tảng học tập và chia sẻ kiến thức tốt nhất",
+    "links": "Liên kết",
+    "legal": "Pháp lý",
+    "privacy": "Chính sách bảo mật"
 
   "bookmark": {
     "title": "Danh sách đã lưu",

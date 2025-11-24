@@ -51,6 +51,5 @@ class NotificationCount(BaseModel):
     """
     Notification count schema
     """
-    unread_count: int
-    total_count: int
+    count: int
 

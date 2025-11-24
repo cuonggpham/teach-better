@@ -1,48 +1,78 @@
 /* =============== NAVBAR =============== */
 
 .navbar {
-  width: 100%;
-  background: #ffffff;
-  border-bottom: 1px solid #eee;
-  padding: 12px 0;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 1rem 0;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 2rem;
 }
 
 /* ----- BRAND ----- */
 .navbar-brand a {
-  text-decoration: none;
-  font-size: 22px;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #333;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.navbar-brand a:hover {
+  transform: scale(1.05);
 }
 
 /* ----- MENU ----- */
 .navbar-menu {
   display: flex;
   list-style: none;
-  gap: 20px;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  justify-content: center;
 }
 
 .navbar-menu li a {
+  color: var(--text-color);
   text-decoration: none;
-  color: #444;
-  font-size: 15px;
-  transition: 0.25s;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  position: relative;
+  padding: 0.5rem 0;
+}
+
+.navbar-menu li a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  transition: width 0.3s ease;
 }
 
 .navbar-menu li a:hover {
-  color: #667eea;
+  color: var(--primary-color);
+}
+
+.navbar-menu li a:hover::after {
+  width: 100%;
 }
 
 /* ----- ACTIONS (right side) ----- */
@@ -52,20 +82,18 @@
   gap: 16px;
 }
 
-/* Login Button */
-.navbar-login-btn {
-  padding: 8px 16px;
-  background: #667eea;
-  color: white;
-  border-radius: 6px;
-  font-size: 14px;
-  text-decoration: none;
-  transition: 0.25s;
+.navbar-user {
+  color: var(--text-color);
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
 }
 
-.navbar-login-btn:hover {
-  background: #5a67d8;
-}
+@media (max-width: 768px) {
+  .navbar-container {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
 
 /* ----- USER AREA (username + logout) ----- */
 .navbar-user {
@@ -99,6 +127,17 @@
 /* ----- Responsive ----- */
 @media (max-width: 768px) {
   .navbar-menu {
-    display: none; /* nếu sau này bạn muốn menu mobile thì mình thêm sau */
+    order: 3;
+    width: 100%;
+    justify-content: space-around;
+    gap: 0.5rem;
+  }
+
+  .navbar-actions {
+    gap: 0.5rem;
+  }
+
+  .navbar-user {
+    display: none;
   }
 }
