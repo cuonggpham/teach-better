@@ -1,0 +1,183 @@
+/* ============================
+   Login Page - Optimized Styles
+   ============================ */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #5a67d8 0%, #7f53ac 100%);
+  padding: 20px;
+}
+
+/* Center Container */
+.login-container {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* Card Wrapper */
+.login-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 36px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+  animation: fadeIn 0.4s ease;
+}
+
+/* Fade Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+/* ---------- Header ---------- */
+.login-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.login-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 6px 0;
+}
+
+.login-subtitle {
+  font-size: 13px;
+  color: #777;
+}
+
+/* ---------- Error Box ---------- */
+.error-message {
+  background-color: #ffe6e6;
+  border: 1px solid #ffb3b3;
+  color: #cc0000;
+  padding: 12px 14px;
+  border-radius: 6px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  text-align: left;
+}
+
+/* ---------- Form Area ---------- */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input {
+  padding: 12px 14px;
+  font-size: 14px;
+  border: 1px solid #dcdcdc;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+  background-color: #fafafa;
+}
+
+.form-group input:focus {
+  outline: none;
+  background-color: #fff;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+/* Error state */
+.form-group input.error {
+  border-color: #e53935;
+  background-color: #fff5f5;
+}
+
+.field-error {
+  font-size: 13px;
+  color: #d32f2f;
+}
+
+/* ---------- Button ---------- */
+.login-button {
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: 0.25s ease;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- Footer Links ---------- */
+.login-footer {
+  margin-top: 22px;
+  text-align: center;
+}
+
+.forgot-password-link {
+  display: inline-block;
+  font-size: 14px;
+  color: #667eea;
+  text-decoration: none;
+  margin-bottom: 10px;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
+}
+
+.register-link {
+  font-size: 14px;
+  color: #555;
+}
+
+.register-link a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 28px 18px;
+  }
+
+  .login-header h1 {
+    font-size: 22px;
+  }
+}

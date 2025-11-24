@@ -1,0 +1,56 @@
+.bookmark-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.bookmark-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+.bookmark-item {
+  background: #ffffff;
+  padding: 18px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bookmark-info h3 {
+  margin: 0 0 6px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.bookmark-info p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+}
+
+.remove-btn {
+  background: #e53935;
+  border: none;
+  padding: 8px 16px;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.remove-btn:hover {
+  background: #c62828;
+}
+
+.bookmark-empty,
+.bookmark-login-required {
+  text-align: center;
+  margin-top: 40px;
+  color: #666;
+  font-size: 16px;
+}

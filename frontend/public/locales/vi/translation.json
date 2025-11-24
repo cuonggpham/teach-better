@@ -1,13 +1,16 @@
 {
   "welcome": "Xin chào",
   "app_title": "Teach Better - Nền tảng giáo dục",
+
   "navigation": {
     "home": "Trang chủ",
     "courses": "Khóa học",
+    "bookmark": "Đã lưu",
     "profile": "Hồ sơ",
     "settings": "Cài đặt",
     "logout": "Đăng xuất"
   },
+
   "auth": {
     "login": "Đăng nhập",
     "register": "Đăng ký",
@@ -18,8 +21,11 @@
     "login_success": "Đăng nhập thành công!",
     "login_error": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
     "register_success": "Đăng ký thành công!",
-    "logout_confirm": "Bạn có chắc muốn đăng xuất?"
+    "logout_confirm": "Bạn có chắc muốn đăng xuất?",
+    "no_account": "Chưa có tài khoản?",
+    "have_account": "Đã có tài khoản?"
   },
+
   "common": {
     "save": "Lưu",
     "cancel": "Hủy",
@@ -34,14 +40,17 @@
     "next": "Tiếp theo",
     "previous": "Trước",
     "submit": "Gửi",
-    "close": "Đóng"
+    "close": "Đóng",
+    "remove": "Xóa"
   },
+
   "language": {
     "select": "Chọn ngôn ngữ",
     "vietnamese": "Tiếng Việt",
     "japanese": "Tiếng Nhật",
     "change_success": "Đã thay đổi ngôn ngữ thành công"
   },
+
   "user": {
     "profile": "Thông tin cá nhân",
     "name": "Họ và tên",
@@ -50,6 +59,7 @@
     "update_profile": "Cập nhật thông tin",
     "change_password": "Đổi mật khẩu"
   },
+
   "course": {
     "title": "Tiêu đề khóa học",
     "description": "Mô tả",
@@ -61,10 +71,19 @@
     "my_courses": "Khóa học của tôi",
     "all_courses": "Tất cả khóa học"
   },
+
   "validation": {
     "required": "Trường này là bắt buộc",
     "email_invalid": "Email không hợp lệ",
     "password_min": "Mật khẩu phải có ít nhất 8 ký tự",
     "password_mismatch": "Mật khẩu không khớp"
+  },
+
+  "bookmark": {
+    "title": "Danh sách đã lưu",
+    "empty": "Bạn chưa lưu mục nào.",
+    "saved_at": "Ngày lưu",
+    "confirm_remove": "Bạn có chắc muốn xóa mục này khỏi bookmark?",
+    "need_login": "Bạn cần đăng nhập để xem danh sách bookmark."
   }
 }
