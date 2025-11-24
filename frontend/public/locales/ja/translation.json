@@ -1,9 +1,10 @@
 {
-  "welcome": "こんにちは",
+  "welcome": "Teach Betterへようこそ",
   "app_title": "Teach Better - 教育プラットフォーム",
   "navigation": {
     "home": "ホーム",
     "courses": "コース",
+    "forum": "フォーラム",
     "profile": "プロフィール",
     "settings": "設定",
     "logout": "ログアウト"
@@ -13,12 +14,22 @@
     "register": "登録",
     "email": "メールアドレス",
     "password": "パスワード",
+    "password_confirm": "パスワード確認",
+    "email_placeholder": "メールアドレスを入力してください",
+    "password_placeholder": "パスワードを入力してください",
+    "password_confirm_placeholder": "パスワードを再入力してください",
+    "password_hint": "最低8文字、文字と数字を含む",
     "forgot_password": "パスワードをお忘れですか？",
     "remember_me": "ログイン状態を保持",
     "login_success": "ログインに成功しました！",
     "login_error": "ログインに失敗しました。情報を確認してください。",
     "register_success": "登録に成功しました！",
-    "logout_confirm": "ログアウトしてもよろしいですか？"
+    "register_error": "登録に失敗しました。もう一度お試しください。",
+    "logout_confirm": "ログアウトしてもよろしいですか？",
+    "password_weak": "パスワードには、文字、数字、記号のうち少なくとも2種類を含める必要があります",
+    "password_invalid_chars": "パスワードに \" または ' を含めることはできません",
+    "already_have_account": "すでにアカウントをお持ちですか？",
+    "no_account": "アカウントをお持ちでないですか？"
   },
   "common": {
     "save": "保存",
@@ -34,7 +45,10 @@
     "next": "次へ",
     "previous": "前へ",
     "submit": "送信",
-    "close": "閉じる"
+    "close": "閉じる",
+    "not_set": "未設定",
+    "anonymous": "匿名",
+    "coming_soon": "近日公開"
   },
   "language": {
     "select": "言語を選択",
@@ -43,10 +57,21 @@
     "change_success": "言語を変更しました"
   },
   "user": {
-    "profile": "個人情報",
-    "name": "氏名",
+    "profile": "情報",
+    "personal_info": "個人情報",
+    "name": "名前",
     "phone": "電話番号",
     "address": "住所",
+    "role": "役割",
+    "role": {
+      "admin": "管理者",
+      "user": "ユーザー"
+    },
+    "joined_date": "参加日",
+    "my_posts": "私の投稿",
+    "bookmarks": "保存済み",
+    "no_posts": "投稿がありません",
+    "no_bookmarks": "保存した投稿がありません",
     "update_profile": "情報を更新",
     "change_password": "パスワードを変更"
   },
@@ -59,12 +84,115 @@
     "enroll": "登録する",
     "start_learning": "学習を始める",
     "my_courses": "マイコース",
-    "all_courses": "すべてのコース"
+    "all_courses": "すべてのコース",
+    "subtitle": "コースと学習資料を探索",
+    "coming_soon_desc": "コースページは開発中で、まもなく公開されます"
   },
   "validation": {
     "required": "この項目は必須です",
     "email_invalid": "メールアドレスが無効です",
     "password_min": "パスワードは8文字以上である必要があります",
     "password_mismatch": "パスワードが一致しません"
+  },
+  "forum": {
+    "title": "フォーラム",
+    "create_post": "新しい投稿",
+    "create_first_post": "最初の投稿を作成",
+    "no_posts": "投稿がありません",
+    "sort": {
+      "newest": "最新",
+      "most_voted": "投票数が多い順",
+      "most_answers": "回答数が多い順",
+      "most_views": "閲覧数が多い順"
+    }
+  },
+  "post": {
+    "title": "タイトル",
+    "content": "内容",
+    "create": "新しい投稿",
+    "publish": "投稿",
+    "title_placeholder": "投稿タイトルを入力（最低10文字）",
+    "content_placeholder": "投稿内容を入力（最低20文字）",
+    "title_min": "タイトルは最低10文字必要です",
+    "content_min": "内容は最低20文字必要です",
+    "create_error": "投稿を作成できませんでした",
+    "status": {
+      "open": "未解決",
+      "closed": "解決済み"
+    },
+    "answers": "回答",
+    "views": "閲覧",
+    "points": "ポイント",
+    "bookmark": "保存",
+    "vote_up": "役に立つ",
+    "vote_down": "役に立たない"
+  },
+  "answer": {
+    "create": "回答を書く",
+    "submit": "回答を送信",
+    "placeholder": "回答を入力してください...",
+    "list": "回答",
+    "no_answers": "回答がありません。最初の回答者になりましょう！",
+    "by": "投稿者"
+  },
+  "comment": {
+    "title": "コメント",
+    "placeholder": "コメントを入力...",
+    "submit": "送信",
+    "no_comments": "コメントがありません",
+    "anonymous": "匿名",
+    "delete_confirm": "このコメントを削除してもよろしいですか？"
+  },
+  "notification": {
+    "title": "通知",
+    "unread": "未読",
+    "no_notifications": "通知がありません",
+    "just_now": "たった今",
+    "minutes_ago": "分前",
+    "hours_ago": "時間前",
+    "days_ago": "日前"
+  },
+  "errors": {
+    "not_found": "投稿が見つかりません"
+  },
+  "home": {
+    "badge": "No.1教育プラットフォーム",
+    "subtitle": "最高の学習と知識共有プラットフォーム。何千人ものコミュニティと共に、いつでもどこでも学べます。",
+    "features": {
+      "title": "主な機能",
+      "subtitle": "効果的な学習に必要なすべて",
+      "learn": {
+        "title": "効果的な学習",
+        "desc": "一流の専門家による高品質なコースと資料にアクセス"
+      },
+      "community": {
+        "title": "活発なコミュニティ",
+        "desc": "何千人ものメンバーと議論に参加し、質問をして知識を共有"
+      },
+      "practice": {
+        "title": "実践的な練習",
+        "desc": "演習を行い、知識をテストし、学習の進捗を追跡"
+      },
+      "quality": {
+        "title": "高品質",
+        "desc": "厳重に審査されたコンテンツで、正確性と最新性を保証"
+      }
+    },
+    "stats": {
+      "users": "ユーザー",
+      "courses": "コース",
+      "posts": "投稿",
+      "satisfaction": "満足度"
+    },
+    "cta": {
+      "title": "学習の旅を始める準備はできていますか？",
+      "desc": "毎日学習し成長している何千人ものユーザーに参加しましょう。無料登録！"
+    }
+  },
+  "footer": {
+    "description": "最高の学習と知識共有プラットフォーム",
+    "links": "リンク",
+    "legal": "法的",
+    "privacy": "プライバシーポリシー"
   }
 }

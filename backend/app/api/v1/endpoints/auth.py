@@ -174,3 +174,17 @@ async def signin(
         "user": user_dict,
         "redirect": "/home"  # URL of main screen
     }
+
+
+@router.post("/signout", response_model=dict, status_code=status.HTTP_200_OK)
+async def signout(
+    t: Translator = Depends(get_translator)
+):
+    """
+    Sign out user
+
+    Returns success message. Token invalidation is handled on the client side.
+    """
+    return {
+        "message": t("auth.logout_success")
+    }

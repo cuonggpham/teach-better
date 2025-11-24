@@ -112,16 +112,62 @@ class UserService:
         user = await self.get_user_by_email(email)
         if not user:
             return None
-        
+
         # Check if user has hashed_password field
         hashed_password = user.password if hasattr(user, 'password') else None
         if not hashed_password and hasattr(user, 'hashed_password'):
             hashed_password = user.hashed_password
-            
+
         if not hashed_password:
             return None
-            
+
         if not verify_password(password, hashed_password):
             return None
-            
+
         return user
+
+    async def add_bookmark(self, user_id: str, post_id: str) -> Optional[UserModel]:
+        """
+        Add a post to user's bookmarks
+        """
+        if not ObjectId.is_valid(user_id) or not ObjectId.is_valid(post_id):
+            return None
+
+        result = await self.collection.find_one_and_update(
+            {"_id": ObjectId(user_id)},
+            {"$addToSet": {"bookmarked_post_ids": ObjectId(post_id)}},
+            return_document=True
+        )
+
+        if result:
+            return UserModel(**result)
+        return None
+
+    async def remove_bookmark(self, user_id: str, post_id: str) -> Optional[UserModel]:
+        """
+        Remove a post from user's bookmarks
+        """
+        if not ObjectId.is_valid(user_id) or not ObjectId.is_valid(post_id):
+            return None
+
+        result = await self.collection.find_one_and_update(
+            {"_id": ObjectId(user_id)},
+            {"$pull": {"bookmarked_post_ids": ObjectId(post_id)}},
+            return_document=True
+        )
+
+        if result:
+            return UserModel(**result)
+        return None
+
+    async def get_bookmarked_posts(self, user_id: str) -> List[str]:
+        """
+        Get list of bookmarked post IDs for a user
+        """
+        if not ObjectId.is_valid(user_id):
+            return []
+
+        user = await self.collection.find_one({"_id": ObjectId(user_id)})
+        if user and "bookmarked_post_ids" in user:
+            return [str(post_id) for post_id in user["bookmarked_post_ids"]]
+        return []
