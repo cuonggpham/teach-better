@@ -1,3 +1,4 @@
+/* Container */
 .items-page {
   min-height: calc(100vh - 200px);
   padding: 3rem 1rem;
@@ -57,4 +58,58 @@
   .items-subtitle {
     font-size: 1.125rem;
   }
+}
+
+/* Grid layout */
+.items-grid {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* Card item */
+.item-card {
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: 0.25s;
+}
+
+.item-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+}
+
+/* Header (title + bookmark icon) */
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Bookmark button */
+.bookmark-btn {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.bookmark-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Description */
+.item-desc {
+  margin-top: 10px;
+  color: #666;
 }

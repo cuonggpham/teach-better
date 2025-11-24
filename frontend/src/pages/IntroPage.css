@@ -1,0 +1,22 @@
+.intro-container {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.intro-button {
+  background: #667eea;
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 16px;
+  text-decoration: none;
+}
+
+.intro-button:hover {
+  background: #5a67d8;
+}

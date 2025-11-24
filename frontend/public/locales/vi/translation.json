@@ -1,14 +1,17 @@
 {
   "welcome": "Chào mừng đến với Teach Better",
   "app_title": "Teach Better - Nền tảng giáo dục",
+
   "navigation": {
     "home": "Trang chủ",
     "courses": "Khóa học",
     "forum": "Diễn đàn",
+    "bookmark": "Đã lưu",
     "profile": "Hồ sơ",
     "settings": "Cài đặt",
     "logout": "Đăng xuất"
   },
+
   "auth": {
     "login": "Đăng nhập",
     "register": "Đăng ký",
@@ -30,7 +33,11 @@
     "password_invalid_chars": "Mật khẩu không được chứa ký tự \" hoặc '",
     "already_have_account": "Đã có tài khoản?",
     "no_account": "Chưa có tài khoản?"
+    "logout_confirm": "Bạn có chắc muốn đăng xuất?",
+    "no_account": "Chưa có tài khoản?",
+    "have_account": "Đã có tài khoản?"
   },
+
   "common": {
     "save": "Lưu",
     "cancel": "Hủy",
@@ -49,13 +56,16 @@
     "not_set": "Chưa cập nhật",
     "anonymous": "Ẩn danh",
     "coming_soon": "Sắp ra mắt"
+    "remove": "Xóa"
   },
+
   "language": {
     "select": "Chọn ngôn ngữ",
     "vietnamese": "Tiếng Việt",
     "japanese": "Tiếng Nhật",
     "change_success": "Đã thay đổi ngôn ngữ thành công"
   },
+
   "user": {
     "profile": "Thông tin",
     "personal_info": "Thông tin cá nhân",
@@ -75,6 +85,7 @@
     "update_profile": "Cập nhật thông tin",
     "change_password": "Đổi mật khẩu"
   },
+
   "course": {
     "title": "Tiêu đề khóa học",
     "description": "Mô tả",
@@ -88,6 +99,7 @@
     "subtitle": "Khám phá các khóa học và tài liệu học tập",
     "coming_soon_desc": "Trang khóa học đang được phát triển và sẽ sớm ra mắt"
   },
+
   "validation": {
     "required": "Trường này là bắt buộc",
     "email_invalid": "Email không hợp lệ",
@@ -194,5 +206,12 @@
     "links": "Liên kết",
     "legal": "Pháp lý",
     "privacy": "Chính sách bảo mật"
+
+  "bookmark": {
+    "title": "Danh sách đã lưu",
+    "empty": "Bạn chưa lưu mục nào.",
+    "saved_at": "Ngày lưu",
+    "confirm_remove": "Bạn có chắc muốn xóa mục này khỏi bookmark?",
+    "need_login": "Bạn cần đăng nhập để xem danh sách bookmark."
   }
 }

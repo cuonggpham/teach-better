@@ -1,14 +1,17 @@
 {
   "welcome": "Teach Betterへようこそ",
   "app_title": "Teach Better - 教育プラットフォーム",
+
   "navigation": {
     "home": "ホーム",
     "courses": "コース",
     "forum": "フォーラム",
+    "bookmark": "ブックマーク",
     "profile": "プロフィール",
     "settings": "設定",
     "logout": "ログアウト"
   },
+
   "auth": {
     "login": "ログイン",
     "register": "登録",
@@ -30,7 +33,11 @@
     "password_invalid_chars": "パスワードに \" または ' を含めることはできません",
     "already_have_account": "すでにアカウントをお持ちですか？",
     "no_account": "アカウントをお持ちでないですか？"
+    "logout_confirm": "ログアウトしてもよろしいですか？",
+    "no_account": "アカウントをお持ちでないですか？",
+    "have_account": "アカウントをお持ちですか？"
   },
+
   "common": {
     "save": "保存",
     "cancel": "キャンセル",
@@ -49,13 +56,16 @@
     "not_set": "未設定",
     "anonymous": "匿名",
     "coming_soon": "近日公開"
+    "remove": "削除"
   },
+
   "language": {
     "select": "言語を選択",
     "vietnamese": "ベトナム語",
     "japanese": "日本語",
     "change_success": "言語を変更しました"
   },
+
   "user": {
     "profile": "情報",
     "personal_info": "個人情報",
@@ -75,6 +85,7 @@
     "update_profile": "情報を更新",
     "change_password": "パスワードを変更"
   },
+
   "course": {
     "title": "コースタイトル",
     "description": "説明",
@@ -88,6 +99,7 @@
     "subtitle": "コースと学習資料を探索",
     "coming_soon_desc": "コースページは開発中で、まもなく公開されます"
   },
+
   "validation": {
     "required": "この項目は必須です",
     "email_invalid": "メールアドレスが無効です",
@@ -194,5 +206,12 @@
     "links": "リンク",
     "legal": "法的",
     "privacy": "プライバシーポリシー"
+
+  "bookmark": {
+    "title": "保存した項目",
+    "empty": "保存された項目はありません。",
+    "saved_at": "保存日時",
+    "confirm_remove": "ブックマークから削除しますか？",
+    "need_login": "ブックマークを見るにはログインしてください。"
   }
 }

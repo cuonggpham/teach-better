@@ -14,15 +14,24 @@ import CreatePostPage from '../pages/CreatePostPage';
  */
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <App />,
     children: [
+      // Trang Intro (khi chưa login)
       {
         index: true,
+        element: <IntroPage />,
+      },
+
+      // Trang Home sau khi login
+      {
+        path: "home",
         element: <HomePage />,
       },
+
+      // Todo Items page
       {
-        path: 'courses',
+        path: "courses",
         element: <ItemsPage />,
       },
       {
