@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import LanguageSwitcher from '../LanguageSwitcher';
+import NotificationIcon from './NotificationIcon';
 import './Navbar.css';
 
 /**
@@ -18,12 +19,12 @@ const Navbar = () => {
         
         <ul className="navbar-menu">
           <li><Link to="/">{t('navigation.home')}</Link></li>
-          <li><Link to="/courses">{t('navigation.courses')}</Link></li>
+          <li><Link to="/forum">{t('navigation.forum')}</Link></li>
           <li><Link to="/profile">{t('navigation.profile')}</Link></li>
-          <li><Link to="/settings">{t('navigation.settings')}</Link></li>
         </ul>
         
         <div className="navbar-actions">
+          <NotificationIcon />
           <LanguageSwitcher />
         </div>
       </div>

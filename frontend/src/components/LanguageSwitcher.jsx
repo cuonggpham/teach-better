@@ -23,9 +23,6 @@ const LanguageSwitcher = () => {
 
   return (
     <div className="language-switcher">
-      <label htmlFor="language-select" className="language-label">
-        {t('language.select')}:
-      </label>
       <select
         id="language-select"
         value={i18n.language}

@@ -52,6 +52,25 @@
     "created": "Đã tạo",
     "updated": "Đã cập nhật",
     "deleted": "Đã xóa",
-    "saved": "Đã lưu"
+    "saved": "Đã lưu",
+    "invalid_id": "ID không hợp lệ",
+    "no_permission": "Bạn không có quyền thực hiện hành động này"
+  },
+  "post": {
+    "not_found": "Không tìm thấy bài viết",
+    "created": "Tạo bài viết thành công",
+    "updated": "Cập nhật bài viết thành công",
+    "deleted": "Xóa bài viết thành công",
+    "vote_success": "Đã bình chọn",
+    "bookmark_added": "Đã thêm vào bookmark",
+    "bookmark_removed": "Đã xóa khỏi bookmark"
+  },
+  "answer": {
+    "not_found": "Không tìm thấy câu trả lời",
+    "created": "Tạo câu trả lời thành công"
+  },
+  "notification": {
+    "not_found": "Không tìm thấy thông báo",
+    "all_marked_read": "Đã đánh dấu tất cả thông báo là đã đọc"
   }
 }
