@@ -47,12 +47,16 @@ async def send_answer_notification(
     """
     post = await post_service.get_post_by_id(post_id)
     if post and str(post.author_id) != answer_author_id:
+        print(f"[DEBUG] Creating notification for post author {post.author_id}, answerer: {answer_author_id}")
         await notification_service.create_notification(
             user_id=str(post.author_id),
             notification_type=NotificationType.NEW_ANSWER,
             message="Có câu trả lời mới cho bài viết của bạn",
             link=f"/posts/{post_id}"
         )
+        print(f"[DEBUG] Notification created successfully")
+    else:
+        print(f"[DEBUG] No notification created - post exists: {post is not None}, same author: {str(post.author_id) == answer_author_id if post else 'N/A'}")
 
 
 async def send_comment_notification(
@@ -66,12 +70,16 @@ async def send_comment_notification(
     """
     answer = await answer_service.get_answer_by_id(answer_id)
     if answer and str(answer.author_id) != comment_author_id:
+        print(f"[DEBUG] Creating notification for answer author {answer.author_id}, commenter: {comment_author_id}")
         await notification_service.create_notification(
             user_id=str(answer.author_id),
             notification_type=NotificationType.NEW_COMMENT,
             message="Có bình luận mới cho câu trả lời của bạn",
             link=f"/posts/{str(answer.post_id)}"
         )
+        print(f"[DEBUG] Notification created successfully")
+    else:
+        print(f"[DEBUG] No notification created - answer exists: {answer is not None}, same author: {str(answer.author_id) == comment_author_id if answer else 'N/A'}")
 
 
 @router.post("/", response_model=Answer, status_code=status.HTTP_201_CREATED)
@@ -123,6 +131,7 @@ async def get_answers_by_post(
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     answer_service: AnswerService = Depends(get_answer_service),
+    db: AsyncIOMotorDatabase = Depends(get_database),
     t: Translator = Depends(get_translator)
 ):
     """
@@ -140,10 +149,20 @@ async def get_answers_by_post(
         answer_dict["votes"]["upvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("upvoted_by", [])]
         answer_dict["votes"]["downvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("downvoted_by", [])]
 
-        # Convert comment IDs
+        # Populate author names for comments
         for comment in answer_dict.get("comments", []):
             comment["id"] = str(comment["id"])
-            comment["author_id"] = str(comment["author_id"])
+            comment_author_id = comment["author_id"]
+            comment["author_id"] = str(comment_author_id)
+            
+            # Fetch author name from users collection
+            from bson import ObjectId
+            if ObjectId.is_valid(str(comment_author_id)):
+                user = await db.users.find_one({"_id": ObjectId(str(comment_author_id))})
+                if user:
+                    comment["author_name"] = user.get("name", "Unknown User")
+                else:
+                    comment["author_name"] = "Unknown User"
 
         answer_list.append(Answer(**answer_dict))
 
@@ -261,6 +280,7 @@ async def add_comment(
     current_user: User = Depends(get_current_user),
     answer_service: AnswerService = Depends(get_answer_service),
     notification_service: NotificationService = Depends(get_notification_service),
+    db: AsyncIOMotorDatabase = Depends(get_database),
     t: Translator = Depends(get_translator)
 ):
     """
@@ -291,10 +311,20 @@ async def add_comment(
     answer_dict["votes"]["upvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("upvoted_by", [])]
     answer_dict["votes"]["downvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("downvoted_by", [])]
 
-    # Convert comment IDs
+    # Populate author names for comments
+    from bson import ObjectId
     for comment in answer_dict.get("comments", []):
         comment["id"] = str(comment["id"])
-        comment["author_id"] = str(comment["author_id"])
+        comment_author_id = comment["author_id"]
+        comment["author_id"] = str(comment_author_id)
+        
+        # Fetch author name from users collection
+        if ObjectId.is_valid(str(comment_author_id)):
+            user = await db.users.find_one({"_id": ObjectId(str(comment_author_id))})
+            if user:
+                comment["author_name"] = user.get("name", "Unknown User")
+            else:
+                comment["author_name"] = "Unknown User"
 
     return Answer(**answer_dict)
 

@@ -72,7 +72,8 @@ const CreatePostPage = () => {
         content: formData.content.trim(),
         status: 'open',
       });
-      navigate(`/forum/${newPost._id}`);
+      // Navigate to forum page (will show at top of page 1)
+      navigate('/forum', { state: { newPostId: newPost._id, scrollToTop: true } });
     } catch (error) {
       setErrors({ general: error.message || t('post.create_error') });
     } finally {

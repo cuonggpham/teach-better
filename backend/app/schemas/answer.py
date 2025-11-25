@@ -9,6 +9,7 @@ class CommentSchema(BaseModel):
     """
     id: str
     author_id: str
+    author_name: Optional[str] = None
     content: str
     created_at: datetime
 

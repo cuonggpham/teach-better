@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
+from bson import ObjectId
 from app.models.user import PyObjectId
 from app.models.post import VotesModel
 
@@ -9,7 +10,7 @@ class CommentModel(BaseModel):
     """
     Comment sub-model embedded in answers
     """
-    id: PyObjectId = Field(default_factory=PyObjectId)
+    id: PyObjectId = Field(default_factory=lambda: str(ObjectId()))
     author_id: PyObjectId
     content: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -30,11 +31,12 @@ class AnswerModel(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
-    class Config:
-        populate_by_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={
             PyObjectId: str,
             datetime: lambda v: v.isoformat()
         }
+    )
 

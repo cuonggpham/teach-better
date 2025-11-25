@@ -1,4 +1,5 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const API_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
 /**
  * Get all answers for a post
@@ -12,7 +13,9 @@ export const getAnswers = async (postId, token, params = {}) => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
+      ...(token && {
+        Authorization: `Bearer ${token}`
+      }),
     },
   });
 
@@ -41,7 +44,17 @@ export const createAnswer = async (token, answerData) => {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.detail || 'Failed to create answer');
+    // FastAPI validation errors return detail as array
+    let errorMessage = 'Failed to create answer';
+    if (data.detail) {
+      if (Array.isArray(data.detail)) {
+        // Extract first validation error message
+        errorMessage = data.detail[0]?.msg || data.detail[0]?.message || errorMessage;
+      } else if (typeof data.detail === 'string') {
+        errorMessage = data.detail;
+      }
+    }
+    throw new Error(errorMessage);
   }
 
   return data;
@@ -52,8 +65,7 @@ export const createAnswer = async (token, answerData) => {
  */
 export const voteAnswer = async (token, answerId, isUpvote) => {
   const response = await fetch(
-    `${API_URL}/answers/${answerId}/vote?is_upvote=${isUpvote}`,
-    {
+    `${API_URL}/answers/${answerId}/vote?is_upvote=${isUpvote}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -113,4 +125,3 @@ export const deleteComment = async (token, answerId, commentId) => {
 
   return data;
 };
-

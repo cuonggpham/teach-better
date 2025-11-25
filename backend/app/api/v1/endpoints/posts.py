@@ -71,21 +71,29 @@ async def get_post(
     return Post(**post_dict)
 
 
-@router.get("/", response_model=List[Post])
+@router.get("/", response_model=PostList)
 async def get_posts(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
     status_filter: Optional[PostStatus] = None,
     author_id: Optional[str] = None,
     tag_ids: Optional[List[str]] = Query(None),
-    sort_by: str = Query("created_at", regex="^(created_at|votes.score|view_count|answer_count)$"),
-    sort_order: int = Query(-1, regex="^(-1|1)$"),
+    sort_by: str = Query("created_at", pattern="^(created_at|votes.score|view_count|answer_count)$"),
+    sort_order: int = Query(-1, ge=-1, le=1),
     post_service: PostService = Depends(get_post_service),
     t: Translator = Depends(get_translator)
 ):
     """
     Get list of posts with filters and sorting
     """
+    # Get total count
+    total = await post_service.count_posts(
+        status=status_filter,
+        author_id=author_id,
+        tag_ids=tag_ids
+    )
+    
+    # Get posts
     posts = await post_service.get_posts(
         skip=skip,
         limit=limit,
@@ -107,7 +115,7 @@ async def get_posts(
         post_dict["votes"]["downvoted_by"] = [str(uid) for uid in post_dict["votes"].get("downvoted_by", [])]
         post_list.append(Post(**post_dict))
 
-    return post_list
+    return PostList(posts=post_list, total=total)
 
 
 @router.put("/{post_id}", response_model=Post)

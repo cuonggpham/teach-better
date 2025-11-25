@@ -87,17 +87,32 @@ const PostDetailPage = () => {
     if (!isAuthenticated || !token || !newAnswer.trim() || submittingAnswer) return;
 
     setSubmittingAnswer(true);
+    setError('');
     try {
       await createAnswer(token, {
         post_id: postId,
         content: newAnswer.trim(),
       });
       setNewAnswer('');
-      fetchAnswers();
+      await fetchAnswers();
       // Refresh post to update answer count
-      fetchPost();
+      await fetchPost();
+      // Trigger notification refresh
+      window.dispatchEvent(new CustomEvent('refreshNotifications'));
+      // Scroll to answers section
+      document.querySelector('.answers-section')?.scrollIntoView({ behavior: 'smooth' });
     } catch (error) {
       console.error('Failed to create answer:', error);
+      // Extract error message from various error formats
+      let errorMessage = 'Failed to create answer';
+      if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      } else if (error.detail) {
+        errorMessage = typeof error.detail === 'string' ? error.detail : JSON.stringify(error.detail);
+      }
+      setError(errorMessage);
     } finally {
       setSubmittingAnswer(false);
     }
@@ -106,12 +121,12 @@ const PostDetailPage = () => {
 
   const isUpvoted = (item) => {
     if (!user || !item.votes?.upvoted_by) return false;
-    return item.votes.upvoted_by.includes(user.id);
+    return item.votes.upvoted_by.includes(user._id || user.id);
   };
 
   const isDownvoted = (item) => {
     if (!user || !item.votes?.downvoted_by) return false;
-    return item.votes.downvoted_by.includes(user.id);
+    return item.votes.downvoted_by.includes(user._id || user.id);
   };
 
   const isBookmarked = () => {
@@ -191,6 +206,13 @@ const PostDetailPage = () => {
         {isAuthenticated && (
           <Card variant="elevated" padding="large" className="answer-form-card">
             <h2>{t('answer.create', 'Viết câu trả lời')}</h2>
+
+            {error && (
+              <Alert type="error" className="mb-2">
+                {typeof error === 'string' ? error : JSON.stringify(error)}
+              </Alert>
+            )}
+
             <form onSubmit={handleSubmitAnswer} className="answer-form">
               <Input
                 as="textarea"
