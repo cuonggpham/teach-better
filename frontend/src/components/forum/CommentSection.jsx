@@ -24,6 +24,8 @@ const CommentSection = ({ answerId, comments = [], onCommentAdded, onCommentDele
       await addComment(token, answerId, { content: newComment.trim() });
       setNewComment('');
       if (onCommentAdded) onCommentAdded();
+      // Trigger notification refresh
+      window.dispatchEvent(new CustomEvent('refreshNotifications'));
     } catch (error) {
       console.error('Failed to add comment:', error);
     } finally {

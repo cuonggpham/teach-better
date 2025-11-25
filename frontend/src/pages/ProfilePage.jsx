@@ -39,14 +39,18 @@ const ProfilePage = () => {
 
     setLoading(true);
     try {
-      const posts = await getPosts(token, {
-        author_id: user.id,
+      const response = await getPosts(token, {
+        author_id: user._id || user.id,
         sort_by: 'created_at',
         sort_order: -1,
       });
-      setUserPosts(posts);
+      // Handle new response format with posts and total
+      const posts = response.posts || response;
+      console.log('User posts:', posts);
+      setUserPosts(Array.isArray(posts) ? posts : []);
     } catch (error) {
       console.error('Failed to fetch user posts:', error);
+      setUserPosts([]);
     } finally {
       setLoading(false);
     }

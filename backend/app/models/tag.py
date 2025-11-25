@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from app.models.user import PyObjectId
 
 
@@ -15,11 +15,12 @@ class TagModel(BaseModel):
     created_by: PyObjectId
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
-    class Config:
-        populate_by_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {
+    model_config = ConfigDict(
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
+        json_encoders={
             PyObjectId: str,
             datetime: lambda v: v.isoformat()
         }
+    )
 

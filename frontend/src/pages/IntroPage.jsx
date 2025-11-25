@@ -1,15 +1,25 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useAuth } from "../contexts/AuthContext";
 import "./IntroPage.css";
 
 const IntroPage = () => {
+  const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
+
+  // Redirect to home if already logged in
+  if (isAuthenticated) {
+    return <Navigate to="/home" replace />;
+  }
+
   return (
     <div className="intro-container">
-      <h1>Welcome to Teach Better</h1>
-      <p>Nền tảng học tập hiện đại, thông minh và dễ sử dụng.</p>
+      <h1>{t('welcome')}</h1>
+      <p>{t('home.subtitle')}</p>
 
-      <Link to="/login" className="intro-button">
-        Bắt đầu ngay
+      <Link to="/signin" className="intro-button">
+        {t('home.cta.title')}
       </Link>
     </div>
   );

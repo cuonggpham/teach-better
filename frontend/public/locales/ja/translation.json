@@ -1,7 +1,6 @@
 {
   "welcome": "Teach Betterへようこそ",
-  "app_title": "Teach Better - 教育プラットフォーム",
-
+  "app_title": "Teach Better",
   "navigation": {
     "home": "ホーム",
     "courses": "コース",
@@ -11,7 +10,6 @@
     "settings": "設定",
     "logout": "ログアウト"
   },
-
   "auth": {
     "login": "ログイン",
     "register": "登録",
@@ -32,12 +30,9 @@
     "password_weak": "パスワードには、文字、数字、記号のうち少なくとも2種類を含める必要があります",
     "password_invalid_chars": "パスワードに \" または ' を含めることはできません",
     "already_have_account": "すでにアカウントをお持ちですか？",
-    "no_account": "アカウントをお持ちでないですか？"
-    "logout_confirm": "ログアウトしてもよろしいですか？",
     "no_account": "アカウントをお持ちでないですか？",
     "have_account": "アカウントをお持ちですか？"
   },
-
   "common": {
     "save": "保存",
     "cancel": "キャンセル",
@@ -51,21 +46,20 @@
     "back": "戻る",
     "next": "次へ",
     "previous": "前へ",
+    "page": "ページ",
     "submit": "送信",
     "close": "閉じる",
     "not_set": "未設定",
     "anonymous": "匿名",
-    "coming_soon": "近日公開"
+    "coming_soon": "近日公開",
     "remove": "削除"
   },
-
   "language": {
     "select": "言語を選択",
     "vietnamese": "ベトナム語",
     "japanese": "日本語",
     "change_success": "言語を変更しました"
   },
-
   "user": {
     "profile": "情報",
     "personal_info": "個人情報",
@@ -73,7 +67,7 @@
     "phone": "電話番号",
     "address": "住所",
     "role": "役割",
-    "role": {
+    "roles": {
       "admin": "管理者",
       "user": "ユーザー"
     },
@@ -85,7 +79,6 @@
     "update_profile": "情報を更新",
     "change_password": "パスワードを変更"
   },
-
   "course": {
     "title": "コースタイトル",
     "description": "説明",
@@ -99,7 +92,6 @@
     "subtitle": "コースと学習資料を探索",
     "coming_soon_desc": "コースページは開発中で、まもなく公開されます"
   },
-
   "validation": {
     "required": "この項目は必須です",
     "email_invalid": "メールアドレスが無効です",
@@ -205,8 +197,10 @@
     "description": "最高の学習と知識共有プラットフォーム",
     "links": "リンク",
     "legal": "法的",
-    "privacy": "プライバシーポリシー"
-
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "rights": "全著作権所有"
+  },
   "bookmark": {
     "title": "保存した項目",
     "empty": "保存された項目はありません。",

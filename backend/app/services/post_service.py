@@ -22,16 +22,23 @@ class PostService:
         post_dict = post_data.model_dump()
         post_dict["author_id"] = ObjectId(author_id)
         post_dict["tag_ids"] = [ObjectId(tag_id) for tag_id in post_data.tag_ids] if post_data.tag_ids else []
-        post_dict["created_at"] = datetime.utcnow()
-        post_dict["updated_at"] = datetime.utcnow()
+        
+        # Ensure created_at is set properly for sorting
+        now = datetime.utcnow()
+        post_dict["created_at"] = now
+        post_dict["updated_at"] = now
         post_dict["answer_count"] = 0
         post_dict["view_count"] = 0
         post_dict["is_deleted"] = False
         post_dict["status"] = PostStatus.OPEN
         post_dict["votes"] = {"upvoted_by": [], "downvoted_by": [], "score": 0}
 
+        print(f"[DEBUG] Creating post with created_at: {now}, title: {post_dict.get('title')}")
+        
         result = await self.collection.insert_one(post_dict)
         post_dict["_id"] = result.inserted_id
+        
+        print(f"[DEBUG] Post created with ID: {result.inserted_id}")
 
         return PostModel(**post_dict)
 
@@ -52,6 +59,29 @@ class PostService:
         if post:
             return PostModel(**post)
         return None
+
+    async def count_posts(
+        self,
+        status: Optional[PostStatus] = None,
+        author_id: Optional[str] = None,
+        tag_ids: Optional[List[str]] = None
+    ) -> int:
+        """
+        Count total posts with filters
+        """
+        query = {"is_deleted": False}
+
+        if status:
+            query["status"] = status
+
+        if author_id and ObjectId.is_valid(author_id):
+            query["author_id"] = ObjectId(author_id)
+
+        if tag_ids:
+            query["tag_ids"] = {"$in": [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]}
+
+        count = await self.collection.count_documents(query)
+        return count
 
     async def get_posts(
         self,
@@ -77,8 +107,14 @@ class PostService:
         if tag_ids:
             query["tag_ids"] = {"$in": [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]}
 
+        print(f"[DEBUG] get_posts query: {query}, sort_by: {sort_by}, sort_order: {sort_order}, skip: {skip}, limit: {limit}")
+        
         cursor = self.collection.find(query).sort(sort_by, sort_order).skip(skip).limit(limit)
         posts = await cursor.to_list(length=limit)
+        
+        print(f"[DEBUG] Found {len(posts)} posts")
+        for i, post in enumerate(posts[:5]):  # Show first 5 posts
+            print(f"  [{i}] Title: {post.get('title', 'No title')[:50]}, created_at: {post.get('created_at')}, is_deleted: {post.get('is_deleted', 'N/A')}")
 
         return [PostModel(**post) for post in posts]
 

@@ -47,6 +47,19 @@ const NotificationBell = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    // Listen for notification refresh events
+    const handleRefreshNotifications = () => {
+      fetchUnreadCount();
+      if (isOpen) {
+        fetchNotifications();
+      }
+    };
+
+    window.addEventListener('refreshNotifications', handleRefreshNotifications);
+    return () => window.removeEventListener('refreshNotifications', handleRefreshNotifications);
+  }, [isOpen, isAuthenticated, token]);
+
   const fetchUnreadCount = async () => {
     if (!token) return;
     try {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { getPosts, votePost } from '../api/postsApi';
@@ -15,26 +15,66 @@ const ForumPage = () => {
   const { t } = useTranslation();
   const { token, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('created_at');
   const [sortOrder, setSortOrder] = useState(-1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPosts, setTotalPosts] = useState(0);
+  const postsPerPage = 10;
+
+  const totalPages = Math.ceil(totalPosts / postsPerPage);
+
+  // Reset to page 1 when coming from create post
+  useEffect(() => {
+    if (location.state?.newPostId) {
+      setCurrentPage(1);
+      setSortBy('created_at');
+      setSortOrder(-1);
+      // Clear the state to prevent reset on subsequent navigations
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state]);
 
   useEffect(() => {
     fetchPosts();
-  }, [sortBy, sortOrder]);
+  }, [sortBy, sortOrder, currentPage]);
 
   const fetchPosts = async () => {
     setLoading(true);
     try {
-      const data = await getPosts(token, {
+      const skip = (currentPage - 1) * postsPerPage;
+      console.log('[ForumPage] Fetching posts with params:', {
         sort_by: sortBy,
         sort_order: sortOrder,
-        limit: 20,
+        skip,
+        limit: postsPerPage,
       });
+      const response = await getPosts(token, {
+        sort_by: sortBy,
+        sort_order: sortOrder,
+        skip,
+        limit: postsPerPage,
+      });
+
+      // Handle new response format with posts and total
+      const data = response.posts || response;
+      const total = response.total || 0;
+
+      console.log('[ForumPage] Fetched posts count:', data.length, 'Total:', total);
+      if (data.length > 0) {
+        console.log('[ForumPage] First 3 posts with dates:');
+        data.slice(0, 3).forEach((p, i) => {
+          console.log(`  [${i}] "${p.title}" - created: ${p.created_at}`);
+        });
+      }
       setPosts(data);
+      setTotalPosts(total);
     } catch (error) {
-      console.error('Failed to fetch posts:', error);
+      console.error('[ForumPage] Failed to fetch posts:', error);
+      setPosts([]);
+      setTotalPosts(0);
     } finally {
       setLoading(false);
     }
@@ -72,6 +112,43 @@ const ForumPage = () => {
     return user.bookmarked_post_ids.includes(post._id);
   };
 
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxPagesToShow = 5;
+
+    if (totalPages <= maxPagesToShow) {
+      // Show all pages if total is small
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Show smart pagination
+      if (currentPage <= 3) {
+        // Near the start
+        for (let i = 1; i <= 4; i++) pages.push(i);
+        pages.push('...');
+        pages.push(totalPages);
+      } else if (currentPage >= totalPages - 2) {
+        // Near the end
+        pages.push(1);
+        pages.push('...');
+        for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i);
+      } else {
+        // In the middle
+        pages.push(1);
+        pages.push('...');
+        pages.push(currentPage - 1);
+        pages.push(currentPage);
+        pages.push(currentPage + 1);
+        pages.push('...');
+        pages.push(totalPages);
+      }
+    }
+
+    return pages;
+  };
+
   return (
     <div className="forum-page">
       <Container size="large">
@@ -87,7 +164,10 @@ const ForumPage = () => {
         <div className="forum-filters">
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
+            onChange={(e) => {
+              setSortBy(e.target.value);
+              setCurrentPage(1); // Reset to page 1 when changing sort
+            }}
             className="filter-select"
           >
             <option value="created_at">{t('forum.sort.newest')}</option>
@@ -157,6 +237,45 @@ const ForumPage = () => {
                 </div>
               </Card>
             ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!loading && posts.length > 0 && totalPages > 1 && (
+          <div className="pagination">
+            <Button
+              variant="ghost"
+              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+            >
+              {t('common.previous')}
+            </Button>
+
+            <div className="pagination-numbers">
+              {getPageNumbers().map((page, index) => (
+                page === '...' ? (
+                  <span key={`ellipsis-${index}`} className="pagination-ellipsis">
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={page}
+                    className={`pagination-number ${currentPage === page ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(page)}
+                  >
+                    {page}
+                  </button>
+                )
+              ))}
+            </div>
+
+            <Button
+              variant="ghost"
+              onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+            >
+              {t('common.next')}
+            </Button>
           </div>
         )}
       </Container>
