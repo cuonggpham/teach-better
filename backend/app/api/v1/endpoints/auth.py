@@ -76,6 +76,7 @@ async def signup(
     username = user_data.email.split('@')[0]
     user_create = UserCreate(
         email=user_data.email,
+        name=username,
         username=username,
         password=user_data.password
     )

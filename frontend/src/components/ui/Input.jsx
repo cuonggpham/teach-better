@@ -32,6 +32,7 @@ const Input = ({
       ) : (
         <input
           id={inputId}
+          type={type}
           className={`input-field ${error ? 'input-error' : ''}`}
           {...inputProps}
         />

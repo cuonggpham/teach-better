@@ -52,7 +52,7 @@ class UserModel(BaseModel):
     id: Optional[PyObjectId] = Field(default=None, alias="_id")
     name: str
     email: EmailStr = Field(..., index=True)
-    password: str  # hashed password
+    password: str = Field(..., alias="hashed_password")  # hashed password
     avatar_url: Optional[str] = None
     role: UserRole = Field(default=UserRole.USER)
     status: UserStatus = Field(default=UserStatus.ACTIVE)
