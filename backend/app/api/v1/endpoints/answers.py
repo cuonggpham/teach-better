@@ -7,6 +7,7 @@ from app.schemas.answer import Answer, AnswerCreate, AnswerUpdate, CommentCreate
 from app.services.answer_service import AnswerService
 from app.services.post_service import PostService
 from app.services.notification_service import NotificationService
+from app.services.user_service import UserService
 from app.api.v1.endpoints.users import get_current_user
 from app.schemas.user import User
 from app.i18n.dependencies import get_translator, Translator
@@ -36,6 +37,13 @@ def get_notification_service(db: AsyncIOMotorDatabase = Depends(get_database)) -
     return NotificationService(db)
 
 
+def get_user_service(db: AsyncIOMotorDatabase = Depends(get_database)) -> UserService:
+    """
+    Dependency to get user service
+    """
+    return UserService(db)
+
+
 async def send_answer_notification(
     post_id: str,
     answer_author_id: str,
@@ -52,7 +60,7 @@ async def send_answer_notification(
             user_id=str(post.author_id),
             notification_type=NotificationType.NEW_ANSWER,
             message="Có câu trả lời mới cho bài viết của bạn",
-            link=f"/posts/{post_id}"
+            link=f"/forum/{post_id}"
         )
         print(f"[DEBUG] Notification created successfully")
     else:
@@ -63,23 +71,67 @@ async def send_comment_notification(
     answer_id: str,
     comment_author_id: str,
     notification_service: NotificationService,
-    answer_service: AnswerService
+    answer_service: AnswerService,
+    post_service: PostService,
+    user_service: UserService
 ):
     """
-    Send notification to answer author when someone comments
+    Send notification to answer author and bookmarked users when someone comments
     """
     answer = await answer_service.get_answer_by_id(answer_id)
-    if answer and str(answer.author_id) != comment_author_id:
+    if not answer:
+        return
+    
+    post_id = str(answer.post_id)
+    
+    # Notify answer author
+    if str(answer.author_id) != comment_author_id:
         print(f"[DEBUG] Creating notification for answer author {answer.author_id}, commenter: {comment_author_id}")
         await notification_service.create_notification(
             user_id=str(answer.author_id),
             notification_type=NotificationType.NEW_COMMENT,
             message="Có bình luận mới cho câu trả lời của bạn",
-            link=f"/posts/{str(answer.post_id)}"
+            link=f"/forum/{post_id}"
         )
         print(f"[DEBUG] Notification created successfully")
-    else:
-        print(f"[DEBUG] No notification created - answer exists: {answer is not None}, same author: {str(answer.author_id) == comment_author_id if answer else 'N/A'}")
+    
+    # Get post details
+    post = await post_service.get_post_by_id(post_id)
+    if not post:
+        return
+    
+    # Notify post author if different from comment author and answer author
+    if str(post.author_id) != comment_author_id and str(post.author_id) != str(answer.author_id):
+        print(f"[DEBUG] Creating notification for post author {post.author_id}")
+        await notification_service.create_notification(
+            user_id=str(post.author_id),
+            notification_type=NotificationType.NEW_COMMENT,
+            message="Có bình luận mới trong bài viết của bạn",
+            link=f"/forum/{post_id}"
+        )
+    
+    # Get all users who bookmarked this post
+    from bson import ObjectId
+    from app.services.user_service import UserService
+    from motor.motor_asyncio import AsyncIOMotorDatabase
+    
+    # Find users who have bookmarked this post
+    users_cursor = user_service.collection.find({
+        "bookmarked_post_ids": ObjectId(post_id)
+    })
+    bookmarked_users = await users_cursor.to_list(length=None)
+    
+    # Notify bookmarked users (except the comment author, post author, and answer author)
+    for user in bookmarked_users:
+        user_id = str(user["_id"])
+        if user_id not in [comment_author_id, str(post.author_id), str(answer.author_id)]:
+            print(f"[DEBUG] Creating notification for bookmarked user {user_id}")
+            await notification_service.create_notification(
+                user_id=user_id,
+                notification_type=NotificationType.NEW_COMMENT,
+                message="Có bình luận mới trong bài viết bạn đã lưu",
+                link=f"/forum/{post_id}"
+            )
 
 
 @router.post("/", response_model=Answer, status_code=status.HTTP_201_CREATED)
@@ -280,6 +332,8 @@ async def add_comment(
     current_user: User = Depends(get_current_user),
     answer_service: AnswerService = Depends(get_answer_service),
     notification_service: NotificationService = Depends(get_notification_service),
+    post_service: PostService = Depends(get_post_service),
+    user_service: UserService = Depends(get_user_service),
     db: AsyncIOMotorDatabase = Depends(get_database),
     t: Translator = Depends(get_translator)
 ):
@@ -294,13 +348,15 @@ async def add_comment(
             detail=t("errors.not_found")
         )
 
-    # Send notification to answer author
+    # Send notification to answer author and bookmarked users
     background_tasks.add_task(
         send_comment_notification,
         answer_id,
         current_user.id,
         notification_service,
-        answer_service
+        answer_service,
+        post_service,
+        user_service
     )
 
     # Convert to response model
