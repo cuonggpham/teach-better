@@ -1,6 +1,8 @@
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { signout } from '../../api/authApi';
 import { Button } from '../ui';
 import { NotificationBell } from '../forum';
@@ -14,18 +16,58 @@ const Navbar = () => {
   const { t } = useTranslation();
   const { user, isAuthenticated, logout, token } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDropdown]);
 
   const handleLogout = async () => {
-    if (window.confirm(t('auth.logout_confirm'))) {
-      try {
-        await signout(token);
-        logout();
-        navigate('/');
-      } catch (error) {
-        logout();
-        navigate('/');
-      }
+    try {
+      await signout(token);
+      logout();
+      toast.success(t('auth.logout_success'));
+      navigate('/');
+    } catch {
+      logout();
+      toast.info(t('auth.logout_success'));
+      navigate('/');
     }
+    setShowDropdown(false);
+  };
+
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+    setShowDropdown(false);
+  };
+
+  const getAvatarText = () => {
+    if (user?.name) {
+      return user.name[0].toUpperCase();
+    }
+    if (user?.email) {
+      return user.email[0].toUpperCase();
+    }
+    return 'U';
   };
 
   return (
@@ -44,11 +86,6 @@ const Navbar = () => {
           <li>
             <Link to="/forum">{t('navigation.forum')}</Link>
           </li>
-          {isAuthenticated && (
-            <li>
-              <Link to="/profile">{t('navigation.profile')}</Link>
-            </li>
-          )}
         </ul>
 
         <div className="navbar-actions">
@@ -56,10 +93,35 @@ const Navbar = () => {
           {isAuthenticated ? (
             <>
               <NotificationBell />
-              <span className="navbar-user">{user?.name || user?.email}</span>
-              <Button variant="danger" size="small" onClick={handleLogout}>
-                {t('navigation.logout')}
-              </Button>
+              <div className="user-menu" ref={dropdownRef}>
+                <div className="user-avatar" onClick={toggleDropdown}>
+                  {user?.avatar_url ? (
+                    <img src={user.avatar_url} alt={user.name || user.email} />
+                  ) : (
+                    <div className="avatar-placeholder">{getAvatarText()}</div>
+                  )}
+                </div>
+                {showDropdown && (
+                  <div className="dropdown-menu">
+                    <button className="dropdown-item" onClick={handleProfileClick}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                      </svg>
+                      <span>{t('navigation.profile')}</span>
+                    </button>
+                    <div className="dropdown-divider"></div>
+                    <button className="dropdown-item danger" onClick={handleLogout}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                      </svg>
+                      <span>{t('navigation.logout')}</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </>
           ) : (
             <>

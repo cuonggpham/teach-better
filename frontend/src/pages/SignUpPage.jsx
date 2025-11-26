@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { signup } from '../api/authApi';
+import { useToast } from '../contexts/ToastContext';
 import { Container, Card } from '../components/ui';
 import AuthForm from '../components/auth/AuthForm';
 import { validateEmail, validatePassword } from '../utils/validators';
@@ -13,6 +14,7 @@ import './AuthPages.css';
 const SignUpPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const toast = useToast();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -20,7 +22,6 @@ const SignUpPage = () => {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,7 +41,6 @@ const SignUpPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
-    setSuccessMessage('');
 
     // Validate email
     if (!formData.email) {
@@ -90,13 +90,13 @@ const SignUpPage = () => {
         formData.password,
         formData.passwordConfirm
       );
-      setSuccessMessage(response.message || t('auth.register_success'));
+      toast.success(response.message || t('auth.register_success'));
       // Redirect to login page after 1.5 seconds
       setTimeout(() => {
         navigate('/signin');
       }, 1500);
     } catch (error) {
-      setErrors({ general: error.message || t('auth.register_error') });
+      toast.error(error.message || t('auth.register_error'));
     } finally {
       setIsSubmitting(false);
     }
@@ -110,7 +110,6 @@ const SignUpPage = () => {
             mode="signup"
             formData={formData}
             errors={errors}
-            successMessage={successMessage}
             isSubmitting={isSubmitting}
             onChange={handleChange}
             onSubmit={handleSubmit}

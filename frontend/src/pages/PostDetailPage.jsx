@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { getPost, votePost } from '../api/postsApi';
 import { getAnswers, createAnswer, voteAnswer } from '../api/answersApi';
-import { Container, Card, Button, Input, LoadingSpinner, Alert } from '../components/ui';
+import { Container, Card, Button, Input, LoadingSpinner } from '../components/ui';
 import { VoteButton, BookmarkButton, CommentSection } from '../components/forum';
 import { formatDateTime } from '../utils/formatters';
 import './PostDetailPage.css';
@@ -17,6 +18,7 @@ const PostDetailPage = () => {
   const { postId } = useParams();
   const navigate = useNavigate();
   const { token, isAuthenticated, user } = useAuth();
+  const toast = useToast();
   const [post, setPost] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,6 +56,7 @@ const PostDetailPage = () => {
 
   const handlePostVote = async (isUpvote) => {
     if (!isAuthenticated || !token) {
+      toast.warning(t('auth.login_required'));
       navigate('/signin');
       return;
     }
@@ -61,13 +64,16 @@ const PostDetailPage = () => {
     try {
       const updatedPost = await votePost(token, postId, isUpvote);
       setPost(updatedPost);
+      toast.success(t('post.vote_success'));
     } catch (error) {
       console.error('Failed to vote:', error);
+      toast.error(t('post.vote_error'));
     }
   };
 
   const handleAnswerVote = async (answerId, isUpvote) => {
     if (!isAuthenticated || !token) {
+      toast.warning(t('auth.login_required'));
       navigate('/signin');
       return;
     }
@@ -77,8 +83,10 @@ const PostDetailPage = () => {
       setAnswers((prev) =>
         prev.map((answer) => (answer._id === answerId ? updatedAnswer : answer))
       );
+      toast.success(t('answer.vote_success'));
     } catch (error) {
       console.error('Failed to vote answer:', error);
+      toast.error(t('answer.vote_error'));
     }
   };
 
@@ -87,13 +95,13 @@ const PostDetailPage = () => {
     if (!isAuthenticated || !token || !newAnswer.trim() || submittingAnswer) return;
 
     setSubmittingAnswer(true);
-    setError('');
     try {
       await createAnswer(token, {
         post_id: postId,
         content: newAnswer.trim(),
       });
       setNewAnswer('');
+      toast.success(t('answer.create_success'));
       await fetchAnswers();
       // Refresh post to update answer count
       await fetchPost();
@@ -104,7 +112,7 @@ const PostDetailPage = () => {
     } catch (error) {
       console.error('Failed to create answer:', error);
       // Extract error message from various error formats
-      let errorMessage = 'Failed to create answer';
+      let errorMessage = t('answer.create_error');
       if (typeof error === 'string') {
         errorMessage = error;
       } else if (error.message) {
@@ -112,7 +120,7 @@ const PostDetailPage = () => {
       } else if (error.detail) {
         errorMessage = typeof error.detail === 'string' ? error.detail : JSON.stringify(error.detail);
       }
-      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setSubmittingAnswer(false);
     }
@@ -147,13 +155,18 @@ const PostDetailPage = () => {
   }
 
   if (error || !post) {
+    if (error) {
+      toast.error(error || t('errors.not_found'));
+    }
     return (
       <div className="post-detail-page">
         <Container size="large">
-          <Alert type="error">{error || t('errors.not_found')}</Alert>
-          <Button onClick={() => navigate('/forum')} variant="primary" className="mt-3">
-            {t('common.back')}
-          </Button>
+          <Card variant="elevated" padding="large">
+            <p>{error || t('errors.not_found')}</p>
+            <Button onClick={() => navigate('/forum')} variant="primary" className="mt-3">
+              {t('common.back')}
+            </Button>
+          </Card>
         </Container>
       </div>
     );
@@ -206,12 +219,6 @@ const PostDetailPage = () => {
         {isAuthenticated && (
           <Card variant="elevated" padding="large" className="answer-form-card">
             <h2>{t('answer.create', 'Viết câu trả lời')}</h2>
-
-            {error && (
-              <Alert type="error" className="mb-2">
-                {typeof error === 'string' ? error : JSON.stringify(error)}
-              </Alert>
-            )}
 
             <form onSubmit={handleSubmitAnswer} className="answer-form">
               <Input

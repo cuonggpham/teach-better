@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Input, Button, Alert } from '../ui';
+import { Input, Button } from '../ui';
 import './AuthForm.css';
 
 /**
@@ -11,7 +11,6 @@ const AuthForm = ({
   mode = 'signin', // 'signin' | 'signup'
   formData,
   errors,
-  successMessage,
   isSubmitting,
   onChange,
   onSubmit,
@@ -25,18 +24,6 @@ const AuthForm = ({
       <h1 className="auth-title">
         {isSignUp ? t('auth.register') : t('auth.login')}
       </h1>
-
-      {errors.general && (
-        <Alert type="error" className="mb-3">
-          {errors.general}
-        </Alert>
-      )}
-
-      {successMessage && (
-        <Alert type="success" className="mb-3">
-          {successMessage}
-        </Alert>
-      )}
 
       <form onSubmit={onSubmit} className="auth-form">
         <Input

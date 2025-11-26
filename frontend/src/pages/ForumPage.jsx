@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { getPosts, votePost } from '../api/postsApi';
 import { Container, Card, Button, LoadingSpinner } from '../components/ui';
 import { VoteButton, BookmarkButton } from '../components/forum';
@@ -16,6 +17,7 @@ const ForumPage = () => {
   const { token, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const toast = useToast();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('created_at');
@@ -82,6 +84,7 @@ const ForumPage = () => {
 
   const handleVote = async (postId, isUpvote) => {
     if (!isAuthenticated || !token) {
+      toast.warning(t('auth.login_required'));
       navigate('/signin');
       return;
     }
@@ -91,8 +94,10 @@ const ForumPage = () => {
       setPosts((prev) =>
         prev.map((post) => (post._id === postId ? updatedPost : post))
       );
+      toast.success(t('post.vote_success'));
     } catch (error) {
       console.error('Failed to vote:', error);
+      toast.error(t('post.vote_error'));
     }
   };
 

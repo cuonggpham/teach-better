@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { createPost } from '../api/postsApi';
-import { Container, Card, Input, Button, Alert } from '../components/ui';
+import { Container, Card, Input, Button } from '../components/ui';
 import './CreatePostPage.css';
 
 /**
@@ -13,6 +14,7 @@ const CreatePostPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { token, isAuthenticated } = useAuth();
+  const toast = useToast();
   const [formData, setFormData] = useState({
     title: '',
     content: '',
@@ -72,10 +74,11 @@ const CreatePostPage = () => {
         content: formData.content.trim(),
         status: 'open',
       });
+      toast.success(t('post.create_success'));
       // Navigate to forum page (will show at top of page 1)
       navigate('/forum', { state: { newPostId: newPost._id, scrollToTop: true } });
     } catch (error) {
-      setErrors({ general: error.message || t('post.create_error') });
+      toast.error(error.message || t('post.create_error'));
     } finally {
       setIsSubmitting(false);
     }
@@ -90,12 +93,6 @@ const CreatePostPage = () => {
       <Container size="medium">
         <Card variant="elevated" padding="large" className="create-post-card">
           <h1 className="create-post-title">{t('post.create')}</h1>
-
-          {errors.general && (
-            <Alert type="error" className="mb-3">
-              {errors.general}
-            </Alert>
-          )}
 
           <form onSubmit={handleSubmit} className="create-post-form">
             <Input

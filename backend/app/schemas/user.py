@@ -44,6 +44,7 @@ class UserUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[EmailStr] = None
     avatar_url: Optional[str] = None
+    bio: Optional[str] = None
     password: Optional[str] = Field(None, min_length=6)
 
 
@@ -53,6 +54,7 @@ class UserInDB(UserBase):
     """
     id: str = Field(..., alias="_id")
     avatar_url: Optional[str] = None
+    bio: Optional[str] = None
     role: UserRole
     status: UserStatus
     bookmarked_post_ids: List[str] = Field(default_factory=list)
