@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supportedLanguages } from '../i18n/config';
 import './LanguageSwitcher.css';
@@ -12,32 +13,70 @@ import './LanguageSwitcher.css';
  */
 const LanguageSwitcher = () => {
   const { i18n, t } = useTranslation();
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const handleLanguageChange = (event) => {
-    const newLanguage = event.target.value;
-    i18n.changeLanguage(newLanguage);
-    
-    // Hiển thị thông báo (có thể tùy chỉnh)
-    console.log(`Language changed to: ${newLanguage}`);
+  const languages = {
+    vi: {
+      name: 'Tiếng Việt',
+      flag: '🇻🇳'
+    },
+    ja: {
+      name: '日本語',
+      flag: '🇯🇵'
+    }
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleLanguageChange = (langCode) => {
+    i18n.changeLanguage(langCode);
+    setIsOpen(false);
+    console.log(`Language changed to: ${langCode}`);
+  };
+
+  const currentLang = languages[i18n.language] || languages['vi'];
+
   return (
-    <div className="language-switcher">
-      <label htmlFor="language-select" className="language-label">
-        {t('language.select')}:
-      </label>
-      <select
-        id="language-select"
-        value={i18n.language}
-        onChange={handleLanguageChange}
-        className="language-select"
+    <div className="language-switcher" ref={dropdownRef}>
+      <button
+        className="language-trigger"
+        onClick={() => setIsOpen(!isOpen)}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
       >
-        {Object.entries(supportedLanguages).map(([code, { nativeName }]) => (
-          <option key={code} value={code}>
-            {nativeName}
-          </option>
-        ))}
-      </select>
+        <span className="flag-icon">{currentLang.flag}</span>
+        <span className="language-name">{currentLang.name}</span>
+        <span className={`dropdown-arrow ${isOpen ? 'open' : ''}`}>▼</span>
+      </button>
+
+      {isOpen && (
+        <div className="language-dropdown">
+          {Object.entries(languages).map(([code, { name, flag }]) => (
+            <button
+              key={code}
+              className={`language-option ${i18n.language === code ? 'active' : ''}`}
+              onClick={() => handleLanguageChange(code)}
+            >
+              <span className="flag-icon">{flag}</span>
+              <span className="language-name">{name}</span>
+              {i18n.language === code && <span className="check-icon">✓</span>}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
