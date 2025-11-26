@@ -197,9 +197,21 @@ async def get_answers_by_post(
         answer_dict = answer.model_dump(by_alias=True)
         answer_dict["_id"] = str(answer_dict["_id"])
         answer_dict["post_id"] = str(answer_dict["post_id"])
-        answer_dict["author_id"] = str(answer_dict["author_id"])
+        answer_author_id = answer_dict["author_id"]
+        answer_dict["author_id"] = str(answer_author_id)
         answer_dict["votes"]["upvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("upvoted_by", [])]
         answer_dict["votes"]["downvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("downvoted_by", [])]
+
+        # Fetch answer author name from users collection
+        from bson import ObjectId
+        if ObjectId.is_valid(str(answer_author_id)):
+            user = await db.users.find_one({"_id": ObjectId(str(answer_author_id))})
+            if user:
+                answer_dict["author_name"] = user.get("name", "Unknown User")
+            else:
+                answer_dict["author_name"] = "Unknown User"
+        else:
+            answer_dict["author_name"] = "Unknown User"
 
         # Populate author names for comments
         for comment in answer_dict.get("comments", []):
@@ -208,7 +220,6 @@ async def get_answers_by_post(
             comment["author_id"] = str(comment_author_id)
             
             # Fetch author name from users collection
-            from bson import ObjectId
             if ObjectId.is_valid(str(comment_author_id)):
                 user = await db.users.find_one({"_id": ObjectId(str(comment_author_id))})
                 if user:
