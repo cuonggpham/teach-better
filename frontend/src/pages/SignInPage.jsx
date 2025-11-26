@@ -5,7 +5,7 @@ import { signin } from '../api/authApi';
 import { useAuth } from '../contexts/AuthContext';
 import { Container, Card } from '../components/ui';
 import AuthForm from '../components/auth/AuthForm';
-import { validateEmail } from '../utils/validators';
+import { validateEmail, validatePassword } from '../utils/validators';
 import './AuthPages.css';
 
 /**
@@ -55,8 +55,9 @@ const SignInPage = () => {
       return;
     }
 
-    if (formData.password.length < 8) {
-      setErrors((prev) => ({ ...prev, password: t('validation.password_min') }));
+    const passwordValidation = validatePassword(formData.password);
+    if (!passwordValidation.isValid) {
+      setErrors((prev) => ({ ...prev, password: t(passwordValidation.errorKey) }));
       return;
     }
 

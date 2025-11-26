@@ -54,6 +54,7 @@ class UserModel(BaseModel):
     email: EmailStr = Field(..., index=True)
     password: str = Field(..., alias="hashed_password")  # hashed password
     avatar_url: Optional[str] = None
+    bio: Optional[str] = None
     role: UserRole = Field(default=UserRole.USER)
     status: UserStatus = Field(default=UserStatus.ACTIVE)
     bookmarked_post_ids: List[PyObjectId] = Field(default_factory=list)

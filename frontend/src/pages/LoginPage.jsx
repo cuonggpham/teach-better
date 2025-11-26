@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 import { login as loginApi } from "../api/authApi";
+import { validateEmail, validatePassword } from "../utils/validators";
 import "./LoginPage.css";
 
 const LoginPage = () => {
@@ -18,15 +19,6 @@ const LoginPage = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
-
-  // Validate email
-  const validateEmail = (email) => {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-  };
-
-  // Validate password (min 8 chars)
-  const validatePassword = (password) => password.length >= 8;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -58,8 +50,11 @@ const LoginPage = () => {
 
     if (!formData.password) {
       newErrors.password = t("validation.required");
-    } else if (!validatePassword(formData.password)) {
-      newErrors.password = t("validation.password_min");
+    } else {
+      const passwordValidation = validatePassword(formData.password);
+      if (!passwordValidation.isValid) {
+        newErrors.password = t(passwordValidation.errorKey);
+      }
     }
 
     setErrors(newErrors);
