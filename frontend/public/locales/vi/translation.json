@@ -26,6 +26,8 @@
     "login_error": "Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.",
     "register_success": "Đăng ký thành công!",
     "register_error": "Đăng ký thất bại. Vui lòng thử lại.",
+    "logout_success": "Đăng xuất thành công!",
+    "login_required": "Bạn cần đăng nhập để thực hiện thao tác này",
     "password_weak": "Mật khẩu phải bao gồm ít nhất hai trong ba loại: chữ cái, số, ký hiệu",
     "password_invalid_chars": "Mật khẩu không được chứa ký tự \" hoặc '",
     "already_have_account": "Đã có tài khoản?",
@@ -132,7 +134,10 @@
     "content_placeholder": "Viết nội dung bài viết của bạn (tối thiểu 20 ký tự)",
     "title_min": "Tiêu đề phải có ít nhất 10 ký tự",
     "content_min": "Nội dung phải có ít nhất 20 ký tự",
+    "create_success": "Đăng bài thành công!",
     "create_error": "Không thể tạo bài viết",
+    "vote_success": "Vote thành công!",
+    "vote_error": "Vote thất bại. Vui lòng thử lại.",
     "status": {
       "open": "Chưa giải quyết",
       "closed": "Đã giải quyết"
@@ -150,7 +155,11 @@
     "placeholder": "Viết câu trả lời của bạn...",
     "list": "Câu trả lời",
     "no_answers": "Chưa có câu trả lời nào. Hãy là người đầu tiên trả lời!",
-    "by": "Bởi"
+    "by": "Bởi",
+    "create_success": "Gửi câu trả lời thành công!",
+    "create_error": "Không thể gửi câu trả lời. Vui lòng thử lại.",
+    "vote_success": "Vote thành công!",
+    "vote_error": "Vote thất bại. Vui lòng thử lại."
   },
   "comment": {
     "title": "Bình luận",
@@ -158,7 +167,11 @@
     "submit": "Gửi",
     "no_comments": "Chưa có bình luận nào",
     "anonymous": "Ẩn danh",
-    "delete_confirm": "Bạn có chắc muốn xóa bình luận này?"
+    "delete_confirm": "Bạn có chắc muốn xóa bình luận này?",
+    "added": "Bình luận đã được thêm!",
+    "add_error": "Không thể thêm bình luận. Vui lòng thử lại.",
+    "deleted": "Bình luận đã được xóa!",
+    "delete_error": "Không thể xóa bình luận. Vui lòng thử lại."
   },
   "notification": {
     "title": "Thông báo",
@@ -219,6 +232,8 @@
     "empty": "Bạn chưa lưu mục nào.",
     "saved_at": "Ngày lưu",
     "confirm_remove": "Bạn có chắc muốn xóa mục này khỏi bookmark?",
-    "need_login": "Bạn cần đăng nhập để xem danh sách bookmark."
+    "need_login": "Bạn cần đăng nhập để xem danh sách bookmark.",
+    "added": "Đã thêm vào bookmark!",
+    "removed": "Đã xóa khỏi bookmark!"
   }
 }

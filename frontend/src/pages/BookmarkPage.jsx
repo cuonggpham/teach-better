@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import { useToast } from "../contexts/ToastContext";
 import { getBookmarks, toggleBookmark } from "../api/bookmarkApi";
 import { useTranslation } from "react-i18next";
 import "./BookmarkPage.css";
@@ -7,6 +8,7 @@ import "./BookmarkPage.css";
 const BookmarkPage = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const toast = useToast();
 
   const [data, setData] = useState([]);
 
@@ -19,10 +21,9 @@ const BookmarkPage = () => {
 
   // Xóa bookmark
   const removeBookmark = (item) => {
-    if (!window.confirm(t("bookmark.confirm_remove"))) return;
-
     const updated = toggleBookmark(user._id, item);
     setData(updated);
+    toast.success(t("bookmark.removed"));
   };
 
   // Nếu chưa login

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { signin } from '../api/authApi';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { Container, Card } from '../components/ui';
 import AuthForm from '../components/auth/AuthForm';
 import { validateEmail, validatePassword } from '../utils/validators';
@@ -15,6 +16,7 @@ const SignInPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { login } = useAuth();
+  const toast = useToast();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -65,9 +67,10 @@ const SignInPage = () => {
     try {
       const response = await signin(formData.email, formData.password);
       login(response.access_token, response.user);
+      toast.success(t('auth.login_success'));
       navigate(response.redirect || '/');
     } catch (error) {
-      setErrors({ general: error.message || t('auth.login_error') });
+      toast.error(error.message || t('auth.login_error'));
     } finally {
       setIsSubmitting(false);
     }

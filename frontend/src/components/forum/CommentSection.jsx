@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { addComment, deleteComment } from '../../api/answersApi';
 import { Button, Input, Card } from '../ui';
 import { formatDateTime } from '../../utils/formatters';
@@ -12,6 +13,7 @@ import './CommentSection.css';
 const CommentSection = ({ answerId, comments = [], onCommentAdded, onCommentDeleted }) => {
   const { t } = useTranslation();
   const { token, isAuthenticated, user } = useAuth();
+  const toast = useToast();
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -24,23 +26,27 @@ const CommentSection = ({ answerId, comments = [], onCommentAdded, onCommentDele
       await addComment(token, answerId, { content: newComment.trim() });
       setNewComment('');
       if (onCommentAdded) onCommentAdded();
+      toast.success(t('comment.added'));
       // Trigger notification refresh
       window.dispatchEvent(new CustomEvent('refreshNotifications'));
     } catch (error) {
       console.error('Failed to add comment:', error);
+      toast.error(t('comment.add_error'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (commentId) => {
-    if (!isAuthenticated || !token || !window.confirm(t('comment.delete_confirm'))) return;
+    if (!isAuthenticated || !token) return;
 
     try {
       await deleteComment(token, answerId, commentId);
       if (onCommentDeleted) onCommentDeleted();
+      toast.success(t('comment.deleted'));
     } catch (error) {
       console.error('Failed to delete comment:', error);
+      toast.error(t('comment.delete_error'));
     }
   };
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useToast } from '../../contexts/ToastContext';
 import { signout } from '../../api/authApi';
 import { Button } from '../ui';
 import { NotificationBell } from '../forum';
@@ -15,6 +16,7 @@ const Navbar = () => {
   const { t } = useTranslation();
   const { user, isAuthenticated, logout, token } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -36,15 +38,15 @@ const Navbar = () => {
   }, [showDropdown]);
 
   const handleLogout = async () => {
-    if (window.confirm(t('auth.logout_confirm'))) {
-      try {
-        await signout(token);
-        logout();
-        navigate('/');
-      } catch (error) {
-        logout();
-        navigate('/');
-      }
+    try {
+      await signout(token);
+      logout();
+      toast.success(t('auth.logout_success'));
+      navigate('/');
+    } catch {
+      logout();
+      toast.info(t('auth.logout_success'));
+      navigate('/');
     }
     setShowDropdown(false);
   };
