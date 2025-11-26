@@ -62,6 +62,7 @@ class AnswerInDB(AnswerBase):
     id: str = Field(..., alias="_id")
     post_id: str
     author_id: str
+    author_name: Optional[str] = None
     is_accepted_solution: bool
     votes: VotesSchema
     comments: List[CommentSchema] = Field(default_factory=list)
