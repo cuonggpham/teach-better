@@ -77,7 +77,10 @@
     "no_posts": "Bạn chưa có bài viết nào",
     "no_bookmarks": "Bạn chưa lưu bài viết nào",
     "update_profile": "Cập nhật thông tin",
-    "change_password": "Đổi mật khẩu"
+    "change_password": "Đổi mật khẩu",
+    "avatar_url": "URL Avatar",
+    "update_success": "Cập nhật thông tin thành công",
+    "update_failed": "Cập nhật thông tin thất bại"
   },
   "course": {
     "title": "Tiêu đề khóa học",

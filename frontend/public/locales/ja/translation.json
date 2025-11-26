@@ -77,7 +77,10 @@
     "no_posts": "投稿がありません",
     "no_bookmarks": "保存した投稿がありません",
     "update_profile": "情報を更新",
-    "change_password": "パスワードを変更"
+    "change_password": "パスワードを変更",
+    "avatar_url": "URL Avatar",
+    "update_success": "更新成功",
+    "update_failed": "更新失敗"
   },
   "course": {
     "title": "コースタイトル",

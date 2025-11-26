@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { updateProfile } from '../api/authApi';
 import { getPosts } from '../api/postsApi';
 import { getBookmarks } from '../api/bookmarksApi';
-import { Container, Card, LoadingSpinner } from '../components/ui';
+import { Container, Card, LoadingSpinner, Button, Input } from '../components/ui';
 import { formatDate } from '../utils/formatters';
 import './ProfilePage.css';
 
@@ -13,12 +14,43 @@ import './ProfilePage.css';
  */
 const ProfilePage = () => {
   const { t } = useTranslation();
-  const { user, token, isAuthenticated } = useAuth();
+  const { user, token, isAuthenticated, updateUser } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('info');
   const [userPosts, setUserPosts] = useState([]);
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    avatar_url: '',
+  });
+
+  useEffect(() => {
+    if (user) {
+      setEditForm({
+        name: user.name || '',
+        avatar_url: user.avatar_url || '',
+      });
+    }
+  }, [user]);
+
+  const handleUpdate = async () => {
+    try {
+      setLoading(true);
+      const response = await updateProfile(user._id || user.id, editForm, token);
+      updateUser(response.data);
+      setIsEditing(false);
+      // You might want to show a toast here, but for now we'll rely on the UI update
+      alert(response.message);
+    } catch (error) {
+      console.error(error);
+      alert(error.message || t('common.error'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -93,7 +125,7 @@ const ProfilePage = () => {
               <h1>{user.name || user.email}</h1>
               <p className="profile-email">{user.email}</p>
               <p className="profile-role">
-                {user.role === 'admin' ? t('user.role.admin') : t('user.role.user')}
+                {user.role === 'admin' ? t('user.roles.admin') : t('user.roles.user')}
               </p>
             </div>
           </div>
@@ -122,27 +154,64 @@ const ProfilePage = () => {
           <div className="profile-content">
             {activeTab === 'info' && (
               <div className="info-section">
-                <h2>{t('user.personal_info')}</h2>
-                <div className="info-grid">
-                  <Card variant="outlined" padding="medium" className="info-item">
-                    <label>{t('user.name')}</label>
-                    <span>{user.name || t('common.not_set')}</span>
-                  </Card>
-                  <Card variant="outlined" padding="medium" className="info-item">
-                    <label>{t('auth.email', 'Email')}</label>
-                    <span>{user.email}</span>
-                  </Card>
-                  <Card variant="outlined" padding="medium" className="info-item">
-                    <label>{t('user.role')}</label>
-                    <span>
-                      {user.role === 'admin' ? t('user.role.admin') : t('user.role.user')}
-                    </span>
-                  </Card>
-                  <Card variant="outlined" padding="medium" className="info-item">
-                    <label>{t('user.joined_date')}</label>
-                    <span>{user.created_at ? formatDate(user.created_at) : 'N/A'}</span>
-                  </Card>
+                <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                  <h2>{t('user.personal_info')}</h2>
+                  {!isEditing && (
+                    <Button onClick={() => setIsEditing(true)}>
+                      {t('user.update_profile', 'Update Info')}
+                    </Button>
+                  )}
                 </div>
+
+                {isEditing ? (
+                  <div className="edit-form">
+                    <div className="form-group" style={{ marginBottom: '1rem' }}>
+                      <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('user.name')}</label>
+                      <Input
+                        value={editForm.name}
+                        onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                        placeholder={user.name}
+                      />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: '1rem' }}>
+                      <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('user.avatar_url')}</label>
+                      <Input
+                        value={editForm.avatar_url}
+                        onChange={(e) => setEditForm({ ...editForm, avatar_url: e.target.value })}
+                        placeholder={user.avatar_url}
+                      />
+                    </div>
+                    <div className="form-actions" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
+                      <Button onClick={handleUpdate} disabled={loading}>
+                        {loading ? <LoadingSpinner size="small" /> : t('common.save')}
+                      </Button>
+                      <Button variant="secondary" onClick={() => setIsEditing(false)} disabled={loading}>
+                        {t('common.cancel')}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="info-grid">
+                    <Card variant="outlined" padding="medium" className="info-item">
+                      <label>{t('user.name')}</label>
+                      <span>{user.name || t('common.not_set')}</span>
+                    </Card>
+                    <Card variant="outlined" padding="medium" className="info-item">
+                      <label>{t('auth.email', 'Email')}</label>
+                      <span>{user.email}</span>
+                    </Card>
+                    <Card variant="outlined" padding="medium" className="info-item">
+                      <label>{t('user.role')}</label>
+                      <span>
+                        {user.role === 'admin' ? t('user.roles.admin') : t('user.roles.user')}
+                      </span>
+                    </Card>
+                    <Card variant="outlined" padding="medium" className="info-item">
+                      <label>{t('user.joined_date')}</label>
+                      <span>{user.created_at ? formatDate(user.created_at) : 'N/A'}</span>
+                    </Card>
+                  </div>
+                )}
               </div>
             )}
 

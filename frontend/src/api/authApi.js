@@ -90,3 +90,25 @@ export const getCurrentUser = async (token) => {
 
   return data;
 };
+
+/**
+ * Update user profile
+ */
+export const updateProfile = async (userId, userData, token) => {
+  const response = await fetch(`${API_URL}/users/${userId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(userData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Update failed');
+  }
+
+  return data;
+};

@@ -114,12 +114,15 @@ async def list_users(
     return user_list
 
 
-@router.put("/{user_id}", response_model=User)
+from app.i18n.dependencies import get_translator, Translator
+
+@router.put("/{user_id}")
 async def update_user(
     user_id: str,
     user_data: UserUpdate,
     user_service: UserService = Depends(get_user_service),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    t: Translator = Depends(get_translator)
 ):
     """
     Update user
@@ -128,7 +131,7 @@ async def update_user(
     if current_user.id != user_id and not current_user.is_superuser:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not enough permissions"
+            detail=t("errors.forbidden")
         )
     
     user = await user_service.update_user(user_id, user_data)
@@ -136,14 +139,17 @@ async def update_user(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="User not found"
+            detail=t("user.not_found")
         )
     
     # Convert to response model
     user_dict = user.model_dump(by_alias=True)
     user_dict["_id"] = str(user_dict["_id"])
     
-    return User(**user_dict)
+    return {
+        "message": t("user.profile_updated"),
+        "data": User(**user_dict)
+    }
 
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
