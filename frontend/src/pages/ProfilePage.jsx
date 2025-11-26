@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { updateProfile } from '../api/authApi';
+import { uploadImage } from '../api/imgbbApi';
 import { getPosts } from '../api/postsApi';
 import { getBookmarks } from '../api/bookmarksApi';
 import { Container, Card, LoadingSpinner, Button, Input } from '../components/ui';
@@ -20,6 +21,8 @@ const ProfilePage = () => {
   const [userPosts, setUserPosts] = useState([]);
   const [bookmarkedPosts, setBookmarkedPosts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -49,6 +52,28 @@ const ProfilePage = () => {
       alert(error.message || t('common.error'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAvatarClick = () => {
+    if (isEditing) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const imageUrl = await uploadImage(file);
+      setEditForm(prev => ({ ...prev, avatar_url: imageUrl }));
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      alert(t('user.upload_failed', 'Failed to upload image'));
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -113,13 +138,39 @@ const ProfilePage = () => {
         <Card variant="elevated" padding="none" className="profile-container">
           <div className="profile-header">
             <div className="profile-avatar">
-              {user.avatar_url ? (
-                <img src={user.avatar_url} alt={user.name} />
-              ) : (
-                <div className="avatar-placeholder">
-                  {user.name ? user.name[0].toUpperCase() : user.email[0].toUpperCase()}
-                </div>
-              )}
+              <div
+                className={`avatar-wrapper ${isEditing ? 'editable' : ''}`}
+                onClick={handleAvatarClick}
+                style={{ cursor: isEditing ? 'pointer' : 'default', position: 'relative' }}
+              >
+                {uploading ? (
+                  <div className="avatar-loading">
+                    <LoadingSpinner size="small" />
+                  </div>
+                ) : (
+                  <>
+                    {(editForm.avatar_url || user.avatar_url) ? (
+                      <img src={editForm.avatar_url || user.avatar_url} alt={user.name} />
+                    ) : (
+                      <div className="avatar-placeholder">
+                        {user.name ? user.name[0].toUpperCase() : user.email[0].toUpperCase()}
+                      </div>
+                    )}
+                    {isEditing && (
+                      <div className="avatar-overlay">
+                        <span>{t('user.change_avatar', 'Change')}</span>
+                      </div>
+                    )}
+                  </>
+                )}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                  accept="image/*"
+                />
+              </div>
             </div>
             <div className="profile-info">
               <h1>{user.name || user.email}</h1>
@@ -171,14 +222,6 @@ const ProfilePage = () => {
                         value={editForm.name}
                         onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                         placeholder={user.name}
-                      />
-                    </div>
-                    <div className="form-group" style={{ marginBottom: '1rem' }}>
-                      <label style={{ display: 'block', marginBottom: '0.5rem' }}>{t('user.avatar_url')}</label>
-                      <Input
-                        value={editForm.avatar_url}
-                        onChange={(e) => setEditForm({ ...editForm, avatar_url: e.target.value })}
-                        placeholder={user.avatar_url}
                       />
                     </div>
                     <div className="form-actions" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
