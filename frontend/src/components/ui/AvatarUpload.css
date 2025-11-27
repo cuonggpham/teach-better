@@ -1,0 +1,141 @@
+.avatar-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.avatar-container {
+    position: relative;
+    display: inline-block;
+}
+
+.avatar-preview {
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: var(--background-light, #f5f5f5);
+    border: 3px solid var(--border-color, #e0e0e0);
+    transition: all 0.2s ease;
+    margin: 0 auto;
+}
+
+.avatar-upload.small .avatar-preview {
+    width: 80px;
+    height: 80px;
+}
+
+.avatar-upload.medium .avatar-preview {
+    width: 120px;
+    height: 120px;
+}
+
+.avatar-upload.large .avatar-preview {
+    width: 160px;
+    height: 160px;
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-color-dark));
+    color: white;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.avatar-upload.small .avatar-placeholder {
+    font-size: 1rem;
+}
+
+.avatar-upload.medium .avatar-placeholder {
+    font-size: 1.25rem;
+}
+
+.upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.change-avatar-btn {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--primary-color, #007bff);
+    color: white;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1;
+}
+
+.change-avatar-btn:hover:not(:disabled) {
+    background-color: var(--primary-color-dark);
+    transform: scale(1.1);
+}
+
+.change-avatar-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.upload-error {
+    color: var(--error-color);
+    font-size: 0.875rem;
+    margin: 0;
+    text-align: center;
+}
+
+.upload-hint {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    text-align: center;
+    margin: 0;
+    max-width: 200px;
+}
+
+.avatar-container:hover .avatar-preview {
+    border-color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .avatar-upload.large .avatar-preview {
+        width: 120px;
+        height: 120px;
+    }
+
+    .avatar-upload.medium .avatar-preview {
+        width: 100px;
+        height: 100px;
+    }
+
+    .change-avatar-btn {
+        width: 32px;
+        height: 32px;
+    }
+}

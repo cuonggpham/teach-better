@@ -91,6 +91,10 @@
     "update_profile": "Cập nhật thông tin",
     "change_password": "Đổi mật khẩu",
     "avatar_url": "URL Avatar",
+    "avatar_hint": "Tải lên ảnh đại diện",
+    "upload_avatar": "Tải lên ảnh",
+    "upload_success": "Cập nhật avatar thành công!",
+    "change_avatar": "Đổi ảnh đại diện",
     "update_success": "Cập nhật thông tin thành công",
     "update_failed": "Cập nhật thông tin thất bại"
   },
