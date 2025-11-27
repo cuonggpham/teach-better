@@ -183,19 +183,21 @@ class PostService:
         upvoted_by = post.get("votes", {}).get("upvoted_by", [])
         downvoted_by = post.get("votes", {}).get("downvoted_by", [])
 
+        # Check if user already voted this way
+        already_upvoted = user_obj_id in upvoted_by
+        already_downvoted = user_obj_id in downvoted_by
+
         # Remove user from both lists first
         if user_obj_id in upvoted_by:
             upvoted_by.remove(user_obj_id)
         if user_obj_id in downvoted_by:
             downvoted_by.remove(user_obj_id)
 
-        # Add to appropriate list if not already voted the same way
-        if is_upvote:
-            if user_obj_id not in upvoted_by:
-                upvoted_by.append(user_obj_id)
-        else:
-            if user_obj_id not in downvoted_by:
-                downvoted_by.append(user_obj_id)
+        # Add to appropriate list only if not already voted the same way (toggle behavior)
+        if is_upvote and not already_upvoted:
+            upvoted_by.append(user_obj_id)
+        elif not is_upvote and not already_downvoted:
+            downvoted_by.append(user_obj_id)
 
         score = len(upvoted_by) - len(downvoted_by)
 

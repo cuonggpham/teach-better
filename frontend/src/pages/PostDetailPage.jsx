@@ -14,7 +14,7 @@ import './PostDetailPage.css';
  * PostDetailPage - Trang chi tiết bài viết với answers và comments
  */
 const PostDetailPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { postId } = useParams();
   const navigate = useNavigate();
   const { token, isAuthenticated, user } = useAuth();
@@ -205,7 +205,7 @@ const PostDetailPage = () => {
                   {post.answer_count || 0} {t('post.answers', 'câu trả lời')} •{' '}
                   {post.view_count || 0} {t('post.views', 'lượt xem')}
                 </span>
-                <span className="post-date">{formatDateTime(post.created_at, 'vi-VN')}</span>
+                <span className="post-date">{formatDateTime(post.created_at, i18n.language)}</span>
               </div>
 
               <div className="post-detail-body">
@@ -276,7 +276,7 @@ const PostDetailPage = () => {
                         <span className="answer-author">
                           {t('answer.by', 'Bởi')} {answer.author_name || t('common.anonymous', 'Ẩn danh')}
                         </span>
-                        <span className="answer-date">{formatDateTime(answer.created_at, 'vi-VN')}</span>
+                        <span className="answer-date">{formatDateTime(answer.created_at, i18n.language)}</span>
                       </div>
 
                       <CommentSection

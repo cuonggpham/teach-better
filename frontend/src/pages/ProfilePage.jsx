@@ -14,7 +14,7 @@ import './ProfilePage.css';
  * Profile Management Page
  */
 const ProfilePage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, token, isAuthenticated, updateUser } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('info');
@@ -368,7 +368,7 @@ const ProfilePage = () => {
                               {post.view_count || 0}
                             </span>
                           </div>
-                          <span className="post-date">{formatDate(post.created_at)}</span>
+                          <span className="post-date">{formatDate(post.created_at, i18n.language)}</span>
                         </div>
                       </div>
                     ))}
@@ -422,7 +422,7 @@ const ProfilePage = () => {
                               {post.view_count || 0}
                             </span>
                           </div>
-                          <span className="post-date">{formatDate(post.created_at)}</span>
+                          <span className="post-date">{formatDate(post.created_at, i18n.language)}</span>
                         </div>
                       </div>
                     ))}
