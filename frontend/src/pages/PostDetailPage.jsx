@@ -129,17 +129,31 @@ const PostDetailPage = () => {
 
   const isUpvoted = (item) => {
     if (!user || !item.votes?.upvoted_by) return false;
-    return item.votes.upvoted_by.includes(user._id || user.id);
+    const userId = user._id || user.id;
+    // Check if user ID is in the upvoted list (compare as strings)
+    return item.votes.upvoted_by.some(id => String(id) === String(userId));
   };
 
   const isDownvoted = (item) => {
     if (!user || !item.votes?.downvoted_by) return false;
-    return item.votes.downvoted_by.includes(user._id || user.id);
+    const userId = user._id || user.id;
+    // Check if user ID is in the downvoted list (compare as strings)
+    return item.votes.downvoted_by.some(id => String(id) === String(userId));
   };
 
   const isBookmarked = () => {
     if (!user || !user.bookmarked_post_ids || !post) return false;
     return user.bookmarked_post_ids.includes(post._id);
+  };
+
+  const isPostAuthor = () => {
+    if (!user || !post) return false;
+    return (user.id === post.author_id || user._id === post.author_id);
+  };
+
+  const isAnswerAuthor = (answer) => {
+    if (!user || !answer) return false;
+    return (user.id === answer.author_id || user._id === answer.author_id);
   };
 
   if (loading) {
@@ -184,7 +198,7 @@ const PostDetailPage = () => {
                 isUpvoted={isUpvoted(post)}
                 isDownvoted={isDownvoted(post)}
                 onVote={handlePostVote}
-                disabled={!isAuthenticated}
+                disabled={!isAuthenticated || isPostAuthor()}
                 size="large"
               />
             </div>
@@ -201,6 +215,15 @@ const PostDetailPage = () => {
                     ? t('post.status.open', 'Chưa giải quyết')
                     : t('post.status.closed', 'Đã giải quyết')}
                 </span>
+                {post.author && (
+                  <span className="post-author">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    {post.author.name || post.author.email}
+                  </span>
+                )}
                 <span className="post-stats">
                   {post.answer_count || 0} {t('post.answers', 'câu trả lời')} •{' '}
                   {post.view_count || 0} {t('post.views', 'lượt xem')}
@@ -262,7 +285,7 @@ const PostDetailPage = () => {
                         isUpvoted={isUpvoted(answer)}
                         isDownvoted={isDownvoted(answer)}
                         onVote={(isUpvote) => handleAnswerVote(answer._id, isUpvote)}
-                        disabled={!isAuthenticated}
+                        disabled={!isAuthenticated || isAnswerAuthor(answer)}
                         size="large"
                       />
                     </div>

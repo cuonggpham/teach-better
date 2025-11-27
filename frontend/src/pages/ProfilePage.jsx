@@ -352,6 +352,11 @@ const ProfilePage = () => {
                         onClick={() => navigate(`/forum/${post._id}`)}
                       >
                         <h3 className="post-title">{post.title}</h3>
+                        {post.content && (
+                          <p className="post-content">
+                            {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
+                          </p>
+                        )}
                         <div className="post-info">
                           <div className="post-stats-group">
                             <span className="post-stat">
@@ -406,6 +411,11 @@ const ProfilePage = () => {
                         onClick={() => navigate(`/forum/${post._id}`)}
                       >
                         <h3 className="post-title">{post.title}</h3>
+                        {post.content && (
+                          <p className="post-content">
+                            {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
+                          </p>
+                        )}
                         <div className="post-info">
                           <div className="post-stats-group">
                             <span className="post-stat">

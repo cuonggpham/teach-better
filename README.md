@@ -294,7 +294,7 @@ ENVIRONMENT=development
 EOF
 
 # Chạy server backend
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 **Backend sẽ chạy tại:** http://localhost:8000

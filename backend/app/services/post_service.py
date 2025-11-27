@@ -170,6 +170,7 @@ class PostService:
         """
         Vote on a post (upvote or downvote)
         User can only vote once. Voting again removes the vote or switches vote type.
+        Author cannot vote on their own post.
         """
         if not ObjectId.is_valid(post_id) or not ObjectId.is_valid(user_id):
             return None
@@ -178,6 +179,10 @@ class PostService:
         post = await self.collection.find_one({"_id": ObjectId(post_id), "is_deleted": False})
 
         if not post:
+            return None
+        
+        # Prevent author from voting on their own post
+        if post.get("author_id") == user_obj_id:
             return None
 
         upvoted_by = post.get("votes", {}).get("upvoted_by", [])

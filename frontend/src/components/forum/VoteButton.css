@@ -12,16 +12,45 @@
   padding: 0.5rem;
   font-size: 1.2rem;
   line-height: 1;
+  transition: all 0.2s ease;
+}
+
+/* Upvote button */
+.vote-button.vote-up {
+  color: #666;
+}
+
+.vote-button.vote-up:hover:not(:disabled) {
+  color: #10b981;
+  background-color: #d1fae5;
 }
 
 .vote-button.vote-up.active {
-  background: var(--success-color);
-  color: white;
+  background-color: #10b981 !important;
+  color: white !important;
+  border-color: #10b981 !important;
+}
+
+/* Downvote button */
+.vote-button.vote-down {
+  color: #666;
+}
+
+.vote-button.vote-down:hover:not(:disabled) {
+  color: #ef4444;
+  background-color: #fee2e2;
 }
 
 .vote-button.vote-down.active {
-  background: var(--error-color);
-  color: white;
+  background-color: #ef4444 !important;
+  color: white !important;
+  border-color: #ef4444 !important;
+}
+
+/* Disabled state */
+.vote-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .vote-score {

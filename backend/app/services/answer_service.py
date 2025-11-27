@@ -119,6 +119,7 @@ class AnswerService:
         """
         Vote on an answer (helpful or not helpful)
         User can only vote once per answer
+        Author cannot vote on their own answer
         """
         if not ObjectId.is_valid(answer_id) or not ObjectId.is_valid(user_id):
             return None
@@ -127,6 +128,10 @@ class AnswerService:
         answer = await self.collection.find_one({"_id": ObjectId(answer_id), "is_deleted": False})
 
         if not answer:
+            return None
+        
+        # Prevent author from voting on their own answer
+        if answer.get("author_id") == user_obj_id:
             return None
 
         upvoted_by = answer.get("votes", {}).get("upvoted_by", [])
