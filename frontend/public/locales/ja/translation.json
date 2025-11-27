@@ -91,6 +91,10 @@
     "update_profile": "情報を更新",
     "change_password": "パスワードを変更",
     "avatar_url": "URL Avatar",
+    "avatar_hint": "プロフィール画像をアップロード",
+    "upload_avatar": "画像をアップロード",
+    "upload_success": "アバター更新成功！",
+    "change_avatar": "画像を変更",
     "update_success": "更新成功",
     "update_failed": "更新失敗"
   },

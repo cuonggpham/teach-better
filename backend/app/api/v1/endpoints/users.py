@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
@@ -7,6 +7,7 @@ from app.core.database import get_database
 from app.core.security import decode_access_token
 from app.schemas.user import User, UserUpdate
 from app.services.user_service import UserService
+from app.services.cloudinary_service import CloudinaryService
 
 router = APIRouter()
 security = HTTPBearer()
@@ -177,3 +178,62 @@ async def delete_user(
         )
     
     return None
+
+
+@router.post("/avatar", response_model=dict)
+async def upload_avatar(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    user_service: UserService = Depends(get_user_service)
+):
+    """
+    Upload user avatar to Cloudinary
+    """
+    # Validate file type
+    if not file.content_type.startswith('image/'):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File must be an image"
+        )
+    
+    # Check file size (max 5MB)
+    file_size = 0
+    file_content = await file.read()
+    file_size = len(file_content)
+    
+    if file_size > 5 * 1024 * 1024:  # 5MB
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="File size must be less than 5MB"
+        )
+    
+    # Upload to Cloudinary
+    result = await CloudinaryService.upload_image(
+        file_content=file_content,
+        filename=file.filename,
+        user_id=current_user.id
+    )
+    
+    if not result:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to upload image"
+        )
+    
+    # Update user avatar_url in database
+    updated_user = await user_service.update_user(
+        current_user.id,
+        UserUpdate(avatar_url=result['url'])
+    )
+    
+    if not updated_user:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update user avatar"
+        )
+    
+    return {
+        "message": "Avatar uploaded successfully",
+        "avatar_url": result['url'],
+        "cloudinary_data": result
+    }
