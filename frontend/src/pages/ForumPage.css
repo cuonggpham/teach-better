@@ -133,6 +133,18 @@
   color: #065f46;
 }
 
+.post-author {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.post-author svg {
+  opacity: 0.6;
+}
+
 .post-stats {
   color: var(--text-muted);
 }

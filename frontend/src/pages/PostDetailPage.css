@@ -56,6 +56,18 @@
   color: var(--text-secondary);
 }
 
+.post-author {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.post-author svg {
+  opacity: 0.6;
+}
+
 .post-detail-body {
   color: var(--text-color);
   line-height: 1.8;

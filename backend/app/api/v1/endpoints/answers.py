@@ -300,12 +300,13 @@ async def delete_answer(
     return None
 
 
-@router.post("/{answer_id}/vote", response_model=Answer)
+@router.post("/{answer_id}/vote")
 async def vote_answer(
     answer_id: str,
     is_upvote: bool = Query(..., description="True for helpful, False for not helpful"),
     current_user: User = Depends(get_current_user),
     answer_service: AnswerService = Depends(get_answer_service),
+    db: AsyncIOMotorDatabase = Depends(get_database),
     t: Translator = Depends(get_translator)
 ):
     """
@@ -314,6 +315,13 @@ async def vote_answer(
     answer = await answer_service.vote_answer(answer_id, current_user.id, is_upvote)
 
     if not answer:
+        # Check if answer exists to give appropriate error message
+        existing_answer = await answer_service.get_answer_by_id(answer_id)
+        if existing_answer and str(existing_answer.author_id) == current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=t("errors.cannot_vote_own_answer", "You cannot vote on your own answer")
+            )
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=t("errors.not_found")
@@ -323,16 +331,37 @@ async def vote_answer(
     answer_dict = answer.model_dump(by_alias=True)
     answer_dict["_id"] = str(answer_dict["_id"])
     answer_dict["post_id"] = str(answer_dict["post_id"])
-    answer_dict["author_id"] = str(answer_dict["author_id"])
+    answer_author_id = answer_dict["author_id"]
+    answer_dict["author_id"] = str(answer_author_id)
     answer_dict["votes"]["upvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("upvoted_by", [])]
     answer_dict["votes"]["downvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("downvoted_by", [])]
 
-    # Convert comment IDs
+    # Fetch answer author name
+    from bson import ObjectId
+    if ObjectId.is_valid(str(answer_author_id)):
+        user = await db.users.find_one({"_id": ObjectId(str(answer_author_id))})
+        if user:
+            answer_dict["author_name"] = user.get("name", "Unknown User")
+        else:
+            answer_dict["author_name"] = "Unknown User"
+    else:
+        answer_dict["author_name"] = "Unknown User"
+
+    # Populate author names for comments
     for comment in answer_dict.get("comments", []):
         comment["id"] = str(comment["id"])
-        comment["author_id"] = str(comment["author_id"])
+        comment_author_id = comment["author_id"]
+        comment["author_id"] = str(comment_author_id)
+        
+        # Fetch author name from users collection
+        if ObjectId.is_valid(str(comment_author_id)):
+            user = await db.users.find_one({"_id": ObjectId(str(comment_author_id))})
+            if user:
+                comment["author_name"] = user.get("name", "Unknown User")
+            else:
+                comment["author_name"] = "Unknown User"
 
-    return Answer(**answer_dict)
+    return answer_dict
 
 
 @router.post("/{answer_id}/comments", response_model=Answer)
@@ -374,9 +403,21 @@ async def add_comment(
     answer_dict = answer.model_dump(by_alias=True)
     answer_dict["_id"] = str(answer_dict["_id"])
     answer_dict["post_id"] = str(answer_dict["post_id"])
-    answer_dict["author_id"] = str(answer_dict["author_id"])
+    answer_author_id = answer_dict["author_id"]
+    answer_dict["author_id"] = str(answer_author_id)
     answer_dict["votes"]["upvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("upvoted_by", [])]
     answer_dict["votes"]["downvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("downvoted_by", [])]
+
+    # Fetch answer author name
+    from bson import ObjectId
+    if ObjectId.is_valid(str(answer_author_id)):
+        user = await db.users.find_one({"_id": ObjectId(str(answer_author_id))})
+        if user:
+            answer_dict["author_name"] = user.get("name", "Unknown User")
+        else:
+            answer_dict["author_name"] = "Unknown User"
+    else:
+        answer_dict["author_name"] = "Unknown User"
 
     # Populate author names for comments
     from bson import ObjectId
@@ -396,12 +437,13 @@ async def add_comment(
     return Answer(**answer_dict)
 
 
-@router.delete("/{answer_id}/comments/{comment_id}", response_model=Answer)
+@router.delete("/{answer_id}/comments/{comment_id}")
 async def delete_comment(
     answer_id: str,
     comment_id: str,
     current_user: User = Depends(get_current_user),
     answer_service: AnswerService = Depends(get_answer_service),
+    db: AsyncIOMotorDatabase = Depends(get_database),
     t: Translator = Depends(get_translator)
 ):
     """
@@ -419,13 +461,34 @@ async def delete_comment(
     answer_dict = answer.model_dump(by_alias=True)
     answer_dict["_id"] = str(answer_dict["_id"])
     answer_dict["post_id"] = str(answer_dict["post_id"])
-    answer_dict["author_id"] = str(answer_dict["author_id"])
+    answer_author_id = answer_dict["author_id"]
+    answer_dict["author_id"] = str(answer_author_id)
     answer_dict["votes"]["upvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("upvoted_by", [])]
     answer_dict["votes"]["downvoted_by"] = [str(uid) for uid in answer_dict["votes"].get("downvoted_by", [])]
 
-    # Convert comment IDs
+    # Fetch answer author name
+    from bson import ObjectId
+    if ObjectId.is_valid(str(answer_author_id)):
+        user = await db.users.find_one({"_id": ObjectId(str(answer_author_id))})
+        if user:
+            answer_dict["author_name"] = user.get("name", "Unknown User")
+        else:
+            answer_dict["author_name"] = "Unknown User"
+    else:
+        answer_dict["author_name"] = "Unknown User"
+
+    # Populate author names for comments
     for comment in answer_dict.get("comments", []):
         comment["id"] = str(comment["id"])
-        comment["author_id"] = str(comment["author_id"])
+        comment_author_id = comment["author_id"]
+        comment["author_id"] = str(comment_author_id)
+        
+        # Fetch author name from users collection
+        if ObjectId.is_valid(str(comment_author_id)):
+            user = await db.users.find_one({"_id": ObjectId(str(comment_author_id))})
+            if user:
+                comment["author_name"] = user.get("name", "Unknown User")
+            else:
+                comment["author_name"] = "Unknown User"
 
-    return Answer(**answer_dict)
+    return answer_dict

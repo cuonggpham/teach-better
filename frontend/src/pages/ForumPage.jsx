@@ -104,17 +104,26 @@ const ForumPage = () => {
 
   const isUpvoted = (post) => {
     if (!user || !post.votes?.upvoted_by) return false;
-    return post.votes.upvoted_by.includes(user.id);
+    const userId = user.id || user._id;
+    // Check if user ID is in the upvoted list (compare as strings)
+    return post.votes.upvoted_by.some(id => String(id) === String(userId));
   };
 
   const isDownvoted = (post) => {
     if (!user || !post.votes?.downvoted_by) return false;
-    return post.votes.downvoted_by.includes(user.id);
+    const userId = user.id || user._id;
+    // Check if user ID is in the downvoted list (compare as strings)
+    return post.votes.downvoted_by.some(id => String(id) === String(userId));
   };
 
   const isBookmarked = (post) => {
     if (!user || !user.bookmarked_post_ids) return false;
     return user.bookmarked_post_ids.includes(post._id);
+  };
+
+  const isAuthor = (post) => {
+    if (!user || !post.author_id) return false;
+    return user.id === post.author_id || user._id === post.author_id;
   };
 
   // Generate page numbers to display
@@ -206,7 +215,7 @@ const ForumPage = () => {
                       isUpvoted={isUpvoted(post)}
                       isDownvoted={isDownvoted(post)}
                       onVote={(isUpvote) => handleVote(post._id, isUpvote)}
-                      disabled={!isAuthenticated}
+                      disabled={!isAuthenticated || isAuthor(post)}
                     />
                   </div>
 
@@ -232,6 +241,15 @@ const ForumPage = () => {
                           ? t('post.status.open')
                           : t('post.status.closed')}
                       </span>
+                      {post.author && (
+                        <span className="post-author">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                          </svg>
+                          {post.author.name || post.author.email}
+                        </span>
+                      )}
                       <span className="post-stats">
                         {post.answer_count || 0} {t('post.answers')} •{' '}
                         {post.view_count || 0} {t('post.views')}
