@@ -13,7 +13,7 @@ import './ForumPage.css';
  * ForumPage - Trang danh sách bài viết (diễn đàn)
  */
 const ForumPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { token, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -236,7 +236,7 @@ const ForumPage = () => {
                         {post.answer_count || 0} {t('post.answers')} •{' '}
                         {post.view_count || 0} {t('post.views')}
                       </span>
-                      <span className="post-date">{formatDate(post.created_at)}</span>
+                      <span className="post-date">{formatDate(post.created_at, i18n.language)}</span>
                     </div>
                   </div>
                 </div>

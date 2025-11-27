@@ -11,7 +11,7 @@ import './CommentSection.css';
  * CommentSection Component - Hiển thị và quản lý comments cho một answer
  */
 const CommentSection = ({ answerId, comments = [], onCommentAdded, onCommentDeleted }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { token, isAuthenticated, user } = useAuth();
   const toast = useToast();
   const [newComment, setNewComment] = useState('');
@@ -80,7 +80,7 @@ const CommentSection = ({ answerId, comments = [], onCommentAdded, onCommentDele
             <Card key={comment.id} variant="outlined" padding="small" className="comment-item">
               <div className="comment-header">
                 <span className="comment-author">{comment.author_name || t('comment.anonymous')}</span>
-                <span className="comment-date">{formatDateTime(comment.created_at, 'vi-VN')}</span>
+                <span className="comment-date">{formatDateTime(comment.created_at, i18n.language)}</span>
               </div>
               <p className="comment-content">{comment.content}</p>
               {isAuthenticated && user && comment.author_id === user.id && (
