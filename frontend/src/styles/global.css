@@ -4,23 +4,30 @@
   line-height: 1.6;
   font-weight: 400;
 
-  /* Color Palette - Modern & Fresh */
-  --primary-color: #3b82f6;
-  --primary-dark: #2563eb;
-  --primary-hover: #2563eb;
-  --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  --primary-light: #dbeafe;
-  --secondary-color: #f0f0f0;
+  /* Color Palette - Pink Soft UI */
+  --primary-color: #ec407a;
+  --primary-dark: #d81b60;
+  --primary-hover: #f06292;
+  --primary-gradient: linear-gradient(145deg, #ec407a 0%, #d81b60 100%);
+  --primary-light: #fce4ec;
+  --primary-lighter: #fff5f8;
+  --secondary-color: #f48fb1;
+  --accent-color: #ad1457;
   --background-color: #ffffff;
-  --background-light: #f8f9fa;
-  --text-color: #1a1a1a;
+  --background-light: #fff5f8;
+  --background-soft: #fafafa;
+  --text-color: #555;
+  --text-primary: #d81b60;
   --text-secondary: #666;
   --text-muted: #999;
-  --border-color: #e0e0e0;
+  --text-light: #ec819e;
+  --border-color: rgba(236, 64, 122, 0.1);
+  --border-color-medium: rgba(236, 64, 122, 0.15);
+  --border-color-strong: rgba(236, 64, 122, 0.2);
   --error-color: #ef4444;
   --success-color: #10b981;
   --warning-color: #f59e0b;
-  --info-color: #3b82f6;
+  --info-color: #ec407a;
 
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -30,17 +37,21 @@
   --spacing-xl: 2rem;
   --spacing-2xl: 3rem;
 
-  /* Border Radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
+  /* Border Radius - Soft UI Style */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  /* Shadows - Neumorphism Style */
+  --shadow-sm: 4px 4px 8px rgba(236, 129, 158, 0.08), -4px -4px 8px rgba(255, 255, 255, 0.9);
+  --shadow-md: 6px 6px 12px rgba(236, 129, 158, 0.1), -6px -6px 12px rgba(255, 255, 255, 0.9);
+  --shadow-lg: 8px 8px 16px rgba(236, 129, 158, 0.12), -8px -8px 16px rgba(255, 255, 255, 0.9);
+  --shadow-xl: 10px 10px 20px rgba(236, 129, 158, 0.12), -10px -10px 20px rgba(255, 255, 255, 0.95);
+  --shadow-2xl: 12px 12px 24px rgba(236, 129, 158, 0.15), -12px -12px 24px rgba(255, 255, 255, 0.95);
+  --shadow-inset: inset 3px 3px 6px rgba(236, 129, 158, 0.08), inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+  --shadow-inset-lg: inset 4px 4px 8px rgba(236, 129, 158, 0.1), inset -4px -4px 8px rgba(255, 255, 255, 0.95);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
