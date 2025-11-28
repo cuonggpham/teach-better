@@ -1,19 +1,26 @@
 .create-post-page {
   min-height: calc(100vh - 200px);
   padding: 2rem 1rem;
-  background-color: var(--background-light);
+  background: #fff5f8;
 }
 
 .create-post-card {
   max-width: 800px;
   margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid rgba(236, 64, 122, 0.1);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.12),
+    -8px -8px 16px rgba(255, 255, 255, 0.9);
 }
 
 .create-post-title {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 2rem;
-  color: var(--text-color);
+  color: #d81b60;
   text-align: center;
 }
 

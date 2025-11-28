@@ -72,7 +72,6 @@ const CreatePostPage = () => {
       const newPost = await createPost(token, {
         title: formData.title.trim(),
         content: formData.content.trim(),
-        status: 'open',
       });
       toast.success(t('post.create_success'));
       // Navigate to forum page (will show at top of page 1)

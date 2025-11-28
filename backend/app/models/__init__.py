@@ -1,6 +1,6 @@
 from app.models.user import UserModel, PyObjectId, UserRole, UserStatus
 from app.models.tag import TagModel
-from app.models.post import PostModel, PostStatus, VotesModel
+from app.models.post import PostModel, VotesModel
 from app.models.answer import AnswerModel, CommentModel
 from app.models.ai_diagnosis import (
     AIDiagnosisModel,

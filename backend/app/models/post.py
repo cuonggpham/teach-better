@@ -1,13 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field, ConfigDict
-from enum import Enum
 from app.models.user import PyObjectId
-
-
-class PostStatus(str, Enum):
-    OPEN = "open"
-    RESOLVED = "resolved"
 
 
 class VotesModel(BaseModel):
@@ -28,7 +22,6 @@ class PostModel(BaseModel):
     content: str  # rich text/markdown
     author_id: PyObjectId = Field(..., index=True)
     tag_ids: List[PyObjectId] = Field(default_factory=list, max_length=5)
-    status: PostStatus = Field(default=PostStatus.OPEN)
     votes: VotesModel = Field(default_factory=VotesModel)
     answer_count: int = Field(default=0)
     view_count: int = Field(default=0)

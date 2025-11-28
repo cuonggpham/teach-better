@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Optional, List
 from pydantic import BaseModel, Field
-from app.models.post import PostStatus
 
 
 class VotesSchema(BaseModel):
@@ -36,7 +35,6 @@ class PostUpdate(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
     tag_ids: Optional[List[str]] = Field(None, max_length=5)
-    status: Optional[PostStatus] = None
 
 
 class PostInDB(PostBase):
@@ -45,7 +43,6 @@ class PostInDB(PostBase):
     """
     id: str = Field(..., alias="_id")
     author_id: str
-    status: PostStatus
     votes: VotesSchema
     answer_count: int
     view_count: int

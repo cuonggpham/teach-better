@@ -4,7 +4,6 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.database import get_database
 from app.schemas.post import Post, PostCreate, PostUpdate, PostList, PostWithAuthor
-from app.models.post import PostStatus
 from app.services.post_service import PostService
 from app.api.v1.endpoints.users import get_current_user
 from app.schemas.user import User
@@ -88,7 +87,6 @@ async def get_post(
 async def get_posts(
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
-    status_filter: Optional[PostStatus] = None,
     author_id: Optional[str] = None,
     tag_ids: Optional[List[str]] = Query(None),
     sort_by: str = Query("created_at", pattern="^(created_at|votes.score|view_count|answer_count)$"),
@@ -103,7 +101,6 @@ async def get_posts(
     """
     # Get total count
     total = await post_service.count_posts(
-        status=status_filter,
         author_id=author_id,
         tag_ids=tag_ids,
         search=search
@@ -113,7 +110,6 @@ async def get_posts(
     posts = await post_service.get_posts(
         skip=skip,
         limit=limit,
-        status=status_filter,
         author_id=author_id,
         tag_ids=tag_ids,
         sort_by=sort_by,

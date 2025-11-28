@@ -280,11 +280,6 @@ const ForumPage = () => {
                     <p className="post-excerpt">{post.content?.substring(0, 200)}...</p>
 
                     <div className="post-meta">
-                      <span className={`post-status ${post.status === 'open' ? 'status-open' : 'status-closed'}`}>
-                        {post.status === 'open'
-                          ? t('post.status.open')
-                          : t('post.status.closed')}
-                      </span>
                       {post.author && (
                         <span className="post-author">
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

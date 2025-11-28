@@ -6,23 +6,28 @@
 
 .example-container h2 {
   text-align: center;
-  color: #333;
+  color: #d81b60;
   margin-bottom: 30px;
+  font-weight: 600;
 }
 
 .example-section {
-  background: white;
-  border-radius: 8px;
+  background: #ffffff;
+  border-radius: 16px;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.12),
+    -8px -8px 16px rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(236, 64, 122, 0.1);
 }
 
 .example-section h3 {
-  color: #646cff;
+  color: #d81b60;
   margin-bottom: 15px;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid rgba(236, 129, 158, 0.25);
   padding-bottom: 10px;
+  font-weight: 600;
 }
 
 /* Navigation */
@@ -34,16 +39,22 @@
 
 .example-nav a {
   padding: 8px 16px;
-  background: #f5f5f5;
-  border-radius: 4px;
+  background: #fafafa;
+  border-radius: 10px;
   text-decoration: none;
-  color: #333;
+  color: #555;
   transition: all 0.3s ease;
+  font-weight: 500;
+  box-shadow: 
+    4px 4px 8px rgba(236, 129, 158, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.9);
 }
 
 .example-nav a:hover {
-  background: #646cff;
-  color: white;
+  color: #ec407a;
+  box-shadow: 
+    inset 2px 2px 4px rgba(236, 129, 158, 0.1),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
 }
 
 /* Form */
@@ -58,39 +69,52 @@
 .form-group label {
   display: block;
   margin-bottom: 5px;
-  font-weight: 500;
-  color: #333;
+  font-weight: 600;
+  color: #d81b60;
 }
 
 .form-group input {
   width: 100%;
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid rgba(236, 64, 122, 0.15);
+  border-radius: 10px;
   font-size: 14px;
+  background: #fafafa;
+  color: #333;
+  box-shadow: 
+    inset 3px 3px 6px rgba(236, 129, 158, 0.08),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #646cff;
+  border-color: #ec407a;
+  box-shadow: 
+    inset 4px 4px 8px rgba(236, 129, 158, 0.12),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(236, 64, 122, 0.1);
 }
 
 .form-group .error {
   display: block;
-  color: #ff4444;
+  color: #f06292;
   font-size: 12px;
   margin-top: 5px;
+  font-weight: 500;
 }
 
 .example-form a {
   display: inline-block;
   margin-top: 10px;
-  color: #646cff;
+  color: #ec407a;
   text-decoration: none;
   font-size: 14px;
+  font-weight: 500;
 }
 
 .example-form a:hover {
+  color: #d81b60;
   text-decoration: underline;
 }
 
@@ -104,47 +128,68 @@
 button {
   padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 10px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .btn-primary {
-  background: #646cff;
+  background: #ec407a;
   color: white;
+  box-shadow: 
+    6px 6px 12px rgba(236, 129, 158, 0.4),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
 }
 
 .btn-primary:hover {
-  background: #535bf2;
+  background: #d81b60;
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
 }
 
 .btn-success {
-  background: #4caf50;
+  background: #66bb6a;
   color: white;
+  box-shadow: 
+    6px 6px 12px rgba(102, 187, 106, 0.4),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
 }
 
 .btn-success:hover {
-  background: #45a049;
+  background: #4caf50;
+  transform: translateY(-1px);
 }
 
 .btn-danger {
-  background: #f44336;
+  background: #f06292;
   color: white;
+  box-shadow: 
+    6px 6px 12px rgba(240, 98, 146, 0.4),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
 }
 
 .btn-danger:hover {
-  background: #da190b;
+  background: #e91e63;
+  transform: translateY(-1px);
 }
 
 .btn-default {
-  background: #f5f5f5;
-  color: #333;
+  background: #fafafa;
+  color: #d81b60;
+  box-shadow: 
+    4px 4px 8px rgba(236, 129, 158, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.9);
 }
 
 .btn-default:hover {
-  background: #e0e0e0;
+  color: #ec407a;
+  box-shadow: 
+    inset 2px 2px 4px rgba(236, 129, 158, 0.1),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
 }
 
 /* User Info */
@@ -155,7 +200,7 @@ button {
 .info-row {
   display: flex;
   padding: 12px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid rgba(236, 129, 158, 0.2);
 }
 
 .info-row:last-child {
@@ -164,12 +209,12 @@ button {
 
 .info-row .label {
   font-weight: 600;
-  color: #666;
+  color: #d81b60;
   min-width: 120px;
 }
 
 .info-row .value {
-  color: #333;
+  color: #ad1457;
 }
 
 /* Responsive */

@@ -4,7 +4,7 @@
 
 /* Hero Section */
 .hero-section {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
+  background: linear-gradient(135deg, #ec407a 0%, #d81b60 50%, #c2185b 100%);
   color: white;
   padding: 6rem 0;
   text-align: center;
@@ -84,8 +84,8 @@
 /* Stats Section */
 .stats-section {
   padding: 4rem 0;
-  background: white;
-  border-bottom: 1px solid var(--border-color);
+  background: #fff5f8;
+  border-bottom: 1px solid rgba(236, 64, 122, 0.1);
 }
 
 .stats-grid {
@@ -102,21 +102,21 @@
 .stat-number {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--primary-color);
+  color: #d81b60;
   margin-bottom: 0.5rem;
   line-height: 1;
 }
 
 .stat-label {
   font-size: 1rem;
-  color: var(--text-secondary);
+  color: #666;
   font-weight: 500;
 }
 
 /* Features Section */
 .features-section {
   padding: 5rem 0;
-  background-color: var(--background-light);
+  background-color: #ffffff;
 }
 
 .section-header {
@@ -127,13 +127,13 @@
 .section-title {
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: var(--text-color);
+  color: #333;
   font-weight: 700;
 }
 
 .section-subtitle {
   font-size: 1.125rem;
-  color: var(--text-secondary);
+  color: #666;
   margin: 0;
 }
 
@@ -146,12 +146,20 @@
 .feature-card {
   text-align: center;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(236, 64, 122, 0.1);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.12),
+    -8px -8px 16px rgba(255, 255, 255, 0.9);
+  padding: 2rem;
 }
 
 .feature-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 12px 24px rgba(59, 130, 246, 0.15);
+  box-shadow: 
+    12px 12px 24px rgba(236, 129, 158, 0.18),
+    -12px -12px 24px rgba(255, 255, 255, 0.95);
 }
 
 .feature-icon {
@@ -163,12 +171,12 @@
 .feature-title {
   font-size: 1.5rem;
   margin-bottom: 1rem;
-  color: var(--text-color);
+  color: #333;
   font-weight: 600;
 }
 
 .feature-description {
-  color: var(--text-secondary);
+  color: #666;
   line-height: 1.6;
   font-size: 0.95rem;
 }
@@ -176,25 +184,30 @@
 /* CTA Section */
 .cta-section {
   padding: 5rem 0;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
+  background: linear-gradient(135deg, #ec407a 0%, #d81b60 50%, #c2185b 100%);
 }
 
 .cta-card {
   text-align: center;
   background: white;
   border: none;
+  border-radius: 24px;
+  padding: 3rem 2rem;
+  box-shadow: 
+    12px 12px 24px rgba(194, 24, 91, 0.3),
+    -12px -12px 24px rgba(255, 255, 255, 0.5);
 }
 
 .cta-title {
   font-size: 2rem;
   margin-bottom: 1rem;
-  color: var(--text-color);
+  color: #333;
   font-weight: 700;
 }
 
 .cta-description {
   font-size: 1.125rem;
-  color: var(--text-secondary);
+  color: #666;
   margin-bottom: 2rem;
   line-height: 1.6;
 }
