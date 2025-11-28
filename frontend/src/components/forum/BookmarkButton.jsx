@@ -18,7 +18,8 @@ const BookmarkButton = ({ postId, isBookmarked: initialBookmarked, onToggle }) =
     setIsBookmarked(initialBookmarked || false);
   }, [initialBookmarked]);
 
-  const handleToggle = async () => {
+  const handleToggle = async (e) => {
+    e.stopPropagation(); // Prevent click from bubbling to parent elements
     if (!isAuthenticated || !token || isLoading) return;
 
     setIsLoading(true);

@@ -17,7 +17,8 @@ const VoteButton = ({
   const { t } = useTranslation();
   const [isVoting, setIsVoting] = useState(false);
 
-  const handleUpvote = async () => {
+  const handleUpvote = async (e) => {
+    e.stopPropagation(); // Prevent click from bubbling to parent elements
     if (disabled || isVoting) return;
     setIsVoting(true);
     try {
@@ -27,7 +28,8 @@ const VoteButton = ({
     }
   };
 
-  const handleDownvote = async () => {
+  const handleDownvote = async (e) => {
+    e.stopPropagation(); // Prevent click from bubbling to parent elements
     if (disabled || isVoting) return;
     setIsVoting(true);
     try {

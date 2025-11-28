@@ -1,46 +1,75 @@
+/* Create Post Page - Soft UI Neumorphism */
 .create-post-page {
   min-height: calc(100vh - 200px);
   padding: 2rem 1rem;
   background: #fff5f8;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(252, 228, 236, 0.5) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(252, 228, 236, 0.4) 0%, transparent 50%);
 }
 
 .create-post-card {
-  max-width: 800px;
+  max-width: 850px;
   margin: 0 auto;
   background: #ffffff;
   border: 1px solid rgba(236, 64, 122, 0.1);
-  border-radius: 16px;
-  padding: 2rem;
+  border-radius: 24px;
+  padding: 3rem;
   box-shadow: 
-    8px 8px 16px rgba(236, 129, 158, 0.12),
-    -8px -8px 16px rgba(255, 255, 255, 0.9);
+    12px 12px 24px rgba(236, 129, 158, 0.15),
+    -12px -12px 24px rgba(255, 255, 255, 0.95);
 }
 
 .create-post-title {
   font-size: 2rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
+  font-weight: 600;
+  margin-bottom: 2.5rem;
   color: #d81b60;
   text-align: center;
+  letter-spacing: -0.5px;
 }
 
 .create-post-form {
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
 }
 
 .create-post-actions {
   display: flex;
   gap: 1rem;
   justify-content: flex-end;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(236, 64, 122, 0.1);
 }
 
 .create-post-actions .btn {
-  min-width: 120px;
+  min-width: 130px;
+  box-shadow: 
+    6px 6px 12px rgba(236, 129, 158, 0.12),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
+}
+
+.create-post-actions .btn:hover {
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.15),
+    -8px -8px 16px rgba(255, 255, 255, 0.95);
 }
 
 @media (max-width: 768px) {
+  .create-post-page {
+    padding: 1rem 0.5rem;
+  }
+
+  .create-post-card {
+    padding: 2rem 1.5rem;
+  }
+
+  .create-post-title {
+    font-size: 1.75rem;
+  }
+
   .create-post-actions {
     flex-direction: column;
   }
