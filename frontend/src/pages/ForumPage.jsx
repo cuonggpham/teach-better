@@ -24,6 +24,8 @@ const ForumPage = () => {
   const [sortOrder, setSortOrder] = useState(-1);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPosts, setTotalPosts] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const postsPerPage = 10;
 
   const totalPages = Math.ceil(totalPosts / postsPerPage);
@@ -41,24 +43,23 @@ const ForumPage = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [sortBy, sortOrder, currentPage]);
+  }, [sortBy, sortOrder, currentPage, searchQuery]);
 
   const fetchPosts = async () => {
     setLoading(true);
     try {
       const skip = (currentPage - 1) * postsPerPage;
-      console.log('[ForumPage] Fetching posts with params:', {
+      const params = {
         sort_by: sortBy,
         sort_order: sortOrder,
         skip,
         limit: postsPerPage,
-      });
-      const response = await getPosts(token, {
-        sort_by: sortBy,
-        sort_order: sortOrder,
-        skip,
-        limit: postsPerPage,
-      });
+      };
+      if (searchQuery) {
+        params.search = searchQuery;
+      }
+      console.log('[ForumPage] Fetching posts with params:', params);
+      const response = await getPosts(token, params);
 
       // Handle new response format with posts and total
       const data = response.posts || response;
@@ -163,6 +164,18 @@ const ForumPage = () => {
     return pages;
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearchQuery(searchInput);
+    setCurrentPage(1); // Reset to page 1 when searching
+  };
+
+  const handleClearSearch = () => {
+    setSearchInput('');
+    setSearchQuery('');
+    setCurrentPage(1);
+  };
+
   return (
     <div className="forum-page">
       <Container size="large">
@@ -175,20 +188,51 @@ const ForumPage = () => {
           )}
         </div>
 
-        <div className="forum-filters">
-          <select
-            value={sortBy}
-            onChange={(e) => {
-              setSortBy(e.target.value);
-              setCurrentPage(1); // Reset to page 1 when changing sort
-            }}
-            className="filter-select"
-          >
-            <option value="created_at">{t('forum.sort.newest')}</option>
-            <option value="votes.score">{t('forum.sort.most_voted')}</option>
-            <option value="answer_count">{t('forum.sort.most_answers')}</option>
-            <option value="view_count">{t('forum.sort.most_views')}</option>
-          </select>
+        <div className="forum-controls">
+          <form className="search-bar" onSubmit={handleSearch}>
+            <input
+              type="text"
+              placeholder={t('common.search')}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="search-input"
+            />
+            {searchInput && (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="clear-search-btn"
+                title={t('common.close')}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            )}
+            <button type="submit" className="search-btn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+            </button>
+          </form>
+
+          <div className="forum-filters">
+            <select
+              value={sortBy}
+              onChange={(e) => {
+                setSortBy(e.target.value);
+                setCurrentPage(1); // Reset to page 1 when changing sort
+              }}
+              className="filter-select"
+            >
+              <option value="created_at">{t('forum.sort.newest')}</option>
+              <option value="votes.score">{t('forum.sort.most_voted')}</option>
+              <option value="answer_count">{t('forum.sort.most_answers')}</option>
+              <option value="view_count">{t('forum.sort.most_views')}</option>
+            </select>
+          </div>
         </div>
 
         {loading ? (

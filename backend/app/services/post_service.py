@@ -64,7 +64,8 @@ class PostService:
         self,
         status: Optional[PostStatus] = None,
         author_id: Optional[str] = None,
-        tag_ids: Optional[List[str]] = None
+        tag_ids: Optional[List[str]] = None,
+        search: Optional[str] = None
     ) -> int:
         """
         Count total posts with filters
@@ -80,6 +81,13 @@ class PostService:
         if tag_ids:
             query["tag_ids"] = {"$in": [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]}
 
+        if search:
+            # Case-insensitive search in title and content
+            query["$or"] = [
+                {"title": {"$regex": search, "$options": "i"}},
+                {"content": {"$regex": search, "$options": "i"}}
+            ]
+
         count = await self.collection.count_documents(query)
         return count
 
@@ -91,7 +99,8 @@ class PostService:
         author_id: Optional[str] = None,
         tag_ids: Optional[List[str]] = None,
         sort_by: str = "created_at",
-        sort_order: int = -1
+        sort_order: int = -1,
+        search: Optional[str] = None
     ) -> List[PostModel]:
         """
         Get list of posts with filters and sorting
@@ -106,6 +115,13 @@ class PostService:
 
         if tag_ids:
             query["tag_ids"] = {"$in": [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]}
+
+        if search:
+            # Case-insensitive search in title and content
+            query["$or"] = [
+                {"title": {"$regex": search, "$options": "i"}},
+                {"content": {"$regex": search, "$options": "i"}}
+            ]
 
         print(f"[DEBUG] get_posts query: {query}, sort_by: {sort_by}, sort_order: {sort_order}, skip: {skip}, limit: {limit}")
         
