@@ -12,6 +12,7 @@ export const getPosts = async (token, params = {}) => {
   if (params.author_id) queryParams.append('author_id', params.author_id);
   if (params.sort_by) queryParams.append('sort_by', params.sort_by);
   if (params.sort_order) queryParams.append('sort_order', params.sort_order);
+  if (params.search) queryParams.append('search', params.search);
 
   const response = await fetch(`${API_URL}/posts?${queryParams.toString()}`, {
     method: 'GET',

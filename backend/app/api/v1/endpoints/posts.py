@@ -93,6 +93,7 @@ async def get_posts(
     tag_ids: Optional[List[str]] = Query(None),
     sort_by: str = Query("created_at", pattern="^(created_at|votes.score|view_count|answer_count)$"),
     sort_order: int = Query(-1, ge=-1, le=1),
+    search: Optional[str] = Query(None, description="Search in post title and content"),
     post_service: PostService = Depends(get_post_service),
     db: AsyncIOMotorDatabase = Depends(get_database),
     t: Translator = Depends(get_translator)
@@ -104,7 +105,8 @@ async def get_posts(
     total = await post_service.count_posts(
         status=status_filter,
         author_id=author_id,
-        tag_ids=tag_ids
+        tag_ids=tag_ids,
+        search=search
     )
     
     # Get posts
@@ -115,7 +117,8 @@ async def get_posts(
         author_id=author_id,
         tag_ids=tag_ids,
         sort_by=sort_by,
-        sort_order=sort_order
+        sort_order=sort_order,
+        search=search
     )
 
     # Convert to response models with author info
