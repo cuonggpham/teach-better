@@ -2,7 +2,7 @@
 .items-page {
   min-height: calc(100vh - 200px);
   padding: 3rem 1rem;
-  background-color: var(--background-light);
+  background: #fff5f8;
 }
 
 .items-header {
@@ -13,18 +13,25 @@
 .items-header h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: var(--text-color);
+  color: #333;
 }
 
 .items-subtitle {
   font-size: 1.25rem;
-  color: var(--text-secondary);
+  color: #666;
   margin: 0;
 }
 
 .coming-soon-card {
   max-width: 600px;
   margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid rgba(236, 64, 122, 0.1);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.12),
+    -8px -8px 16px rgba(255, 255, 255, 0.9);
 }
 
 .coming-soon-content {
@@ -40,12 +47,12 @@
 .coming-soon-content h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
-  color: var(--text-color);
+  color: #333;
 }
 
 .coming-soon-content p {
   font-size: 1.125rem;
-  color: var(--text-secondary);
+  color: #666;
   line-height: 1.6;
   margin: 0;
 }
@@ -72,14 +79,19 @@
 .item-card {
   background: #ffffff;
   padding: 18px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: 0.25s;
+  border-radius: 16px;
+  border: 1px solid rgba(236, 64, 122, 0.1);
+  box-shadow: 
+    6px 6px 12px rgba(236, 129, 158, 0.1),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
 }
 
 .item-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.15),
+    -8px -8px 16px rgba(255, 255, 255, 0.95);
 }
 
 /* Header (title + bookmark icon) */

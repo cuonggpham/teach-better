@@ -3,7 +3,7 @@ from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 
-from app.models.post import PostModel, PostStatus
+from app.models.post import PostModel
 from app.schemas.post import PostCreate, PostUpdate
 
 
@@ -30,7 +30,6 @@ class PostService:
         post_dict["answer_count"] = 0
         post_dict["view_count"] = 0
         post_dict["is_deleted"] = False
-        post_dict["status"] = PostStatus.OPEN
         post_dict["votes"] = {"upvoted_by": [], "downvoted_by": [], "score": 0}
 
         print(f"[DEBUG] Creating post with created_at: {now}, title: {post_dict.get('title')}")
@@ -62,7 +61,6 @@ class PostService:
 
     async def count_posts(
         self,
-        status: Optional[PostStatus] = None,
         author_id: Optional[str] = None,
         tag_ids: Optional[List[str]] = None,
         search: Optional[str] = None
@@ -71,9 +69,6 @@ class PostService:
         Count total posts with filters
         """
         query = {"is_deleted": False}
-
-        if status:
-            query["status"] = status
 
         if author_id and ObjectId.is_valid(author_id):
             query["author_id"] = ObjectId(author_id)
@@ -95,7 +90,6 @@ class PostService:
         self,
         skip: int = 0,
         limit: int = 20,
-        status: Optional[PostStatus] = None,
         author_id: Optional[str] = None,
         tag_ids: Optional[List[str]] = None,
         sort_by: str = "created_at",
@@ -106,9 +100,6 @@ class PostService:
         Get list of posts with filters and sorting
         """
         query = {"is_deleted": False}
-
-        if status:
-            query["status"] = status
 
         if author_id and ObjectId.is_valid(author_id):
             query["author_id"] = ObjectId(author_id)

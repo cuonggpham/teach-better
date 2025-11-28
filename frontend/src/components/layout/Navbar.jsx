@@ -7,6 +7,7 @@ import { signout } from '../../api/authApi';
 import { Button } from '../ui';
 import { NotificationBell } from '../forum';
 import LanguageSwitcher from '../LanguageSwitcher';
+import logo from '../../assets/logo.png';
 import './Navbar.css';
 
 /**
@@ -76,7 +77,9 @@ const Navbar = () => {
 
         {/* Logo */}
         <div className="navbar-brand">
-          <Link to="/">{t('app_title', 'Teach Better')}</Link>
+          <Link to="/">
+            <img src={logo} alt="Teach Better" className="navbar-logo" />
+          </Link>
         </div>
 
         <ul className="navbar-menu">

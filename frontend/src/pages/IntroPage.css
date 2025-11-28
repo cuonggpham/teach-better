@@ -6,17 +6,27 @@
   align-items: center;
   gap: 16px;
   text-align: center;
+  background: #fff5f8;
 }
 
 .intro-button {
-  background: #667eea;
+  background: #ec407a;
   color: #fff;
   padding: 12px 24px;
-  border-radius: 6px;
+  border-radius: 12px;
   font-size: 16px;
   text-decoration: none;
+  font-weight: 600;
+  box-shadow: 
+    6px 6px 12px rgba(236, 129, 158, 0.3),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
+  transition: all 0.3s ease;
 }
 
 .intro-button:hover {
-  background: #5a67d8;
+  background: #d81b60;
+  transform: translateY(-2px);
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.4),
+    -8px -8px 16px rgba(255, 255, 255, 0.95);
 }

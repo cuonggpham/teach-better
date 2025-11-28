@@ -210,11 +210,6 @@ const PostDetailPage = () => {
               </div>
 
               <div className="post-detail-meta">
-                <span className={`post-status ${post.status === 'open' ? 'status-open' : 'status-closed'}`}>
-                  {post.status === 'open'
-                    ? t('post.status.open', 'Chưa giải quyết')
-                    : t('post.status.closed', 'Đã giải quyết')}
-                </span>
                 {post.author && (
                   <span className="post-author">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

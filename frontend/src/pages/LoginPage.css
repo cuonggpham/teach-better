@@ -1,5 +1,5 @@
 /* ============================
-   Login Page - Optimized Styles
+   Login Page - Pink Pastel Neumorphism
    ============================ */
 
 .login-page {
@@ -7,23 +7,30 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #5a67d8 0%, #7f53ac 100%);
+  background: #fff5f8;
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(252, 228, 236, 0.5) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(252, 228, 236, 0.4) 0%, transparent 50%);
   padding: 20px;
+  position: relative;
 }
 
 /* Center Container */
 .login-container {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
 }
 
-/* Card Wrapper */
+/* Card Wrapper - Soft UI / Neumorphism */
 .login-card {
   background: #ffffff;
-  border-radius: 14px;
-  padding: 36px;
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
-  animation: fadeIn 0.4s ease;
+  border-radius: 24px;
+  padding: 48px 40px;
+  box-shadow: 
+    12px 12px 24px rgba(236, 129, 158, 0.15),
+    -12px -12px 24px rgba(255, 255, 255, 0.95);
+  animation: fadeIn 0.5s ease;
+  border: 1px solid rgba(236, 64, 122, 0.1);
 }
 
 /* Fade Animation */
@@ -41,31 +48,36 @@
 /* ---------- Header ---------- */
 .login-header {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .login-header h1 {
-  font-size: 26px;
-  font-weight: 700;
-  color: #333;
-  margin: 0 0 6px 0;
+  font-size: 28px;
+  font-weight: 600;
+  color: #d81b60;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
 }
 
 .login-subtitle {
-  font-size: 13px;
-  color: #777;
+  font-size: 14px;
+  color: #ec407a;
+  font-weight: 400;
 }
 
 /* ---------- Error Box ---------- */
 .error-message {
-  background-color: #ffe6e6;
-  border: 1px solid #ffb3b3;
-  color: #cc0000;
-  padding: 12px 14px;
-  border-radius: 6px;
-  margin-bottom: 18px;
+  background: #fce4ec;
+  border: none;
+  color: #c2185b;
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 20px;
   font-size: 14px;
   text-align: left;
+  box-shadow: 
+    inset 4px 4px 8px rgba(236, 129, 158, 0.3),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.9);
 }
 
 /* ---------- Form Area ---------- */
@@ -83,101 +95,129 @@
 
 .form-group label {
   font-size: 14px;
-  font-weight: 600;
-  color: #333;
+  font-weight: 500;
+  color: #d81b60;
+  letter-spacing: 0.2px;
 }
 
 .form-group input {
-  padding: 12px 14px;
-  font-size: 14px;
-  border: 1px solid #dcdcdc;
-  border-radius: 6px;
-  transition: all 0.25s ease;
-  background-color: #fafafa;
+  padding: 14px 18px;
+  font-size: 15px;
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  background: #fce4ec;
+  color: #ad1457;
+  box-shadow: 
+    inset 4px 4px 8px rgba(236, 129, 158, 0.3),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.9);
 }
 
 .form-group input:focus {
   outline: none;
-  background-color: #fff;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  box-shadow: 
+    inset 6px 6px 12px rgba(236, 129, 158, 0.4),
+    inset -6px -6px 12px rgba(255, 255, 255, 0.95);
+}
+
+.form-group input::placeholder {
+  color: #f48fb1;
 }
 
 /* Error state */
 .form-group input.error {
-  border-color: #e53935;
-  background-color: #fff5f5;
+  box-shadow: 
+    inset 4px 4px 8px rgba(194, 24, 91, 0.25),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.9);
 }
 
 .field-error {
   font-size: 13px;
-  color: #d32f2f;
+  color: #c2185b;
+  font-weight: 400;
 }
 
-/* ---------- Button ---------- */
+/* ---------- Button - Soft UI ---------- */
 .login-button {
-  padding: 14px;
+  padding: 15px;
   font-size: 15px;
   font-weight: 600;
   color: #ffffff;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #ec407a;
   border: none;
-  border-radius: 6px;
+  border-radius: 12px;
   cursor: pointer;
-  margin-top: 6px;
-  transition: 0.25s ease;
+  margin-top: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 
+    6px 6px 12px rgba(236, 129, 158, 0.4),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
+  letter-spacing: 0.3px;
 }
 
 .login-button:hover:not(:disabled) {
+  background: #d81b60;
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.95);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+}
+
+.login-button:active:not(:disabled) {
+  background: #c2185b;
+  box-shadow: 
+    inset 4px 4px 8px rgba(194, 24, 91, 0.3),
+    inset -4px -4px 8px rgba(255, 182, 193, 0.3);
+  transform: translateY(0);
 }
 
 .login-button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* ---------- Footer Links ---------- */
 .login-footer {
-  margin-top: 22px;
+  margin-top: 28px;
   text-align: center;
 }
 
 .forgot-password-link {
   display: inline-block;
   font-size: 14px;
-  color: #667eea;
+  color: #ec407a;
   text-decoration: none;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  transition: color 0.3s ease;
 }
 
 .forgot-password-link:hover {
-  text-decoration: underline;
+  color: #d81b60;
 }
 
 .register-link {
   font-size: 14px;
-  color: #555;
+  color: #ad1457;
 }
 
 .register-link a {
-  color: #667eea;
+  color: #ec407a;
   text-decoration: none;
   font-weight: 600;
+  transition: color 0.3s ease;
 }
 
 .register-link a:hover {
-  text-decoration: underline;
+  color: #d81b60;
 }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 480px) {
   .login-card {
-    padding: 28px 18px;
+    padding: 36px 24px;
   }
 
   .login-header h1 {
-    font-size: 22px;
+    font-size: 24px;
   }
 }

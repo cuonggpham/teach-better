@@ -1,8 +1,8 @@
-/* Minimal Profile Page */
+/* Minimal Profile Page - Neumorphism Pink */
 .profile-page {
   min-height: calc(100vh - 200px);
   padding: 2rem 1rem;
-  background: #fafafa;
+  background: #fff5f8;
 }
 
 /* Layout */
@@ -22,8 +22,12 @@
 }
 
 .profile-card {
-  border: 1px solid #e0e0e0;
-  background: white;
+  border: 1px solid rgba(236, 64, 122, 0.1);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.12),
+    -8px -8px 16px rgba(255, 255, 255, 0.9);
 }
 
 /* Avatar Section */
@@ -33,7 +37,7 @@
   align-items: center;
   gap: 1rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(236, 129, 158, 0.25);
 }
 
 .avatar-container {
@@ -41,14 +45,20 @@
   height: 100px;
   border-radius: 50%;
   overflow: hidden;
-  border: 2px solid #e0e0e0;
+  border: none;
   position: relative;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 
+    6px 6px 12px rgba(236, 129, 158, 0.4),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
 }
 
 .avatar-container.editable:hover {
-  border-color: #999;
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.5),
+    -8px -8px 16px rgba(255, 255, 255, 0.95);
+  transform: translateY(-2px);
 }
 
 .avatar-img {
@@ -64,19 +74,20 @@
   align-items: center;
   justify-content: center;
   font-size: 2.5rem;
-  color: #666;
-  background: #f5f5f5;
+  color: #ffffff;
+  background: #ec407a;
+  font-weight: 600;
 }
 
 .avatar-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(216, 27, 96, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.3s;
 }
 
 .avatar-container.editable:hover .avatar-overlay {
@@ -89,33 +100,37 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
+  background: #fce4ec;
 }
 
 .user-name {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #222;
+  color: #d81b60;
   text-align: center;
 }
 
 .user-email {
   margin: 0;
   font-size: 0.875rem;
-  color: #666;
+  color: #ad1457;
   text-align: center;
 }
 
 .user-badge {
   padding: 0.25rem 0.75rem;
-  background: #f5f5f5;
-  border: 1px solid #e0e0e0;
+  background: #fce4ec;
+  border: none;
   border-radius: 12px;
   font-size: 0.75rem;
-  color: #666;
+  color: #ec407a;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-weight: 600;
+  box-shadow: 
+    inset 2px 2px 4px rgba(236, 129, 158, 0.3),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
 }
 
 /* Navigation Menu */
@@ -133,23 +148,31 @@
   padding: 0.75rem 1rem;
   background: none;
   border: none;
-  border-left: 2px solid transparent;
+  border-left: 3px solid transparent;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   font-size: 0.9rem;
-  color: #666;
+  color: #555;
+  font-weight: 500;
+  border-radius: 0 10px 10px 0;
 }
 
 .nav-item:hover {
-  background: #f9f9f9;
-  color: #222;
+  background: #fafafa;
+  color: #ec407a;
+  box-shadow: 
+    inset 2px 2px 4px rgba(236, 129, 158, 0.1),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.7);
 }
 
 .nav-item.active {
-  border-left-color: #222;
-  background: #f9f9f9;
-  color: #222;
-  font-weight: 500;
+  border-left-color: #d81b60;
+  background: #fafafa;
+  color: #d81b60;
+  font-weight: 600;
+  box-shadow: 
+    inset 3px 3px 6px rgba(236, 129, 158, 0.12),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.9);
 }
 
 .nav-icon {
@@ -173,8 +196,12 @@
 }
 
 .content-card {
-  border: 1px solid #e0e0e0;
-  background: white;
+  border: 1px solid rgba(236, 64, 122, 0.1);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.12),
+    -8px -8px 16px rgba(255, 255, 255, 0.9);
 }
 
 .content-section {
@@ -189,14 +216,14 @@
   gap: 1.5rem;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(236, 129, 158, 0.15);
 }
 
 .section-title {
   margin: 0 0 0.25rem 0;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #222;
+  color: #d81b60;
 }
 
 .section-subtitle {
@@ -231,17 +258,20 @@
 
 .field-label {
   font-size: 0.875rem;
-  color: #666;
-  font-weight: 500;
+  color: #d81b60;
+  font-weight: 600;
 }
 
 .field-value {
   font-size: 1rem;
-  color: #222;
+  color: #555;
   padding: 0.75rem;
-  background: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  background: #fafafa;
+  border: 1px solid rgba(236, 64, 122, 0.1);
+  border-radius: 10px;
+  box-shadow: 
+    inset 2px 2px 4px rgba(236, 129, 158, 0.08),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.9);
 }
 
 .bio-text {
@@ -270,8 +300,8 @@
 
 .form-label {
   font-size: 0.875rem;
-  color: #666;
-  font-weight: 500;
+  color: #d81b60;
+  font-weight: 600;
 }
 
 .form-actions {
@@ -289,23 +319,28 @@
 
 .post-card {
   padding: 1.5rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
+  border: 1px solid rgba(236, 64, 122, 0.1);
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s;
-  background: white;
+  transition: all 0.3s ease;
+  background: #ffffff;
+  box-shadow: 
+    6px 6px 12px rgba(236, 129, 158, 0.1),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
 }
 
 .post-card:hover {
-  border-color: #999;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.15),
+    -8px -8px 16px rgba(255, 255, 255, 0.95);
+  transform: translateY(-2px);
 }
 
 .post-title {
   margin: 0 0 1rem 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #222;
+  color: #d81b60;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -332,7 +367,7 @@
   align-items: center;
   gap: 1rem;
   font-size: 0.813rem;
-  color: #666;
+  color: #999;
 }
 
 .post-stats-group {
@@ -344,14 +379,16 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+  color: #ec407a;
 }
 
 .post-stat svg {
-  opacity: 0.5;
+  opacity: 0.7;
 }
 
 .post-date {
   white-space: nowrap;
+  color: #f48fb1;
 }
 
 /* Empty State */
@@ -368,14 +405,15 @@
   width: 64px;
   height: 64px;
   margin-bottom: 1.5rem;
-  color: #ccc;
+  color: #ddd;
   stroke-width: 1.5;
 }
 
 .empty-state h3 {
   margin: 0 0 0.5rem 0;
   font-size: 1.25rem;
-  color: #222;
+  color: #d81b60;
+  font-weight: 600;
 }
 
 .empty-state p {

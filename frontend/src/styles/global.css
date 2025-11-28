@@ -1,5 +1,5 @@
 :root {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   line-height: 1.6;
   font-weight: 400;
@@ -46,6 +46,19 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Language-specific fonts */
+:root:lang(ja),
+[lang="ja"],
+[lang="ja"] * {
+  font-family: 'Zen Maru Gothic', 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+:root:lang(vi),
+[lang="vi"],
+[lang="vi"] * {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 * {

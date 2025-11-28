@@ -1,13 +1,15 @@
-/* =============== NAVBAR =============== */
+/* =============== NAVBAR - Neumorphism Màu Hồng =============== */
 
 .navbar {
-  background-color: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.05),
+    0 -2px 6px rgba(255, 255, 255, 0.9) inset;
   padding: 1rem 0;
   position: sticky;
   top: 0;
   z-index: 1000;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid rgba(236, 64, 122, 0.08);
 }
 
 .navbar-container {
@@ -22,25 +24,41 @@
 
 /* ----- BRAND ----- */
 .navbar-brand a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   font-size: 1.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-weight: 600;
+  color: #d81b60;
   text-decoration: none;
   transition: all 0.3s ease;
+  letter-spacing: -0.5px;
 }
 
 .navbar-brand a:hover {
+  color: #c2185b;
+}
+
+.navbar-logo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.navbar-brand a:hover .navbar-logo {
   transform: scale(1.05);
+}
+
+.navbar-title {
+  display: inline-block;
 }
 
 /* ----- MENU ----- */
 .navbar-menu {
   display: flex;
   list-style: none;
-  gap: 2rem;
+  gap: 1rem;
   margin: 0;
   padding: 0;
   flex: 1;
@@ -48,31 +66,23 @@
 }
 
 .navbar-menu li a {
-  color: var(--text-color);
+  color: #555;
   text-decoration: none;
   font-weight: 500;
-  transition: color 0.2s ease;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
   position: relative;
-  padding: 0.5rem 0;
-}
-
-.navbar-menu li a::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  transition: width 0.3s ease;
+  padding: 0.625rem 1.25rem;
+  border-radius: 10px;
+  display: block;
 }
 
 .navbar-menu li a:hover {
-  color: var(--primary-color);
-}
-
-.navbar-menu li a:hover::after {
-  width: 100%;
+  color: #ec407a;
+  background: #fafafa;
+  box-shadow: 
+    inset 2px 2px 4px rgba(236, 129, 158, 0.1),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
 }
 
 /* ----- ACTIONS (right side) ----- */
@@ -88,17 +98,23 @@
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   overflow: hidden;
   cursor: pointer;
-  transition: opacity 0.2s ease;
-  border: 2px solid #e5e5e5;
+  transition: all 0.3s ease;
+  border: none;
+  box-shadow: 
+    4px 4px 8px rgba(236, 129, 158, 0.5),
+    -4px -4px 8px rgba(255, 250, 253, 0.9);
 }
 
 .user-avatar:hover {
-  opacity: 0.8;
+  box-shadow: 
+    6px 6px 12px rgba(236, 129, 158, 0.6),
+    -6px -6px 12px rgba(255, 250, 253, 1);
+  transform: translateY(-1px);
 }
 
 .user-avatar img {
@@ -113,23 +129,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000;
+  background: #ec407a;
   color: white;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-/* Dropdown Menu */
+/* Dropdown Menu - Soft UI */
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 8px);
+  top: calc(100% + 12px);
   right: 0;
   min-width: 200px;
-  background: white;
-  border: 1px solid #e5e5e5;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  border: 1px solid rgba(236, 64, 122, 0.1);
+  border-radius: 12px;
+  box-shadow: 
+    8px 8px 16px rgba(236, 129, 158, 0.12),
+    -8px -8px 16px rgba(255, 255, 255, 0.9);
   z-index: 1000;
-  animation: slideDown 0.2s ease;
+  animation: slideDown 0.3s ease;
+  overflow: hidden;
 }
 
 @keyframes slideDown {
@@ -148,18 +168,23 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1rem;
   border: none;
-  background: none;
+  background: transparent;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
   font-size: 0.875rem;
-  color: #333;
+  color: #555;
   text-align: left;
+  font-weight: 500;
 }
 
 .dropdown-item:hover {
   background: #fafafa;
+  color: #ec407a;
+  box-shadow: 
+    inset 2px 2px 4px rgba(236, 129, 158, 0.1),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.8);
 }
 
 .dropdown-item svg {
@@ -167,16 +192,20 @@
 }
 
 .dropdown-item.danger {
-  color: #ef4444;
+  color: #f06292;
 }
 
 .dropdown-item.danger:hover {
-  background: #fef2f2;
+  background: #fce4ec;
+  color: #e91e63;
+  box-shadow: 
+    inset 3px 3px 6px rgba(240, 98, 146, 0.3),
+    inset -3px -3px 6px rgba(255, 250, 253, 0.8);
 }
 
 .dropdown-divider {
   height: 1px;
-  background: #e5e5e5;
+  background: rgba(236, 129, 158, 0.3);
   margin: 0.25rem 0;
 }
 
@@ -186,6 +215,15 @@
     gap: 1rem;
   }
 
+  .navbar-logo {
+    height: 32px;
+  }
+
+  .navbar-brand a {
+    font-size: 1.25rem;
+    gap: 0.5rem;
+  }
+
   .navbar-menu {
     order: 3;
     width: 100%;
@@ -193,12 +231,17 @@
     gap: 0.5rem;
   }
 
+  .navbar-menu li a {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
   .navbar-actions {
     gap: 0.75rem;
   }
 
   .user-avatar {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
   }
 }
