@@ -22,9 +22,7 @@ from app.schemas.post import (
     PostUpdate,
     PostInDB,
     Post,
-    PostWithAuthor,
-    PostVote,
-    VotesSchema
+    PostWithAuthor
 )
 from app.schemas.answer import (
     AnswerBase,
@@ -93,8 +91,6 @@ __all__ = [
     "PostInDB",
     "Post",
     "PostWithAuthor",
-    "PostVote",
-    "VotesSchema",
     # Answer
     "AnswerBase",
     "AnswerCreate",

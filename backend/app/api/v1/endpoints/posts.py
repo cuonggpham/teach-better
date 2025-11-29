@@ -36,8 +36,6 @@ async def create_post(
     post_dict["_id"] = str(post_dict["_id"])
     post_dict["author_id"] = str(post_dict["author_id"])
     post_dict["tag_ids"] = [str(tag_id) for tag_id in post_dict.get("tag_ids", [])]
-    post_dict["votes"]["upvoted_by"] = [str(uid) for uid in post_dict["votes"].get("upvoted_by", [])]
-    post_dict["votes"]["downvoted_by"] = [str(uid) for uid in post_dict["votes"].get("downvoted_by", [])]
 
     return Post(**post_dict)
 
@@ -68,9 +66,6 @@ async def get_post(
     
     tag_ids = post_dict.get("tag_ids", [])
     post_dict["tag_ids"] = [str(tag_id) for tag_id in tag_ids]
-    
-    post_dict["votes"]["upvoted_by"] = [str(uid) for uid in post_dict["votes"].get("upvoted_by", [])]
-    post_dict["votes"]["downvoted_by"] = [str(uid) for uid in post_dict["votes"].get("downvoted_by", [])]
 
     # Get author info
     from bson import ObjectId
@@ -151,9 +146,6 @@ async def get_posts(
         tag_ids = post_dict.get("tag_ids", [])
         post_dict["tag_ids"] = [str(tag_id) for tag_id in tag_ids]
         
-        post_dict["votes"]["upvoted_by"] = [str(uid) for uid in post_dict["votes"].get("upvoted_by", [])]
-        post_dict["votes"]["downvoted_by"] = [str(uid) for uid in post_dict["votes"].get("downvoted_by", [])]
-        
         # Get author info
         author = await db.users.find_one({"_id": ObjectId(author_id_str)})
         if author:
@@ -209,8 +201,6 @@ async def update_post(
     post_dict["_id"] = str(post_dict["_id"])
     post_dict["author_id"] = str(post_dict["author_id"])
     post_dict["tag_ids"] = [str(tag_id) for tag_id in post_dict.get("tag_ids", [])]
-    post_dict["votes"]["upvoted_by"] = [str(uid) for uid in post_dict["votes"].get("upvoted_by", [])]
-    post_dict["votes"]["downvoted_by"] = [str(uid) for uid in post_dict["votes"].get("downvoted_by", [])]
 
     return Post(**post_dict)
 
@@ -234,53 +224,3 @@ async def delete_post(
         )
 
     return None
-
-
-@router.post("/{post_id}/vote")
-async def vote_post(
-    post_id: str,
-    is_upvote: bool = Query(..., description="True for upvote, False for downvote"),
-    current_user: User = Depends(get_current_user),
-    post_service: PostService = Depends(get_post_service),
-    db: AsyncIOMotorDatabase = Depends(get_database),
-    t: Translator = Depends(get_translator)
-):
-    """
-    Vote on a post (upvote or downvote)
-    """
-    post = await post_service.vote_post(post_id, current_user.id, is_upvote)
-
-    if not post:
-        # Check if post exists to give appropriate error message
-        existing_post = await post_service.get_post_by_id(post_id)
-        if existing_post and str(existing_post.author_id) == current_user.id:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=t("errors.cannot_vote_own_post", "You cannot vote on your own post")
-            )
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=t("errors.not_found")
-        )
-
-    # Convert to response model with author info
-    post_dict = post.model_dump(by_alias=True)
-    post_dict["_id"] = str(post_dict["_id"])
-    author_id_str = str(post_dict["author_id"])
-    post_dict["author_id"] = author_id_str
-    post_dict["tag_ids"] = [str(tag_id) for tag_id in post_dict.get("tag_ids", [])]
-    post_dict["votes"]["upvoted_by"] = [str(uid) for uid in post_dict["votes"].get("upvoted_by", [])]
-    post_dict["votes"]["downvoted_by"] = [str(uid) for uid in post_dict["votes"].get("downvoted_by", [])]
-
-    # Get author info
-    from bson import ObjectId
-    author = await db.users.find_one({"_id": ObjectId(author_id_str)})
-    if author:
-        post_dict["author"] = {
-            "_id": str(author["_id"]),
-            "name": author.get("name", ""),
-            "email": author.get("email", ""),
-            "avatar_url": author.get("avatar_url", "")
-        }
-
-    return post_dict

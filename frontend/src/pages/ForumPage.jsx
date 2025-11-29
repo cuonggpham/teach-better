@@ -3,10 +3,10 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { getPosts, votePost } from '../api/postsApi';
+import { getPosts } from '../api/postsApi';
 import { getCategories } from '../api/categoriesApi';
 import { Container, Card, Button, LoadingSpinner } from '../components/ui';
-import { VoteButton, BookmarkButton } from '../components/forum';
+import { BookmarkButton } from '../components/forum';
 import { formatDate } from '../utils/formatters';
 import './ForumPage.css';
 
@@ -133,48 +133,9 @@ const ForumPage = () => {
     setPopularTags(sortedTags.slice(0, 10));
   };
 
-  const handleVote = async (postId, isUpvote) => {
-    if (!isAuthenticated || !token) {
-      toast.warning(t('auth.login_required'));
-      navigate('/signin');
-      return;
-    }
-
-    try {
-      const updatedPost = await votePost(token, postId, isUpvote);
-      setPosts((prev) =>
-        prev.map((post) => (post._id === postId ? updatedPost : post))
-      );
-      toast.success(t('post.vote_success'));
-    } catch (error) {
-      console.error('Failed to vote:', error);
-      toast.error(t('post.vote_error'));
-    }
-  };
-
-
-  const isUpvoted = (post) => {
-    if (!user || !post.votes?.upvoted_by) return false;
-    const userId = user.id || user._id;
-    // Check if user ID is in the upvoted list (compare as strings)
-    return post.votes.upvoted_by.some(id => String(id) === String(userId));
-  };
-
-  const isDownvoted = (post) => {
-    if (!user || !post.votes?.downvoted_by) return false;
-    const userId = user.id || user._id;
-    // Check if user ID is in the downvoted list (compare as strings)
-    return post.votes.downvoted_by.some(id => String(id) === String(userId));
-  };
-
   const isBookmarked = (post) => {
     if (!user || !user.bookmarked_post_ids) return false;
     return user.bookmarked_post_ids.includes(post._id);
-  };
-
-  const isAuthor = (post) => {
-    if (!user || !post.author_id) return false;
-    return user.id === post.author_id || user._id === post.author_id;
   };
 
   // Generate page numbers to display
@@ -417,12 +378,6 @@ const ForumPage = () => {
                               <circle cx="12" cy="12" r="3"></circle>
                             </svg>
                             {post.view_count || 0}
-                          </span>
-                          <span className="stat-item votes">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="m18 15-6-6-6 6"></path>
-                            </svg>
-                            {post.votes?.score || 0}
                           </span>
                         </div>
                       </div>

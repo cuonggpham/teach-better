@@ -3,15 +3,6 @@ from typing import Optional, List
 from pydantic import BaseModel, Field
 
 
-class VotesSchema(BaseModel):
-    """
-    Votes schema
-    """
-    upvoted_by: List[str] = Field(default_factory=list)
-    downvoted_by: List[str] = Field(default_factory=list)
-    score: int = 0
-
-
 class PostBase(BaseModel):
     """
     Base post schema
@@ -45,7 +36,6 @@ class PostInDB(PostBase):
     """
     id: str = Field(..., alias="_id")
     author_id: str
-    votes: VotesSchema
     answer_count: int
     view_count: int
     is_deleted: bool
@@ -69,13 +59,6 @@ class PostWithAuthor(Post):
     """
     author: Optional[dict] = None
     tags: List[dict] = Field(default_factory=list)
-
-
-class PostVote(BaseModel):
-    """
-    Post vote action schema
-    """
-    vote_type: str = Field(..., pattern="^(upvote|downvote|remove)$")
 
 
 class PostList(BaseModel):

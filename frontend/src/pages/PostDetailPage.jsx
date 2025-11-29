@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { getPost, votePost } from '../api/postsApi';
+import { getPost } from '../api/postsApi';
 import { getAnswers, createAnswer, voteAnswer } from '../api/answersApi';
 import { Container, Card, Button, Input, LoadingSpinner } from '../components/ui';
 import { VoteButton, BookmarkButton, CommentSection } from '../components/forum';
@@ -51,23 +51,6 @@ const PostDetailPage = () => {
       setAnswers(data);
     } catch (error) {
       console.error('Failed to fetch answers:', error);
-    }
-  };
-
-  const handlePostVote = async (isUpvote) => {
-    if (!isAuthenticated || !token) {
-      toast.warning(t('auth.login_required'));
-      navigate('/signin');
-      return;
-    }
-
-    try {
-      const updatedPost = await votePost(token, postId, isUpvote);
-      setPost(updatedPost);
-      toast.success(t('post.vote_success'));
-    } catch (error) {
-      console.error('Failed to vote:', error);
-      toast.error(t('post.vote_error'));
     }
   };
 
@@ -127,28 +110,21 @@ const PostDetailPage = () => {
   };
 
 
-  const isUpvoted = (item) => {
-    if (!user || !item.votes?.upvoted_by) return false;
+  const isAnswerUpvoted = (answer) => {
+    if (!user || !answer.votes?.upvoted_by) return false;
     const userId = user._id || user.id;
-    // Check if user ID is in the upvoted list (compare as strings)
-    return item.votes.upvoted_by.some(id => String(id) === String(userId));
+    return answer.votes.upvoted_by.some(id => String(id) === String(userId));
   };
 
-  const isDownvoted = (item) => {
-    if (!user || !item.votes?.downvoted_by) return false;
+  const isAnswerDownvoted = (answer) => {
+    if (!user || !answer.votes?.downvoted_by) return false;
     const userId = user._id || user.id;
-    // Check if user ID is in the downvoted list (compare as strings)
-    return item.votes.downvoted_by.some(id => String(id) === String(userId));
+    return answer.votes.downvoted_by.some(id => String(id) === String(userId));
   };
 
   const isBookmarked = () => {
     if (!user || !user.bookmarked_post_ids || !post) return false;
     return user.bookmarked_post_ids.includes(post._id);
-  };
-
-  const isPostAuthor = () => {
-    if (!user || !post) return false;
-    return (user.id === post.author_id || user._id === post.author_id);
   };
 
   const isAnswerAuthor = (answer) => {
@@ -192,17 +168,6 @@ const PostDetailPage = () => {
         {/* Post Content */}
         <Card variant="elevated" padding="large" className="post-detail-card">
           <div className="post-detail-layout">
-            <div className="post-detail-votes">
-              <VoteButton
-                score={post.votes?.score || 0}
-                isUpvoted={isUpvoted(post)}
-                isDownvoted={isDownvoted(post)}
-                onVote={handlePostVote}
-                disabled={!isAuthenticated || isPostAuthor()}
-                size="large"
-              />
-            </div>
-
             <div className="post-detail-content">
               <div className="post-detail-header">
                 <h1 className="post-detail-title">{post.title}</h1>
@@ -277,8 +242,8 @@ const PostDetailPage = () => {
                     <div className="answer-votes">
                       <VoteButton
                         score={answer.votes?.score || 0}
-                        isUpvoted={isUpvoted(answer)}
-                        isDownvoted={isDownvoted(answer)}
+                        isUpvoted={isAnswerUpvoted(answer)}
+                        isDownvoted={isAnswerDownvoted(answer)}
                         onVote={(isUpvote) => handleAnswerVote(answer._id, isUpvote)}
                         disabled={!isAuthenticated || isAnswerAuthor(answer)}
                         size="large"

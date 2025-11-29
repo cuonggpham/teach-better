@@ -13,6 +13,10 @@ export const getPosts = async (token, params = {}) => {
   if (params.sort_by) queryParams.append('sort_by', params.sort_by);
   if (params.sort_order) queryParams.append('sort_order', params.sort_order);
   if (params.search) queryParams.append('search', params.search);
+  if (params.category) queryParams.append('category', params.category);
+  if (params.tag_ids && Array.isArray(params.tag_ids)) {
+    params.tag_ids.forEach(tagId => queryParams.append('tag_ids', tagId));
+  }
 
   const response = await fetch(`${API_URL}/posts?${queryParams.toString()}`, {
     method: 'GET',

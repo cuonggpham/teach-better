@@ -6,7 +6,7 @@ from app.models.user import PyObjectId
 
 class VotesModel(BaseModel):
     """
-    Votes sub-model for posts and answers
+    Votes sub-model for answers
     """
     upvoted_by: List[PyObjectId] = Field(default_factory=list)
     downvoted_by: List[PyObjectId] = Field(default_factory=list)
@@ -23,7 +23,6 @@ class PostModel(BaseModel):
     author_id: PyObjectId = Field(..., index=True)
     category: Optional[str] = Field(default=None, index=True)  # Broad subject: Toán học, Tiếng Anh, Vật lý, etc.
     tag_ids: List[PyObjectId] = Field(default_factory=list, max_length=5)  # Specific topics: Tích phân, Ngữ pháp, JLPT N3, etc.
-    votes: VotesModel = Field(default_factory=VotesModel)
     answer_count: int = Field(default=0)
     view_count: int = Field(default=0)
     is_deleted: bool = Field(default=False)
