@@ -115,9 +115,13 @@
   },
   "forum": {
     "title": "Diễn đàn",
-    "create_post": "Đăng bài mới",
+    "create_post": "Câu hỏi mới",
     "create_first_post": "Tạo bài viết đầu tiên",
     "no_posts": "Chưa có bài viết nào",
+    "categories": "Danh mục",
+    "all_categories": "Tất cả",
+    "popular_tags": "Thẻ phổ biến",
+    "search_placeholder": "Tìm kiếm theo tiêu đề, từ khóa, tag hoặc tên người đăng",
     "sort": {
       "newest": "Mới nhất",
       "most_voted": "Nhiều vote nhất",
@@ -128,6 +132,13 @@
   "post": {
     "title": "Tiêu đề",
     "content": "Nội dung",
+    "category": "Danh mục",
+    "select_category": "Chọn danh mục (tùy chọn)",
+    "tags": "Thẻ chủ đề",
+    "optional": "tùy chọn",
+    "max_5_tags": "tối đa 5",
+    "search_or_create_tag": "Tìm kiếm hoặc tạo thẻ mới...",
+    "posts": "bài viết",
     "create": "Đăng bài mới",
     "publish": "Đăng bài",
     "title_placeholder": "Nhập tiêu đề bài viết (tối thiểu 10 ký tự)",
@@ -235,5 +246,14 @@
     "need_login": "Bạn cần đăng nhập để xem danh sách bookmark.",
     "added": "Đã thêm vào bookmark!",
     "removed": "Đã xóa khỏi bookmark!"
+  },
+  "tag": {
+    "already_exists": "Thẻ này đã tồn tại",
+    "not_found": "Không tìm thấy thẻ",
+    "update_failed": "Cập nhật thẻ thất bại",
+    "delete_failed": "Xóa thẻ thất bại",
+    "create_new": "Tạo thẻ mới",
+    "create_success": "Tạo thẻ mới thành công!",
+    "create_error": "Không thể tạo thẻ mới"
   }
 }

@@ -115,9 +115,13 @@
   },
   "forum": {
     "title": "フォーラム",
-    "create_post": "新しい投稿",
+    "create_post": "新しい質問",
     "create_first_post": "最初の投稿を作成",
     "no_posts": "投稿がありません",
+    "categories": "カテゴリー",
+    "all_categories": "すべて",
+    "popular_tags": "人気のタグ",
+    "search_placeholder": "タイトル、キーワード、タグ、投稿者で検索",
     "sort": {
       "newest": "最新",
       "most_voted": "投票数が多い順",
@@ -128,6 +132,13 @@
   "post": {
     "title": "タイトル",
     "content": "内容",
+    "category": "カテゴリー",
+    "select_category": "カテゴリーを選択（オプション）",
+    "tags": "タグ",
+    "optional": "オプション",
+    "max_5_tags": "最大5個",
+    "search_or_create_tag": "タグを検索または作成...",
+    "posts": "投稿",
     "create": "新しい投稿",
     "publish": "投稿",
     "title_placeholder": "投稿タイトルを入力（最低10文字）",
@@ -235,5 +246,14 @@
     "need_login": "ブックマークを見るにはログインしてください。",
     "added": "ブックマークに追加しました！",
     "removed": "ブックマークから削除しました！"
+  },
+  "tag": {
+    "already_exists": "このタグはすでに存在します",
+    "not_found": "タグが見つかりません",
+    "update_failed": "タグの更新に失敗しました",
+    "delete_failed": "タグの削除に失敗しました",
+    "create_new": "新しいタグを作成",
+    "create_success": "新しいタグを作成しました！",
+    "create_error": "タグを作成できませんでした"
   }
 }

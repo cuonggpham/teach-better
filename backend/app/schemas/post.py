@@ -18,6 +18,7 @@ class PostBase(BaseModel):
     """
     title: str
     content: str
+    category: Optional[str] = None
     tag_ids: List[str] = Field(default_factory=list, max_length=5)
 
 
@@ -34,6 +35,7 @@ class PostUpdate(BaseModel):
     """
     title: Optional[str] = None
     content: Optional[str] = None
+    category: Optional[str] = None
     tag_ids: Optional[List[str]] = Field(None, max_length=5)
 
 

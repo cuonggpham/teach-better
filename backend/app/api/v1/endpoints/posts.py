@@ -65,7 +65,10 @@ async def get_post(
     post_dict["_id"] = str(post_dict["_id"])
     author_id_str = str(post_dict["author_id"])
     post_dict["author_id"] = author_id_str
-    post_dict["tag_ids"] = [str(tag_id) for tag_id in post_dict.get("tag_ids", [])]
+    
+    tag_ids = post_dict.get("tag_ids", [])
+    post_dict["tag_ids"] = [str(tag_id) for tag_id in tag_ids]
+    
     post_dict["votes"]["upvoted_by"] = [str(uid) for uid in post_dict["votes"].get("upvoted_by", [])]
     post_dict["votes"]["downvoted_by"] = [str(uid) for uid in post_dict["votes"].get("downvoted_by", [])]
 
@@ -79,6 +82,22 @@ async def get_post(
             "email": author.get("email", ""),
             "avatar_url": author.get("avatar_url", "")
         }
+    
+    # Get tags info
+    post_dict["tags"] = []
+    if tag_ids:
+        tag_object_ids = [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(str(tag_id))]
+        if tag_object_ids:
+            tags_cursor = db.tags.find({"_id": {"$in": tag_object_ids}})
+            tags = await tags_cursor.to_list(length=len(tag_object_ids))
+            post_dict["tags"] = [
+                {
+                    "_id": str(tag["_id"]),
+                    "name": tag.get("name", ""),
+                    "description": tag.get("description", "")
+                }
+                for tag in tags
+            ]
 
     return post_dict
 
@@ -89,6 +108,7 @@ async def get_posts(
     limit: int = Query(20, ge=1, le=100),
     author_id: Optional[str] = None,
     tag_ids: Optional[List[str]] = Query(None),
+    category: Optional[str] = Query(None, description="Filter by category name"),
     sort_by: str = Query("created_at", pattern="^(created_at|votes.score|view_count|answer_count)$"),
     sort_order: int = Query(-1, ge=-1, le=1),
     search: Optional[str] = Query(None, description="Search in post title and content"),
@@ -103,6 +123,7 @@ async def get_posts(
     total = await post_service.count_posts(
         author_id=author_id,
         tag_ids=tag_ids,
+        category=category,
         search=search
     )
     
@@ -112,24 +133,28 @@ async def get_posts(
         limit=limit,
         author_id=author_id,
         tag_ids=tag_ids,
+        category=category,
         sort_by=sort_by,
         sort_order=sort_order,
         search=search
     )
 
-    # Convert to response models with author info
+    # Convert to response models with author info and tags
     post_list = []
+    from bson import ObjectId
     for post in posts:
         post_dict = post.model_dump(by_alias=True)
         post_dict["_id"] = str(post_dict["_id"])
         author_id_str = str(post_dict["author_id"])
         post_dict["author_id"] = author_id_str
-        post_dict["tag_ids"] = [str(tag_id) for tag_id in post_dict.get("tag_ids", [])]
+        
+        tag_ids = post_dict.get("tag_ids", [])
+        post_dict["tag_ids"] = [str(tag_id) for tag_id in tag_ids]
+        
         post_dict["votes"]["upvoted_by"] = [str(uid) for uid in post_dict["votes"].get("upvoted_by", [])]
         post_dict["votes"]["downvoted_by"] = [str(uid) for uid in post_dict["votes"].get("downvoted_by", [])]
         
         # Get author info
-        from bson import ObjectId
         author = await db.users.find_one({"_id": ObjectId(author_id_str)})
         if author:
             post_dict["author"] = {
@@ -138,6 +163,22 @@ async def get_posts(
                 "email": author.get("email", ""),
                 "avatar_url": author.get("avatar_url", "")
             }
+        
+        # Get tags info
+        post_dict["tags"] = []
+        if tag_ids:
+            tag_object_ids = [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(str(tag_id))]
+            if tag_object_ids:
+                tags_cursor = db.tags.find({"_id": {"$in": tag_object_ids}})
+                tags = await tags_cursor.to_list(length=len(tag_object_ids))
+                post_dict["tags"] = [
+                    {
+                        "_id": str(tag["_id"]),
+                        "name": tag.get("name", ""),
+                        "description": tag.get("description", "")
+                    }
+                    for tag in tags
+                ]
         
         post_list.append(post_dict)
 

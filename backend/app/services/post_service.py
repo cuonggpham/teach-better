@@ -63,6 +63,7 @@ class PostService:
         self,
         author_id: Optional[str] = None,
         tag_ids: Optional[List[str]] = None,
+        category: Optional[str] = None,
         search: Optional[str] = None
     ) -> int:
         """
@@ -76,8 +77,11 @@ class PostService:
         if tag_ids:
             query["tag_ids"] = {"$in": [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]}
 
+        if category:
+            query["category"] = category
+
         if search:
-            # Case-insensitive search in title and content
+            # Case-insensitive search in title, content, and author name
             query["$or"] = [
                 {"title": {"$regex": search, "$options": "i"}},
                 {"content": {"$regex": search, "$options": "i"}}
@@ -92,6 +96,7 @@ class PostService:
         limit: int = 20,
         author_id: Optional[str] = None,
         tag_ids: Optional[List[str]] = None,
+        category: Optional[str] = None,
         sort_by: str = "created_at",
         sort_order: int = -1,
         search: Optional[str] = None
@@ -107,8 +112,11 @@ class PostService:
         if tag_ids:
             query["tag_ids"] = {"$in": [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]}
 
+        if category:
+            query["category"] = category
+
         if search:
-            # Case-insensitive search in title and content
+            # Case-insensitive search in title, content, and author name
             query["$or"] = [
                 {"title": {"$regex": search, "$options": "i"}},
                 {"content": {"$regex": search, "$options": "i"}}
