@@ -38,7 +38,7 @@ axiosInstance.interceptors.request.use(
 // Response interceptor - Xử lý response và lỗi
 axiosInstance.interceptors.response.use(
   (response) => {
-    // Trả về data trực tiếp
+    // Trả về data để tránh phải extract .data nhiều lần
     return response.data;
   },
   (error) => {
