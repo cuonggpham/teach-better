@@ -45,6 +45,22 @@ class UserStatus(str, Enum):
     LOCKED = "locked"
 
 
+class BookmarkItem(BaseModel):
+    """
+    Bookmark item with post ID and timestamp
+    """
+    post_id: PyObjectId
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        json_encoders={
+            ObjectId: str,
+            datetime: lambda v: v.isoformat()
+        }
+    )
+
+
 class UserModel(BaseModel):
     """
     User database model
@@ -57,7 +73,8 @@ class UserModel(BaseModel):
     bio: Optional[str] = None
     role: UserRole = Field(default=UserRole.USER)
     status: UserStatus = Field(default=UserStatus.ACTIVE)
-    bookmarked_post_ids: List[PyObjectId] = Field(default_factory=list)
+    bookmarks: List[BookmarkItem] = Field(default_factory=list)
+    bookmarked_post_ids: List[PyObjectId] = Field(default_factory=list)  # Deprecated, kept for backward compatibility
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

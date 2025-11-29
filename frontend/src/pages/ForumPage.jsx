@@ -304,7 +304,6 @@ const ForumPage = () => {
                   className="filter-select"
                 >
                   <option value="created_at">{t('forum.sort.newest')}</option>
-                  <option value="votes.score">{t('forum.sort.most_voted')}</option>
                   <option value="answer_count">{t('forum.sort.most_answers')}</option>
                   <option value="view_count">{t('forum.sort.most_views')}</option>
                 </select>
@@ -336,16 +335,21 @@ const ForumPage = () => {
                         >
                           {post.title}
                         </h2>
-                        {post.category && (
-                          <span className="post-category-badge">{post.category}</span>
-                        )}
+                        <BookmarkButton
+                          postId={post._id}
+                          isBookmarked={isBookmarked(post)}
+                          onToggle={() => fetchPosts()}
+                        />
                       </div>
 
                       <p className="post-card-excerpt">{post.content?.substring(0, 150)}...</p>
 
-                      {post.tags && post.tags.length > 0 && (
+                      {(post.category || (post.tags && post.tags.length > 0)) && (
                         <div className="post-card-tags">
-                          {post.tags.map((tag) => (
+                          {post.category && (
+                            <span className="post-category-badge">{post.category}</span>
+                          )}
+                          {post.tags && post.tags.map((tag) => (
                             <span key={tag._id} className="post-tag">{tag.name}</span>
                           ))}
                         </div>

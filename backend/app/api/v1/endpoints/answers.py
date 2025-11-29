@@ -48,13 +48,18 @@ async def send_answer_notification(
     post_id: str,
     answer_author_id: str,
     notification_service: NotificationService,
-    post_service: PostService
+    post_service: PostService,
+    user_service: UserService
 ):
     """
-    Send notification to post author when someone answers
+    Send notification to post author and bookmarked users when someone answers
     """
     post = await post_service.get_post_by_id(post_id)
-    if post and str(post.author_id) != answer_author_id:
+    if not post:
+        return
+    
+    # Notify post author
+    if str(post.author_id) != answer_author_id:
         print(f"[DEBUG] Creating notification for post author {post.author_id}, answerer: {answer_author_id}")
         await notification_service.create_notification(
             user_id=str(post.author_id),
@@ -63,8 +68,27 @@ async def send_answer_notification(
             link=f"/forum/{post_id}"
         )
         print(f"[DEBUG] Notification created successfully")
-    else:
-        print(f"[DEBUG] No notification created - post exists: {post is not None}, same author: {str(post.author_id) == answer_author_id if post else 'N/A'}")
+    
+    # Get all users who bookmarked this post
+    from bson import ObjectId
+    
+    # Find users who have bookmarked this post
+    users_cursor = user_service.collection.find({
+        "bookmarked_post_ids": ObjectId(post_id)
+    })
+    bookmarked_users = await users_cursor.to_list(length=None)
+    
+    # Notify bookmarked users (except the answer author and post author)
+    for user in bookmarked_users:
+        user_id = str(user["_id"])
+        if user_id not in [answer_author_id, str(post.author_id)]:
+            print(f"[DEBUG] Creating notification for bookmarked user {user_id}")
+            await notification_service.create_notification(
+                user_id=user_id,
+                notification_type=NotificationType.NEW_ANSWER,
+                message="Có câu trả lời mới trong bài viết bạn đã lưu",
+                link=f"/forum/{post_id}"
+            )
 
 
 async def send_comment_notification(
@@ -142,6 +166,7 @@ async def create_answer(
     answer_service: AnswerService = Depends(get_answer_service),
     post_service: PostService = Depends(get_post_service),
     notification_service: NotificationService = Depends(get_notification_service),
+    user_service: UserService = Depends(get_user_service),
     t: Translator = Depends(get_translator)
 ):
     """
@@ -152,13 +177,14 @@ async def create_answer(
     # Increment answer count on post
     await post_service.increment_answer_count(answer_data.post_id)
 
-    # Send notification to post author
+    # Send notification to post author and bookmarked users
     background_tasks.add_task(
         send_answer_notification,
         answer_data.post_id,
         current_user.id,
         notification_service,
-        post_service
+        post_service,
+        user_service
     )
 
     # Convert to response model

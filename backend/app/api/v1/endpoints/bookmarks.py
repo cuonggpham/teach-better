@@ -78,7 +78,7 @@ async def remove_bookmark(
     return {"message": t("common.success")}
 
 
-@router.get("/", response_model=List[Post])
+@router.get("/", response_model=List[dict])
 async def get_bookmarks(
     current_user: User = Depends(get_current_user),
     user_service: UserService = Depends(get_user_service),
@@ -86,20 +86,46 @@ async def get_bookmarks(
     t: Translator = Depends(get_translator)
 ):
     """
-    Get user's bookmarked posts
+    Get user's bookmarked posts with bookmark timestamps
     """
-    bookmarked_post_ids = await user_service.get_bookmarked_posts(current_user.id)
+    # Get user data including bookmarks
+    user_data = await user_service.get_user_by_id(current_user.id)
+    if not user_data:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("errors.not_found")
+        )
 
-    # Fetch full post details
-    posts = []
-    for post_id in bookmarked_post_ids:
+    # Get bookmarks with timestamps
+    bookmarks = user_data.bookmarks if hasattr(user_data, 'bookmarks') else []
+    
+    # If no new format bookmarks, fall back to old format
+    if not bookmarks and hasattr(user_data, 'bookmarked_post_ids'):
+        bookmarked_post_ids = user_data.bookmarked_post_ids
+        posts = []
+        for post_id in bookmarked_post_ids:
+            post = await post_service.get_post_by_id(str(post_id))
+            if post:
+                post_dict = post.model_dump(by_alias=True)
+                post_dict["_id"] = str(post_dict["_id"])
+                post_dict["author_id"] = str(post_dict["author_id"])
+                post_dict["tag_ids"] = [str(tag_id) for tag_id in post_dict.get("tag_ids", [])]
+                posts.append(post_dict)
+        return posts
+
+    # Fetch full post details with bookmark timestamps
+    result = []
+    for bookmark in bookmarks:
+        post_id = str(bookmark.post_id) if hasattr(bookmark, 'post_id') else str(bookmark.get('post_id'))
         post = await post_service.get_post_by_id(post_id)
         if post:
-            # Convert to response model
             post_dict = post.model_dump(by_alias=True)
             post_dict["_id"] = str(post_dict["_id"])
             post_dict["author_id"] = str(post_dict["author_id"])
             post_dict["tag_ids"] = [str(tag_id) for tag_id in post_dict.get("tag_ids", [])]
-            posts.append(Post(**post_dict))
+            # Add bookmark timestamp
+            created_at = bookmark.created_at if hasattr(bookmark, 'created_at') else bookmark.get('created_at')
+            post_dict["bookmarked_at"] = created_at.isoformat() if created_at else None
+            result.append(post_dict)
 
-    return posts
+    return result

@@ -23,7 +23,8 @@
     -6px -6px 12px rgba(255, 255, 255, 0.9);
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: 1rem;
   transition: all 0.3s ease;
 }
 
@@ -34,16 +35,42 @@
     -8px -8px 16px rgba(255, 255, 255, 0.95);
 }
 
-.bookmark-info h3 {
-  margin: 0 0 6px 0;
-  font-size: 18px;
-  color: #333;
+.bookmark-info {
+  flex: 1;
+  cursor: pointer;
 }
 
-.bookmark-info p {
-  margin: 0;
+.bookmark-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  color: #333;
+  font-weight: 600;
+}
+
+.bookmark-content-preview {
   color: #666;
+  margin: 8px 0;
+  line-height: 1.5;
   font-size: 14px;
+}
+
+.bookmark-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.bookmark-author {
+  color: #888;
+  font-style: italic;
+}
+
+.bookmark-date {
+  color: #f06292;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .remove-btn {

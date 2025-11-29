@@ -128,14 +128,31 @@ class UserService:
 
     async def add_bookmark(self, user_id: str, post_id: str) -> Optional[UserModel]:
         """
-        Add a post to user's bookmarks
+        Add a post to user's bookmarks with timestamp
         """
         if not ObjectId.is_valid(user_id) or not ObjectId.is_valid(post_id):
             return None
 
+        # Check if bookmark already exists
+        user = await self.collection.find_one({"_id": ObjectId(user_id)})
+        if user:
+            bookmarks = user.get("bookmarks", [])
+            if any(b.get("post_id") == ObjectId(post_id) for b in bookmarks):
+                # Already bookmarked, return existing user
+                return UserModel(**user)
+
+        # Add new bookmark with timestamp
+        bookmark_item = {
+            "post_id": ObjectId(post_id),
+            "created_at": datetime.utcnow()
+        }
+
         result = await self.collection.find_one_and_update(
             {"_id": ObjectId(user_id)},
-            {"$addToSet": {"bookmarked_post_ids": ObjectId(post_id)}},
+            {
+                "$addToSet": {"bookmarked_post_ids": ObjectId(post_id)},  # Keep for backward compatibility
+                "$push": {"bookmarks": bookmark_item}
+            },
             return_document=True
         )
 
@@ -152,7 +169,12 @@ class UserService:
 
         result = await self.collection.find_one_and_update(
             {"_id": ObjectId(user_id)},
-            {"$pull": {"bookmarked_post_ids": ObjectId(post_id)}},
+            {
+                "$pull": {
+                    "bookmarked_post_ids": ObjectId(post_id),  # Keep for backward compatibility
+                    "bookmarks": {"post_id": ObjectId(post_id)}
+                }
+            },
             return_document=True
         )
 
