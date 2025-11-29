@@ -30,7 +30,6 @@ class PostService:
         post_dict["answer_count"] = 0
         post_dict["view_count"] = 0
         post_dict["is_deleted"] = False
-        post_dict["votes"] = {"upvoted_by": [], "downvoted_by": [], "score": 0}
 
         print(f"[DEBUG] Creating post with created_at: {now}, title: {post_dict.get('title')}")
         
@@ -180,61 +179,6 @@ class PostService:
         )
 
         return result.modified_count > 0
-
-    async def vote_post(self, post_id: str, user_id: str, is_upvote: bool) -> Optional[PostModel]:
-        """
-        Vote on a post (upvote or downvote)
-        User can only vote once. Voting again removes the vote or switches vote type.
-        Author cannot vote on their own post.
-        """
-        if not ObjectId.is_valid(post_id) or not ObjectId.is_valid(user_id):
-            return None
-
-        user_obj_id = ObjectId(user_id)
-        post = await self.collection.find_one({"_id": ObjectId(post_id), "is_deleted": False})
-
-        if not post:
-            return None
-        
-        # Prevent author from voting on their own post
-        if post.get("author_id") == user_obj_id:
-            return None
-
-        upvoted_by = post.get("votes", {}).get("upvoted_by", [])
-        downvoted_by = post.get("votes", {}).get("downvoted_by", [])
-
-        # Check if user already voted this way
-        already_upvoted = user_obj_id in upvoted_by
-        already_downvoted = user_obj_id in downvoted_by
-
-        # Remove user from both lists first
-        if user_obj_id in upvoted_by:
-            upvoted_by.remove(user_obj_id)
-        if user_obj_id in downvoted_by:
-            downvoted_by.remove(user_obj_id)
-
-        # Add to appropriate list only if not already voted the same way (toggle behavior)
-        if is_upvote and not already_upvoted:
-            upvoted_by.append(user_obj_id)
-        elif not is_upvote and not already_downvoted:
-            downvoted_by.append(user_obj_id)
-
-        score = len(upvoted_by) - len(downvoted_by)
-
-        result = await self.collection.find_one_and_update(
-            {"_id": ObjectId(post_id)},
-            {"$set": {
-                "votes.upvoted_by": upvoted_by,
-                "votes.downvoted_by": downvoted_by,
-                "votes.score": score,
-                "updated_at": datetime.utcnow()
-            }},
-            return_document=True
-        )
-
-        if result:
-            return PostModel(**result)
-        return None
 
     async def increment_answer_count(self, post_id: str) -> bool:
         """

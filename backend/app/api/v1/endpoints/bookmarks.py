@@ -100,8 +100,6 @@ async def get_bookmarks(
             post_dict["_id"] = str(post_dict["_id"])
             post_dict["author_id"] = str(post_dict["author_id"])
             post_dict["tag_ids"] = [str(tag_id) for tag_id in post_dict.get("tag_ids", [])]
-            post_dict["votes"]["upvoted_by"] = [str(uid) for uid in post_dict["votes"].get("upvoted_by", [])]
-            post_dict["votes"]["downvoted_by"] = [str(uid) for uid in post_dict["votes"].get("downvoted_by", [])]
             posts.append(Post(**post_dict))
 
     return posts
