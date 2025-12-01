@@ -54,5 +54,35 @@
     "updated": "Đã cập nhật",
     "deleted": "Đã xóa",
     "saved": "Đã lưu"
+  },
+  "report": {
+    "created": "Báo cáo đã được gửi thành công",
+    "creation_failed": "Gửi báo cáo thất bại",
+    "not_found": "Không tìm thấy báo cáo",
+    "target_not_found": "Không tìm thấy đối tượng báo cáo",
+    "access_denied": "Bạn không có quyền truy cập báo cáo này",
+    "admin_only": "Chỉ quản trị viên mới có quyền thực hiện thao tác này",
+    "resolved": "Báo cáo đã được xử lý",
+    "dismissed": "Báo cáo đã bị bỏ qua",
+    "reason_too_short": "Lý do báo cáo phải có ít nhất 20 ký tự",
+    "types": {
+      "spam": "Spam",
+      "inappropriate": "Nội dung không phù hợp",
+      "harassment": "Quấy rối",
+      "offensive": "Xúc phạm",
+      "misleading": "Thông tin sai lệch",
+      "other": "Khác"
+    },
+    "status": {
+      "pending": "Đang chờ xử lý",
+      "resolved": "Đã xử lý",
+      "dismissed": "Đã bỏ qua"
+    },
+    "actions": {
+      "warned": "Đã cảnh báo người dùng",
+      "locked_user": "Đã khóa tài khoản người dùng",
+      "deleted_content": "Đã xóa nội dung vi phạm",
+      "no_action": "Không có hành động"
+    }
   }
 }

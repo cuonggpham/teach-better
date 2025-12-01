@@ -102,6 +102,63 @@ backend/
 - `DELETE /api/v1/users/{user_id}` - Delete user
 - `GET /api/v1/users/` - List users
 
+### Posts
+
+- `POST /api/v1/posts/` - Create post
+- `GET /api/v1/posts/` - List posts
+- `GET /api/v1/posts/{post_id}` - Get post details
+- `PUT /api/v1/posts/{post_id}` - Update post
+- `DELETE /api/v1/posts/{post_id}` - Delete post
+
+### Answers
+
+- `POST /api/v1/answers/` - Create answer
+- `GET /api/v1/answers/` - List answers
+- `GET /api/v1/answers/{answer_id}` - Get answer details
+- `PUT /api/v1/answers/{answer_id}` - Update answer
+- `DELETE /api/v1/answers/{answer_id}` - Delete answer
+
+### Reports (New Feature!)
+
+- `POST /api/v1/reports/` - Create report (báo cáo vi phạm)
+- `GET /api/v1/reports/` - List reports (user: own reports, admin: all reports)
+- `GET /api/v1/reports/my-reports` - Get current user's reports
+- `GET /api/v1/reports/{report_id}` - Get report details
+- `POST /api/v1/reports/{report_id}/resolve` - Resolve report (admin only)
+- `POST /api/v1/reports/{report_id}/dismiss` - Dismiss report (admin only)
+- `GET /api/v1/reports/target/{type}/{id}` - Get reports for target (admin only)
+
+**Report Features:**
+
+- Users can report violations on posts, answers, comments, or users
+- Report categories: spam, inappropriate content, harassment, offensive, misleading info
+- Minimum 20 characters for detailed reason
+- Optional evidence URL attachment
+- Admin resolution workflow with action tracking
+
+See [REPORTS_API.md](app/api/v1/endpoints/REPORTS_API.md) for detailed documentation.
+
+### Categories
+
+- `GET /api/v1/categories/` - List categories
+- `POST /api/v1/categories/` - Create category
+
+### Tags
+
+- `GET /api/v1/tags/` - List tags
+- `POST /api/v1/tags/` - Create tag
+
+### Bookmarks
+
+- `GET /api/v1/bookmarks/` - List bookmarks
+- `POST /api/v1/bookmarks/` - Create bookmark
+- `DELETE /api/v1/bookmarks/{bookmark_id}` - Delete bookmark
+
+### Notifications
+
+- `GET /api/v1/notifications/` - List notifications
+- `PUT /api/v1/notifications/{notification_id}/read` - Mark as read
+
 ## Development
 
 ### Running tests

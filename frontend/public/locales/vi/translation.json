@@ -255,5 +255,37 @@
     "create_new": "Tạo thẻ mới",
     "create_success": "Tạo thẻ mới thành công!",
     "create_error": "Không thể tạo thẻ mới"
+  },
+  "report": {
+    "title": "Báo cáo vi phạm",
+    "report": "Báo cáo",
+    "button_title": "Báo cáo vi phạm",
+    "violation_type": "Loại vi phạm",
+    "select_type": "Chọn loại vi phạm",
+    "reason_detail": "Lý do chi tiết",
+    "reason_placeholder": "Nhập lý do chi tiết về vi phạm (tối thiểu 20 ký tự)",
+    "reason_hint": "Tối thiểu 20 ký tự",
+    "evidence": "Bằng chứng",
+    "upload_image": "Đính kèm ảnh bằng chứng",
+    "uploading": "Đang tải lên...",
+    "submit": "Gửi báo cáo",
+    "success_message": "Báo cáo đã được gửi thành công",
+    "error_message": "Không thể gửi báo cáo. Vui lòng thử lại",
+    "types": {
+      "spam": "Spam",
+      "inappropriate": "Nội dung không phù hợp",
+      "harassment": "Quấy rối",
+      "offensive": "Xúc phạm",
+      "misleading": "Thông tin sai lệch",
+      "other": "Khác"
+    },
+    "errors": {
+      "select_type": "Vui lòng chọn loại vi phạm",
+      "reason_required": "Vui lòng nhập lý do",
+      "reason_min_length": "Lý do phải có ít nhất 20 ký tự",
+      "image_too_large": "Ảnh quá lớn (tối đa 5MB)",
+      "invalid_image": "Vui lòng chọn file ảnh hợp lệ",
+      "upload_failed": "Tải ảnh lên thất bại"
+    }
   }
 }

@@ -255,5 +255,37 @@
     "create_new": "新しいタグを作成",
     "create_success": "新しいタグを作成しました！",
     "create_error": "タグを作成できませんでした"
+  },
+  "report": {
+    "title": "違反を報告",
+    "report": "報告",
+    "button_title": "違反を報告",
+    "violation_type": "違反の種類",
+    "select_type": "違反の種類を選択",
+    "reason_detail": "詳細な理由",
+    "reason_placeholder": "違反の詳細な理由を入力してください（最低20文字）",
+    "reason_hint": "最低20文字",
+    "evidence": "証拠",
+    "upload_image": "証拠画像を添付",
+    "uploading": "アップロード中...",
+    "submit": "報告を送信",
+    "success_message": "報告が正常に送信されました",
+    "error_message": "報告を送信できませんでした。もう一度お試しください",
+    "types": {
+      "spam": "スパム",
+      "inappropriate": "不適切なコンテンツ",
+      "harassment": "嫌がらせ",
+      "offensive": "攻撃的",
+      "misleading": "誤った情報",
+      "other": "その他"
+    },
+    "errors": {
+      "select_type": "違反の種類を選択してください",
+      "reason_required": "理由を入力してください",
+      "reason_min_length": "理由は最低20文字必要です",
+      "image_too_large": "画像が大きすぎます（最大5MB）",
+      "invalid_image": "有効な画像ファイルを選択してください",
+      "upload_failed": "画像のアップロードに失敗しました"
+    }
   }
 }

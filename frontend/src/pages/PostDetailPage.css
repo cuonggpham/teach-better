@@ -86,6 +86,12 @@
   border-bottom: 1px solid rgba(236, 129, 158, 0.12);
 }
 
+.post-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .post-detail-title {
   flex: 1;
   font-size: 1.5rem;
@@ -167,7 +173,6 @@
     -12px -12px 24px rgba(255, 255, 255, 0.95);
   animation: fadeIn 0.5s ease 0.1s backwards;
   position: relative;
-  z-index: 2;
 }
 
 .answer-form-card h2 {
@@ -185,7 +190,6 @@
   flex-direction: column;
   gap: 1rem;
   position: relative;
-  z-index: 3;
   pointer-events: auto;
 }
 
@@ -207,7 +211,6 @@
   pointer-events: auto !important;
   cursor: text;
   position: relative;
-  z-index: 5;
 }
 
 .answer-form textarea:focus {
@@ -333,6 +336,10 @@
   color: #999;
   padding-bottom: 1.25rem;
   border-bottom: 1px solid rgba(236, 64, 122, 0.08);
+}
+
+.answer-meta > * {
+  margin: 0;
 }
 
 .answer-author {

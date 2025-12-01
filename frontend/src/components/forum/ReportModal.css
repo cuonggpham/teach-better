@@ -1,0 +1,213 @@
+/* ReportModal Component - Pink Pastel Neumorphism */
+.report-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  z-index: 9999;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #d81b60;
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+}
+
+.form-label.required::after {
+  content: ' *';
+  color: #ec407a;
+}
+
+.optional-label {
+  font-weight: 400;
+  color: #999;
+  font-size: 0.85rem;
+}
+
+/* Select styling */
+.form-select {
+  width: 100%;
+  padding: 0.875rem 1.125rem;
+  border: 1px solid rgba(236, 64, 122, 0.15);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #fafafa;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 
+    inset 3px 3px 6px rgba(236, 129, 158, 0.08),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.9);
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #ec407a;
+  box-shadow: 
+    inset 4px 4px 8px rgba(236, 129, 158, 0.12),
+    inset -4px -4px 8px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(236, 64, 122, 0.1);
+}
+
+.form-select.error {
+  border-color: #f06292;
+  box-shadow: 
+    inset 3px 3px 6px rgba(240, 98, 146, 0.12),
+    inset -3px -3px 6px rgba(255, 255, 255, 0.9),
+    0 0 0 3px rgba(240, 98, 146, 0.1);
+}
+
+.form-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #c2185b;
+  font-size: 0.875rem;
+  margin-top: -0.25rem;
+  font-weight: 400;
+}
+
+/* Textarea specific */
+.reason-textarea textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* Upload area */
+.upload-area {
+  position: relative;
+}
+
+.file-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.upload-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px dashed rgba(236, 64, 122, 0.3);
+  border-radius: 12px;
+  background: #fce4ec;
+  color: #d81b60;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-label:hover:not(.disabled) {
+  border-color: #ec407a;
+  background: #f8bbd0;
+  box-shadow: 
+    4px 4px 8px rgba(236, 129, 158, 0.15),
+    -4px -4px 8px rgba(255, 255, 255, 0.9);
+}
+
+.upload-label.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.upload-icon {
+  font-size: 1.5rem;
+}
+
+.upload-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(216, 27, 96, 0.3);
+  border-top-color: #d81b60;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Evidence preview */
+.evidence-preview {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 
+    6px 6px 12px rgba(236, 129, 158, 0.2),
+    -6px -6px 12px rgba(255, 255, 255, 0.95);
+}
+
+.evidence-image {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #ec407a;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 
+    3px 3px 6px rgba(236, 129, 158, 0.3),
+    -3px -3px 6px rgba(255, 255, 255, 0.95);
+}
+
+.remove-image-btn:hover:not(:disabled) {
+  background: #fff;
+  color: #d81b60;
+  transform: rotate(90deg);
+}
+
+.remove-image-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Form actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(236, 64, 122, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}

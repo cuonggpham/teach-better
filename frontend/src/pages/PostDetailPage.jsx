@@ -6,7 +6,7 @@ import { useToast } from '../contexts/ToastContext';
 import { getPost } from '../api/postsApi';
 import { getAnswers, createAnswer, voteAnswer } from '../api/answersApi';
 import { Container, Card, Button, Input, LoadingSpinner } from '../components/ui';
-import { VoteButton, BookmarkButton, CommentSection } from '../components/forum';
+import { VoteButton, BookmarkButton, CommentSection, ReportButton } from '../components/forum';
 import { formatDateTime } from '../utils/formatters';
 import './PostDetailPage.css';
 
@@ -171,7 +171,10 @@ const PostDetailPage = () => {
             <div className="post-detail-content">
               <div className="post-detail-header">
                 <h1 className="post-detail-title">{post.title}</h1>
-                <BookmarkButton postId={post._id} isBookmarked={isBookmarked()} />
+                <div className="post-actions">
+                  <BookmarkButton postId={post._id} isBookmarked={isBookmarked()} />
+                  <ReportButton targetType="post" targetId={post._id} />
+                </div>
               </div>
 
               <div className="post-detail-meta">
@@ -260,6 +263,7 @@ const PostDetailPage = () => {
                           {t('answer.by', 'Bởi')} {answer.author_name || t('common.anonymous', 'Ẩn danh')}
                         </span>
                         <span className="answer-date">{formatDateTime(answer.created_at, i18n.language)}</span>
+                        <ReportButton targetType="answer" targetId={answer._id} />
                       </div>
 
                       <CommentSection
