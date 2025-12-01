@@ -6,7 +6,7 @@ import { useToast } from '../contexts/ToastContext';
 import { getPosts } from '../api/postsApi';
 import { getCategories } from '../api/categoriesApi';
 import { Container, Card, Button, LoadingSpinner } from '../components/ui';
-import { BookmarkButton } from '../components/forum';
+import { BookmarkButton, ReportButton } from '../components/forum';
 import { formatDate } from '../utils/formatters';
 import './ForumPage.css';
 
@@ -335,11 +335,17 @@ const ForumPage = () => {
                         >
                           {post.title}
                         </h2>
-                        <BookmarkButton
-                          postId={post._id}
-                          isBookmarked={isBookmarked(post)}
-                          onToggle={() => fetchPosts()}
-                        />
+                        <div className="post-card-actions">
+                          <BookmarkButton
+                            postId={post._id}
+                            isBookmarked={isBookmarked(post)}
+                            onToggle={() => fetchPosts()}
+                          />
+                          <ReportButton
+                            targetType="post"
+                            targetId={post._id}
+                          />
+                        </div>
                       </div>
 
                       <p className="post-card-excerpt">{post.content?.substring(0, 150)}...</p>

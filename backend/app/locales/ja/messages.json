@@ -53,5 +53,36 @@
     "updated": "更新されました",
     "deleted": "削除されました",
     "saved": "保存されました"
+  },
+  "report": {
+    "created": "報告が正常に送信されました",
+    "creation_failed": "報告の送信に失敗しました",
+    "not_found": "報告が見つかりません",
+    "target_not_found": "報告対象が見つかりません",
+    "access_denied": "この報告にアクセスする権限がありません",
+    "admin_only": "この操作は管理者のみが実行できます",
+    "resolved": "報告が処理されました",
+    "dismissed": "報告が却下されました",
+    "reason_too_short": "報告理由は20文字以上必要です",
+    "types": {
+      "spam": "スパム",
+      "inappropriate": "不適切なコンテンツ",
+      "harassment": "嫌がらせ",
+      "offensive": "攻撃的",
+      "misleading": "誤解を招く情報",
+      "other": "その他"
+    },
+    "status": {
+      "pending": "処理待ち",
+      "resolved": "処理済み",
+      "dismissed": "却下済み"
+    },
+    "actions": {
+      "warned": "ユーザーに警告しました",
+      "locked_user": "ユーザーアカウントをロックしました",
+      "deleted_content": "違反コンテンツを削除しました",
+      "no_action": "アクションなし"
+    }
   }
 }
+

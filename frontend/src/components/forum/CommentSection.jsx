@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { addComment, deleteComment } from '../../api/answersApi';
 import { Button, Input, Card } from '../ui';
+import { ReportButton } from '../forum';
 import { formatDateTime } from '../../utils/formatters';
 import './CommentSection.css';
 
@@ -83,16 +84,19 @@ const CommentSection = ({ answerId, comments = [], onCommentAdded, onCommentDele
                 <span className="comment-date">{formatDateTime(comment.created_at, i18n.language)}</span>
               </div>
               <p className="comment-content">{comment.content}</p>
-              {isAuthenticated && user && comment.author_id === user.id && (
-                <Button
-                  variant="ghost"
-                  size="small"
-                  onClick={() => handleDelete(comment.id)}
-                  className="comment-delete"
-                >
-                  {t('common.delete')}
-                </Button>
-              )}
+              <div className="comment-actions">
+                {isAuthenticated && user && comment.author_id === user.id && (
+                  <Button
+                    variant="ghost"
+                    size="small"
+                    onClick={() => handleDelete(comment.id)}
+                    className="comment-delete"
+                  >
+                    {t('common.delete')}
+                  </Button>
+                )}
+                <ReportButton targetType="comment" targetId={comment.id} />
+              </div>
             </Card>
           ))
         )}

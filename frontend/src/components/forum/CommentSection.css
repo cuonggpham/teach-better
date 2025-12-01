@@ -98,14 +98,16 @@
   font-size: 0.875rem;
 }
 
-.comment-delete {
+.comment-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-top: 0.5rem;
   padding-top: 0.5rem;
   border-top: 1px solid rgba(236, 64, 122, 0.08);
-  text-align: right;
 }
 
-.comment-delete button {
+.comment-delete {
   font-size: 0.75rem;
   padding: 0.25rem 0.75rem;
   color: #d32f2f;

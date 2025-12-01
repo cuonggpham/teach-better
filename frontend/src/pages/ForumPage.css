@@ -35,7 +35,6 @@
     8px 8px 16px rgba(236, 129, 158, 0.12),
     -8px -8px 16px rgba(255, 255, 255, 0.95);
   position: relative;
-  z-index: 1;
 }
 
 .forum-header h1 {
@@ -57,7 +56,6 @@
   grid-template-columns: 220px 1fr;
   gap: 1.5rem;
   position: relative;
-  z-index: 1;
 }
 
 /* Left Sidebar */
@@ -344,6 +342,13 @@
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 0.75rem;
+}
+
+.post-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .post-card-title {
@@ -652,7 +657,6 @@
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
-  z-index: 1;
 }
 
 .forum-header {
@@ -771,7 +775,6 @@
   align-items: center;
   gap: 0.75rem;
   position: relative;
-  z-index: 10;
 }
 
 .filter-select {
@@ -789,7 +792,6 @@
     inset -3px -3px 6px rgba(255, 255, 255, 0.95);
   pointer-events: auto;
   position: relative;
-  z-index: 10;
 }
 
 .filter-select:hover {
@@ -887,7 +889,6 @@
   letter-spacing: -0.3px;
   pointer-events: auto !important;
   position: relative;
-  z-index: 10;
 }
 
 .post-title:hover {
