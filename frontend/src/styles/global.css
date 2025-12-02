@@ -244,3 +244,57 @@ h4 {
   flex: 1 0 auto;
   width: 100%;
 }
+
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.category-management {
+  padding: 20px;
+  background-color: #f8f9fa;
+}
+
+.category-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.add-category {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.add-category input {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.category-card {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.category-actions {
+  display: flex;
+  gap: 10px;
+}
