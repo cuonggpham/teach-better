@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { getPosts } from '../api/postsApi';
-import { getCategories } from '../api/categoriesApi';
+import { categoriesApi } from '../api/categoriesApi';
 import { Container, Card, Button, LoadingSpinner } from '../components/ui';
 import { BookmarkButton, ReportButton } from '../components/forum';
 import { formatDate } from '../utils/formatters';
@@ -58,7 +58,7 @@ const ForumPage = () => {
   const fetchCategories = async () => {
     try {
       console.log('[ForumPage] Fetching categories...');
-      const response = await getCategories();
+      const response = await categoriesApi.getCategories();
       console.log('[ForumPage] Categories response:', response);
       console.log('[ForumPage] Categories array:', response.categories);
       setCategories(response.categories || []);
@@ -104,7 +104,7 @@ const ForumPage = () => {
       }
       setPosts(data);
       setTotalPosts(total);
-      
+
       // Extract popular tags from posts
       extractPopularTags(data);
     } catch (error) {
@@ -223,15 +223,15 @@ const ForumPage = () => {
             <Card variant="elevated" padding="medium" className="categories-card">
               <h3 className="sidebar-title">{t('forum.categories', 'Danh mục')}</h3>
               <ul className="category-list">
-                <li 
+                <li
                   className={`category-item ${!selectedCategory ? 'active' : ''}`}
                   onClick={() => setSelectedCategory(null)}
                 >
                   <span className="category-name">{t('forum.all_categories', 'Tất cả')}</span>
                 </li>
                 {categories.map((category) => (
-                  <li 
-                    key={category._id} 
+                  <li
+                    key={category._id}
                     className={`category-item ${selectedCategory === category.name ? 'active' : ''}`}
                     onClick={() => handleCategoryClick(category.name)}
                   >

@@ -12,6 +12,8 @@ from app.schemas.admin import (
     UserDetailResponse
 )
 from app.schemas.audit_log import AuditLogList
+from app.schemas.category import CategoryResponse, CategoryCreate, CategoryUpdate
+from app.schemas.tag import TagResponse, TagCreate, TagUpdate
 from app.services.admin_service import AdminService
 from app.services.audit_log_service import AuditLogService
 from app.api.v1.endpoints.users import get_current_user
@@ -397,3 +399,324 @@ async def get_user_audit_logs(
         skip=skip,
         limit=limit
     )
+
+
+# CATEGORY MANAGEMENT ENDPOINTS
+
+@router.get("/categories", response_model=list[CategoryResponse])
+async def get_all_categories_admin(
+    include_inactive: bool = Query(False, description="Include deactivated categories"),
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Get all categories for admin management"""
+    try:
+        filter_query = {} if include_inactive else {"is_active": True}
+        
+        cursor = db.categories.find(filter_query).sort("name", 1)
+        categories = []
+        
+        async for category in cursor:
+            # Convert _id to id and remove _id to avoid validation conflicts
+            category["id"] = str(category["_id"])
+            del category["_id"]  # Remove the original _id field
+            
+            # Handle missing is_active field for existing records
+            if "is_active" not in category:
+                category["is_active"] = True
+                
+            try:
+                category_response = CategoryResponse(**category)
+                categories.append(category_response)
+            except Exception as validation_error:
+                raise
+        
+        return categories
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to fetch categories: {str(e)}")
+
+
+@router.post("/categories", response_model=CategoryResponse)
+async def create_category_admin(
+    category_data: CategoryCreate,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Create new category (admin only)"""
+    try:
+        # Check if category name already exists
+        existing = await db.categories.find_one({"name": category_data.name})
+        if existing:
+            raise HTTPException(status_code=400, detail="Category name already exists")
+        
+        # Create category document
+        from bson import ObjectId
+        category_doc = {
+            "_id": ObjectId(),
+            "name": category_data.name,
+            "description": category_data.description,
+            "post_count": 0,
+            "is_active": True,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        
+        await db.categories.insert_one(category_doc)
+        category_doc["id"] = str(category_doc["_id"])
+        return CategoryResponse(**category_doc)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create category: {str(e)}")
+
+
+@router.put("/categories/{category_id}", response_model=CategoryResponse)
+async def update_category_admin(
+    category_id: str,
+    category_data: CategoryUpdate,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Update category (admin only)"""
+    try:
+        # Validate ObjectId
+        from bson import ObjectId
+        try:
+            obj_id = ObjectId(category_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid category ID")
+        
+        # Check if category exists
+        existing = await db.categories.find_one({"_id": obj_id})
+        if not existing:
+            raise HTTPException(status_code=404, detail="Category not found")
+        
+        # Check if new name conflicts (if name is being changed)
+        update_data = category_data.model_dump(exclude_unset=True)
+        if "name" in update_data and update_data["name"] != existing["name"]:
+            name_exists = await db.categories.find_one({"name": update_data["name"]})
+            if name_exists:
+                raise HTTPException(status_code=400, detail="Category name already exists")
+        
+        # Add updated timestamp
+        update_data["updated_at"] = datetime.utcnow()
+        
+        # Update category
+        result = await db.categories.update_one(
+            {"_id": obj_id},
+            {"$set": update_data}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=400, detail="No changes made")
+        
+        # Return updated category
+        updated_category = await db.categories.find_one({"_id": obj_id})
+        updated_category["id"] = str(updated_category["_id"])
+        return CategoryResponse(**updated_category)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update category: {str(e)}")
+
+
+@router.patch("/categories/{category_id}/toggle")
+async def toggle_category_status(
+    category_id: str,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Toggle category active status (soft delete/restore)"""
+    try:
+        # Validate ObjectId
+        from bson import ObjectId
+        try:
+            obj_id = ObjectId(category_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid category ID")
+        
+        # Get current category
+        category = await db.categories.find_one({"_id": obj_id})
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found")
+        
+        # Toggle is_active status
+        new_status = not category.get("is_active", True)
+        
+        await db.categories.update_one(
+            {"_id": obj_id},
+            {"$set": {"is_active": new_status, "updated_at": datetime.utcnow()}}
+        )
+        
+        action = "activated" if new_status else "deactivated"
+        return {"message": f"Category {action} successfully", "is_active": new_status}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to toggle category status: {str(e)}")
+
+
+# TAG MANAGEMENT ENDPOINTS
+
+@router.get("/tags", response_model=list[TagResponse])
+async def get_all_tags_admin(
+    include_inactive: bool = Query(False, description="Include deactivated tags"),
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Get all tags for admin management"""
+    try:
+        filter_query = {} if include_inactive else {"is_active": True}
+        
+        cursor = db.tags.find(filter_query).sort("name", 1)
+        tags = []
+        
+        async for tag in cursor:
+            # Convert _id to id and remove _id to avoid validation conflicts
+            tag["id"] = str(tag["_id"])
+            del tag["_id"]  # Remove the original _id field
+            
+            # Handle missing is_active field for existing records
+            if "is_active" not in tag:
+                tag["is_active"] = True
+                
+            # Convert created_by ObjectId to string
+            if "created_by" in tag:
+                tag["created_by"] = str(tag["created_by"])
+                
+            try:
+                tag_response = TagResponse(**tag)
+                tags.append(tag_response)
+            except Exception as validation_error:
+                raise
+        
+        return tags
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Failed to fetch tags: {str(e)}")
+
+
+@router.post("/tags", response_model=TagResponse)
+async def create_tag_admin(
+    tag_data: TagCreate,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Create new tag (admin only)"""
+    try:
+        # Check if tag name already exists
+        existing = await db.tags.find_one({"name": tag_data.name})
+        if existing:
+            raise HTTPException(status_code=400, detail="Tag name already exists")
+        
+        # Create tag document
+        from bson import ObjectId
+        tag_doc = {
+            "_id": ObjectId(),
+            "name": tag_data.name,
+            "description": tag_data.description,
+            "post_count": 0,
+            "is_active": True,
+            "created_by": current_user.id,
+            "created_at": datetime.utcnow()
+        }
+        
+        await db.tags.insert_one(tag_doc)
+        tag_doc["id"] = str(tag_doc["_id"])
+        return TagResponse(**tag_doc)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to create tag: {str(e)}")
+
+
+@router.put("/tags/{tag_id}", response_model=TagResponse)
+async def update_tag_admin(
+    tag_id: str,
+    tag_data: TagUpdate,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Update tag (admin only)"""
+    try:
+        # Validate ObjectId
+        from bson import ObjectId
+        try:
+            obj_id = ObjectId(tag_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid tag ID")
+        
+        # Check if tag exists
+        existing = await db.tags.find_one({"_id": obj_id})
+        if not existing:
+            raise HTTPException(status_code=404, detail="Tag not found")
+        
+        # Check if new name conflicts (if name is being changed)
+        update_data = tag_data.model_dump(exclude_unset=True)
+        if "name" in update_data and update_data["name"] != existing["name"]:
+            name_exists = await db.tags.find_one({"name": update_data["name"]})
+            if name_exists:
+                raise HTTPException(status_code=400, detail="Tag name already exists")
+        
+        # Update tag
+        result = await db.tags.update_one(
+            {"_id": obj_id},
+            {"$set": update_data}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=400, detail="No changes made")
+        
+        # Return updated tag
+        updated_tag = await db.tags.find_one({"_id": obj_id})
+        updated_tag["id"] = str(updated_tag["_id"])
+        return TagResponse(**updated_tag)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update tag: {str(e)}")
+
+
+@router.patch("/tags/{tag_id}/toggle")
+async def toggle_tag_status(
+    tag_id: str,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Toggle tag active status (soft delete/restore)"""
+    try:
+        # Validate ObjectId
+        from bson import ObjectId
+        try:
+            obj_id = ObjectId(tag_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid tag ID")
+        
+        # Get current tag
+        tag = await db.tags.find_one({"_id": obj_id})
+        if not tag:
+            raise HTTPException(status_code=404, detail="Tag not found")
+        
+        # Toggle is_active status
+        new_status = not tag.get("is_active", True)
+        
+        await db.tags.update_one(
+            {"_id": obj_id},
+            {"$set": {"is_active": new_status}}
+        )
+        
+        action = "activated" if new_status else "deactivated"
+        return {"message": f"Tag {action} successfully", "is_active": new_status}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to toggle tag status: {str(e)}")

@@ -1,28 +1,26 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 from app.models.user import PyObjectId
 
 
 class TagModel(BaseModel):
     """
-    Tag database model - Detailed topic classification within subjects
-    Examples: Phương pháp dạy học, Ngữ pháp, Tích phân, Đạo hàm, JLPT N3, etc.
-    Tags provide fine-grained categorization beyond broad subject categories.
+    Tag database model
     """
     id: Optional[PyObjectId] = Field(default=None, alias="_id")
-    name: str = Field(..., index=True)  # Specific topic like "Tích phân", "Ngữ pháp"
-    description: Optional[str] = None  # Detailed description of the specific topic
+    name: str = Field(..., index=True)
+    description: Optional[str] = None
     post_count: int = Field(default=0)
+    is_active: bool = Field(default=True)
     created_by: PyObjectId
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
-    model_config = ConfigDict(
-        populate_by_name=True,
-        arbitrary_types_allowed=True,
-        json_encoders={
+    class Config:
+        populate_by_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {
             PyObjectId: str,
             datetime: lambda v: v.isoformat()
         }
-    )
 

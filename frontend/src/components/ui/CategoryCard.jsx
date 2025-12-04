@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './CategoryCard.css';
 
-const CategoryCard = ({ item, onEdit, onDelete }) => {
+const CategoryCard = ({ item, type, onEdit, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -10,7 +10,7 @@ const CategoryCard = ({ item, onEdit, onDelete }) => {
   };
 
   const handleConfirmDelete = () => {
-    onDelete(item._id, item.type);
+    onDelete(item._id || item.id, type || item.type);
     setShowDeleteConfirm(false);
   };
 
@@ -43,8 +43,8 @@ const CategoryCard = ({ item, onEdit, onDelete }) => {
           <div className="card-header">
             <div className="card-title-section">
               <h4 className="card-title">{item.name}</h4>
-              <span className={`type-badge ${item.type === 'category' ? 'badge-category' : 'badge-tag'}`}>
-                {item.type === 'category' ? 'Danh mục' : 'Tag'}
+              <span className={`type-badge ${(type || item.type) === 'category' ? 'badge-category' : 'badge-tag'}`}>
+                {(type || item.type) === 'category' ? 'Danh mục' : 'Tag'}
               </span>
             </div>
             {!isActive && (
@@ -75,19 +75,19 @@ const CategoryCard = ({ item, onEdit, onDelete }) => {
         </div>
 
         <div className="card-actions">
-          <button 
+          <button
             onClick={handleEditClick}
             className="btn btn-small btn-edit"
             title="Chỉnh sửa"
           >
             ✎ Sửa
           </button>
-          <button 
+          <button
             onClick={handleDeleteClick}
-            className="btn btn-small btn-delete"
-            title="Xóa"
+            className={`btn btn-small ${isActive ? 'btn-delete' : 'btn-restore'}`}
+            title={isActive ? 'Vô hiệu hóa' : 'Kích hoạt lại'}
           >
-            🗑 Xóa
+            {isActive ? '🚫 Vô hiệu hóa' : '✅ Kích hoạt'}
           </button>
         </div>
       </div>
@@ -97,8 +97,8 @@ const CategoryCard = ({ item, onEdit, onDelete }) => {
         <div className="modal-overlay">
           <div className="modal-dialog">
             <div className="modal-header">
-              <h3>Xác nhận xóa</h3>
-              <button 
+              <h3>{isActive ? 'Xác nhận vô hiệu hóa' : 'Xác nhận kích hoạt'}</h3>
+              <button
                 className="modal-close"
                 onClick={() => setShowDeleteConfirm(false)}
               >
@@ -107,30 +107,33 @@ const CategoryCard = ({ item, onEdit, onDelete }) => {
             </div>
 
             <div className="modal-body">
-              {status.isActive ? (
+              {isActive ? (
                 <>
                   <p className="warning-text">
-                    ⚠️ <strong>Cảnh báo:</strong> {item.name} đang được sử dụng bởi <strong>{item.post_count} bài đăng</strong>.
+                    ⚠️ <strong>Xác nhận vô hiệu hóa:</strong> {item.name}
                   </p>
-                  <p className="info-text">
-                    Xóa sẽ vô hiệu hóa {item.type === 'category' ? 'danh mục' : 'tag'} này, nhưng các bài đăng sẽ được giữ lại.
-                  </p>
+                  {status.isActive && (
+                    <p className="info-text">
+                      {(type || item.type) === 'category' ? 'Danh mục' : 'Tag'} này đang được sử dụng bởi <strong>{item.post_count} bài đăng</strong>.
+                      Vô hiệu hóa sẽ ẩn nó khỏi danh sách, nhưng các bài đăng hiện tại sẽ được giữ nguyên.
+                    </p>
+                  )}
                 </>
               ) : (
                 <p className="confirm-text">
-                  Bạn có chắc muốn xóa "{item.name}"?
+                  Bạn có chắc muốn kích hoạt lại "{item.name}"?
                 </p>
               )}
             </div>
 
             <div className="modal-footer">
-              <button 
+              <button
                 onClick={handleConfirmDelete}
-                className="btn btn-danger"
+                className={`btn ${isActive ? 'btn-warning' : 'btn-success'}`}
               >
-                Xóa
+                {isActive ? 'Vô hiệu hóa' : 'Kích hoạt'}
               </button>
-              <button 
+              <button
                 onClick={() => setShowDeleteConfirm(false)}
                 className="btn btn-secondary"
               >

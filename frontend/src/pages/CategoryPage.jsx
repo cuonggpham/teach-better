@@ -1,5 +1,5 @@
 import React from 'react';
-import CategoryManagement from '../components/CategoryManagement';
+import CategoryManagement from '../components/ui/CategoryManagement';
 
 const CategoryPage = () => {
   return (

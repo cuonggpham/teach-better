@@ -80,6 +80,7 @@ const router = createBrowserRouter([
       {
         path: 'admin/categories',
         element: <CategoryManagement />,
+      },
       {
         path: 'diagnosis',
         element: <DiagnosisPage />,
