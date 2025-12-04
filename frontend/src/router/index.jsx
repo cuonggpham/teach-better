@@ -11,6 +11,8 @@ import PostDetailPage from '../pages/PostDetailPage';
 import CreatePostPage from '../pages/CreatePostPage';
 import CategoryManagement from '../components/ui/CategoryManagement';
 import CategoryPage from '../pages/CategoryPage';
+import DiagnosisPage from '../pages/DiagnosisPage';
+import DiagnosisHistoryPage from '../pages/DiagnosisHistoryPage';
 
 /**
  * Cấu hình React Router
@@ -78,6 +80,13 @@ const router = createBrowserRouter([
       {
         path: 'admin/categories',
         element: <CategoryManagement />,
+      {
+        path: 'diagnosis',
+        element: <DiagnosisPage />,
+      },
+      {
+        path: 'diagnosis/history',
+        element: <DiagnosisHistoryPage />,
       },
     ],
   },
