@@ -9,6 +9,8 @@ import ProfilePage from '../pages/ProfilePage';
 import ForumPage from '../pages/ForumPage';
 import PostDetailPage from '../pages/PostDetailPage';
 import CreatePostPage from '../pages/CreatePostPage';
+import DiagnosisPage from '../pages/DiagnosisPage';
+import DiagnosisHistoryPage from '../pages/DiagnosisHistoryPage';
 
 /**
  * Cấu hình React Router
@@ -58,6 +60,14 @@ const router = createBrowserRouter([
       {
         path: 'forum/:postId',
         element: <PostDetailPage />,
+      },
+      {
+        path: 'diagnosis',
+        element: <DiagnosisPage />,
+      },
+      {
+        path: 'diagnosis/history',
+        element: <DiagnosisHistoryPage />,
       },
     ],
   },

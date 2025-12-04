@@ -89,6 +89,9 @@ const Navbar = () => {
           <li>
             <Link to="/forum">{t('navigation.forum')}</Link>
           </li>
+          <li>
+            <Link to="/diagnosis">{t('navigation.diagnosis')}</Link>
+          </li>
         </ul>
 
         <div className="navbar-actions">
