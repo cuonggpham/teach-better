@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../contexts/AuthContext';
 import { getPostComments, addComment, updateComment, deleteComment } from '../../api/postsApi';
 import { useToast } from '../../contexts/ToastContext';
 import './CommentSection.css';
@@ -27,9 +27,9 @@ const CommentSection = ({ postId, onCommentAdded }) => {
   useEffect(() => {
     if (newCommentId && newCommentRef.current) {
       setTimeout(() => {
-        newCommentRef.current?.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'center' 
+        newCommentRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
         });
       }, 300);
     }
@@ -63,17 +63,17 @@ const CommentSection = ({ postId, onCommentAdded }) => {
 
     try {
       setLoading(true);
-      
+
       // Gửi bình luận
       const response = await addComment(token, postId, {
         content: newComment,
       });
 
       const createdComment = response.data || response;
-      
+
       // Hiệu ứng reload mượt mà
       setIsReloading(true);
-      
+
       // Reset form
       setNewComment('');
       setNewCommentId(createdComment._id);
@@ -83,7 +83,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       await loadComments();
 
       showToast('Bình luận đã được đăng thành công!', 'success');
-      
+
       // Gọi callback nếu có
       if (onCommentAdded) {
         onCommentAdded(createdComment);
@@ -108,7 +108,7 @@ const CommentSection = ({ postId, onCommentAdded }) => {
 
     try {
       await deleteComment(token, postId, commentId);
-      
+
       // Tải lại comments
       await loadComments();
       showToast('Bình luận đã được xóa', 'success');
@@ -148,8 +148,8 @@ const CommentSection = ({ postId, onCommentAdded }) => {
       {user ? (
         <form onSubmit={handleSubmitComment} className="comment-form">
           <div className="comment-input-wrapper">
-            <img 
-              src={user.avatar || '/default-avatar.png'} 
+            <img
+              src={user.avatar || '/default-avatar.png'}
               alt="Avatar"
               className="user-avatar"
             />

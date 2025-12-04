@@ -13,6 +13,7 @@ class CategoryModel(BaseModel):
     name: str = Field(..., index=True, unique=True)  # Subject name like "Toán học", "Tiếng Anh"
     description: Optional[str] = None  # Brief description of the subject area
     post_count: int = Field(default=0)
+    is_active: bool = Field(default=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 

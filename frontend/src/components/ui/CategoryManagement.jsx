@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './CategoryManagement.css';
 import CategoryCard from './CategoryCard';
-import { categoriesApi } from '../../api/categoriesApi';
+import { adminApi } from '../../api/adminApi';
 
 const CategoryManagement = () => {
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('all'); // all, category, tag
-  
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -27,14 +27,11 @@ const CategoryManagement = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [categoriesRes, tagsRes] = await Promise.all([
-        categoriesApi.getCategories(),
-        categoriesApi.getTags()
-      ]);
-      setCategories(categoriesRes.data || []);
-      setTags(tagsRes.data || []);
+      const data = await adminApi.getCategoriesAndTags(true); // Include inactive items
+      setCategories(data.categories || []);
+      setTags(data.tags || []);
     } catch (err) {
-      setError('Lỗi khi tải dữ liệu: ' + err.message);
+      setError('Lỗi khi tải dữ liệu: ' + (err.response?.data?.detail || err.message));
     }
     setLoading(false);
   };
@@ -56,7 +53,7 @@ const CategoryManagement = () => {
 
   const handleAddOrUpdate = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.name.trim()) {
       setError('Vui lòng nhập tên');
       return;
@@ -66,52 +63,65 @@ const CategoryManagement = () => {
     try {
       if (editingId) {
         // Chỉnh sửa
-        const endpoint = formData.type === 'category' 
-          ? `categories/${editingId}` 
-          : `tags/${editingId}`;
-        await categoriesApi.updateCategory(editingId, {
-          name: formData.name,
-          description: formData.description,
-          type: formData.type
-        });
+        if (formData.type === 'category') {
+          await adminApi.updateCategory(editingId, {
+            name: formData.name,
+            description: formData.description
+          });
+        } else {
+          await adminApi.updateTag(editingId, {
+            name: formData.name,
+            description: formData.description
+          });
+        }
         setSuccess('Cập nhật thành công!');
       } else {
         // Thêm mới
-        const endpoint = formData.type === 'category' ? 'categories' : 'tags';
-        await categoriesApi.createCategory({
-          name: formData.name,
-          description: formData.description,
-          type: formData.type
-        });
+        if (formData.type === 'category') {
+          await adminApi.createCategory({
+            name: formData.name,
+            description: formData.description
+          });
+        } else {
+          await adminApi.createTag({
+            name: formData.name,
+            description: formData.description
+          });
+        }
         setSuccess('Thêm mới thành công!');
       }
-      
+
       resetForm();
       await loadData();
     } catch (err) {
-      setError('Lỗi: ' + (err.response?.data?.message || err.message));
+      setError('Lỗi: ' + (err.response?.data?.detail || err.message));
     }
     setLoading(false);
   };
 
   const handleEdit = (item) => {
-    setEditingId(item._id);
+    const itemType = item.created_by ? 'tag' : 'category'; // Tags have created_by field
+    setEditingId(item._id || item.id);
     setFormData({
       name: item.name,
       description: item.description || '',
-      type: item.type || 'category'
+      type: itemType
     });
   };
 
   const handleDelete = async (id, type) => {
     setLoading(true);
     try {
-      // Xóa mềm - set is_active = false
-      await categoriesApi.deleteCategory(id, true);
-      setSuccess('Xóa thành công!');
+      // Toggle active status (soft delete/restore)
+      if (type === 'category') {
+        await adminApi.toggleCategoryStatus(id);
+      } else {
+        await adminApi.toggleTagStatus(id);
+      }
+      setSuccess('Trạng thái đã được thay đổi!');
       await loadData();
     } catch (err) {
-      setError('Lỗi khi xóa: ' + err.message);
+      setError('Lỗi: ' + (err.response?.data?.detail || err.message));
     }
     setLoading(false);
   };
@@ -129,11 +139,14 @@ const CategoryManagement = () => {
 
   const getFilteredData = () => {
     if (activeTab === 'category') {
-      return categories.filter(cat => cat.type === 'category');
+      return categories.map(cat => ({ ...cat, type: 'category' }));
     } else if (activeTab === 'tag') {
-      return tags.filter(tag => tag.type === 'tag');
+      return tags.map(tag => ({ ...tag, type: 'tag' }));
     } else {
-      return [...categories, ...tags];
+      return [
+        ...categories.map(cat => ({ ...cat, type: 'category' })),
+        ...tags.map(tag => ({ ...tag, type: 'tag' }))
+      ];
     }
   };
 
@@ -163,7 +176,7 @@ const CategoryManagement = () => {
           <h3 className="section-title">
             {editingId ? '✎ Chỉnh sửa' : '+ Thêm mới'}
           </h3>
-          
+
           <form onSubmit={handleAddOrUpdate} className="category-form">
             <div className="form-group">
               <label htmlFor="name">Tên danh mục / Tag *</label>
@@ -208,16 +221,16 @@ const CategoryManagement = () => {
             </div>
 
             <div className="form-actions">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="btn btn-primary"
                 disabled={loading}
               >
                 {loading ? 'Đang xử lý...' : editingId ? 'Cập nhật' : 'Thêm mới'}
               </button>
               {editingId && (
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={resetForm}
                   className="btn btn-secondary"
                 >
@@ -237,19 +250,19 @@ const CategoryManagement = () => {
 
           {/* Tabs */}
           <div className="tabs-container">
-            <button 
+            <button
               className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
               onClick={() => setActiveTab('all')}
             >
               Tất cả
             </button>
-            <button 
+            <button
               className={`tab-btn ${activeTab === 'category' ? 'active' : ''}`}
               onClick={() => setActiveTab('category')}
             >
               Danh mục môn học ({categories.length})
             </button>
-            <button 
+            <button
               className={`tab-btn ${activeTab === 'tag' ? 'active' : ''}`}
               onClick={() => setActiveTab('tag')}
             >
@@ -271,8 +284,9 @@ const CategoryManagement = () => {
             ) : (
               filteredData.map(item => (
                 <CategoryCard
-                  key={item._id}
+                  key={item._id || item.id}
                   item={item}
+                  type={item.type}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
                 />

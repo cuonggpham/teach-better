@@ -46,6 +46,13 @@ class Category(CategoryInDB):
     pass
 
 
+class CategoryResponse(CategoryInDB):
+    """
+    Category response schema for admin API
+    """
+    is_active: Optional[bool] = True
+
+
 class CategoryList(BaseModel):
     """
     List of categories

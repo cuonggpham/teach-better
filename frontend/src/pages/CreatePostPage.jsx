@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { createPost } from '../api/postsApi';
-import { getCategories } from '../api/categoriesApi';
+import { categoriesApi } from '../api/categoriesApi';
 import { getTags, createTag } from '../api/tagsApi';
 import { Container, Card, Input, Button } from '../components/ui';
 import './CreatePostPage.css';
@@ -43,7 +43,7 @@ const CreatePostPage = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await getCategories();
+      const response = await categoriesApi.getCategories();
       console.log('Categories response:', response);
       console.log('Categories array:', response.categories);
       setCategories(response.categories || []);
@@ -117,7 +117,7 @@ const CreatePostPage = () => {
     if (!tagInput.trim()) return;
 
     // Check if tag already exists
-    const existingTag = tags.find(tag => 
+    const existingTag = tags.find(tag =>
       tag.name.toLowerCase() === tagInput.trim().toLowerCase()
     );
 
@@ -226,7 +226,7 @@ const CreatePostPage = () => {
               <label className="form-label">
                 {t('post.tags')} <span className="text-muted">({t('post.optional')}, {t('post.max_5_tags')})</span>
               </label>
-              
+
               {/* Selected Tags Display */}
               {selectedTags.length > 0 && (
                 <div className="selected-tags-container mb-2">
@@ -266,7 +266,7 @@ const CreatePostPage = () => {
                     placeholder={t('post.search_or_create_tag')}
                     className="tag-input"
                   />
-                  
+
                   {/* Tag Suggestions Dropdown */}
                   {showTagSuggestions && filteredTags.length > 0 && (
                     <div className="tag-suggestions">

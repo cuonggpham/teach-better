@@ -46,6 +46,13 @@ class Tag(TagInDB):
     pass
 
 
+class TagResponse(TagInDB):
+    """
+    Tag response schema for admin API
+    """
+    is_active: Optional[bool] = True
+
+
 class TagWithPosts(Tag):
     """
     Tag with posts info

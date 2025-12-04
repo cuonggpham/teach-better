@@ -1,7 +1,7 @@
 import asyncio
 import sys
 from pathlib import Path
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from bson import ObjectId
 import random
 
@@ -123,7 +123,7 @@ TAG_TEMPLATES = {
     "Vật lý": ["Cơ học", "Nhiệt học", "Điện học", "Quang học", "Vật lý đại cương"],
     "Hóa học": ["Hóa vô cơ", "Hóa hữu cơ", "Phản ứng", "Bảng tuần hoàn", "Cân bằng hóa học"],
     "Lập trình": ["Python", "JavaScript", "React", "FastAPI", "MongoDB", "Thuật toán"],
-    "Tiếng Nhật": ["JLPT N3", "JLPT N2", "Kanji", "Ngữ pháp", "Từ vựng", "Hội thoại"],
+    "Tiếng Nhật": ["JLPT N3", "JLPT N2", "Kanji", "Ngữ pháp Nhật", "Từ vựng", "Hội thoại"],
     "Sinh học": ["Tế bào", "Di truyền", "Sinh thái", "Tiến hóa", "Thực vật", "Động vật"],
     "Địa lý": ["Địa hình", "Khí hậu", "Dân cư", "Kinh tế", "Môi trường"],
     "Lịch sử": ["Lịch sử Việt Nam", "Lịch sử Thế giới", "Văn minh", "Chiến tranh"],
@@ -285,8 +285,8 @@ async def seed_database():
                 "name": cat["name"],
                 "description": cat["description"],
                 "post_count": cat["post_count"],
-                "created_at": datetime.utcnow(),
-                "updated_at": datetime.utcnow()
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
             }
             await db.categories.insert_one(cat_doc)
             category_ids[cat["name"]] = cat_doc["_id"]
@@ -306,8 +306,8 @@ async def seed_database():
                 "role": user["role"],
                 "status": user["status"],
                 "bookmarked_post_ids": [],
-                "created_at": datetime.utcnow(),
-                "updated_at": datetime.utcnow()
+                "created_at": datetime.now(timezone.utc),
+                "updated_at": datetime.now(timezone.utc)
             }
             await db.users.insert_one(user_doc)
             user_ids.append(user_doc["_id"])
@@ -325,9 +325,16 @@ async def seed_database():
                     "description": f"Tag liên quan đến {category_name}",
                     "post_count": 0,
                     "created_by": random.choice(user_ids),
-                    "created_at": datetime.utcnow()
+                    "created_at": datetime.now(timezone.utc)
                 }
-                await db.tags.insert_one(tag_doc)
+                try:
+                    await db.tags.insert_one(tag_doc)
+                except Exception as e:
+                    if "E11000" in str(e):
+                        print(f"  ⚠️  Tag '{tag_name}' already exists, skipping...")
+                        continue
+                    else:
+                        raise e
                 tag_ids[category_name].append((tag_doc["_id"], tag_name))
                 print(f"  ✓ Created tag: {tag_name} (in {category_name})")
         
@@ -337,7 +344,7 @@ async def seed_database():
         for i, post_template in enumerate(POST_TEMPLATES):
             # Random created time (last 30 days)
             days_ago = random.randint(0, 30)
-            created_at = datetime.utcnow() - timedelta(days=days_ago)
+            created_at = datetime.now(timezone.utc) - timedelta(days=days_ago)
             
             # Get tags for this category
             category_tags = tag_ids.get(post_template["category"], [])
@@ -393,8 +400,8 @@ async def seed_database():
                     },
                     "comments": [],
                     "is_deleted": False,
-                    "created_at": datetime.utcnow(),
-                    "updated_at": datetime.utcnow()
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
                 }
                 await db.answers.insert_one(answer_doc)
                 answer_count += 1
@@ -435,3 +442,4 @@ async def seed_database():
 
 if __name__ == "__main__":
     asyncio.run(seed_database())
+
