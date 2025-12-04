@@ -143,3 +143,88 @@ export const votePost = async (token, postId, isUpvote) => {
 
   return data;
 };
+
+/**
+ * Get comments for a post
+ */
+export const getPostComments = async (postId, token) => {
+  const response = await fetch(`${API_URL}/posts/${postId}/comments`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Failed to fetch comments');
+  }
+
+  return data;
+};
+
+/**
+ * Add comment to post
+ */
+export const addComment = async (token, postId, commentData) => {
+  const response = await fetch(`${API_URL}/posts/${postId}/comments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(commentData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Failed to add comment');
+  }
+
+  return data;
+};
+
+/**
+ * Update comment
+ */
+export const updateComment = async (token, postId, commentId, commentData) => {
+  const response = await fetch(`${API_URL}/posts/${postId}/comments/${commentId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(commentData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.detail || 'Failed to update comment');
+  }
+
+  return data;
+};
+
+/**
+ * Delete comment
+ */
+export const deleteComment = async (token, postId, commentId) => {
+  const response = await fetch(`${API_URL}/posts/${postId}/comments/${commentId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const data = await response.json();
+    throw new Error(data.detail || 'Failed to delete comment');
+  }
+
+  return true;
+};

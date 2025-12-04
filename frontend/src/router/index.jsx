@@ -9,6 +9,8 @@ import ProfilePage from '../pages/ProfilePage';
 import ForumPage from '../pages/ForumPage';
 import PostDetailPage from '../pages/PostDetailPage';
 import CreatePostPage from '../pages/CreatePostPage';
+import CategoryManagement from '../components/ui/CategoryManagement';
+import CategoryPage from '../pages/CategoryPage';
 import DiagnosisPage from '../pages/DiagnosisPage';
 import DiagnosisHistoryPage from '../pages/DiagnosisHistoryPage';
 
@@ -37,6 +39,8 @@ const router = createBrowserRouter([
         path: "courses",
         element: <ItemsPage />,
       },
+
+      // Auth pages
       {
         path: 'signup',
         element: <SignUpPage />,
@@ -45,10 +49,14 @@ const router = createBrowserRouter([
         path: 'signin',
         element: <SignInPage />,
       },
+
+      // User pages
       {
         path: 'profile',
         element: <ProfilePage />,
       },
+
+      // Forum pages
       {
         path: 'forum',
         element: <ForumPage />,
@@ -61,6 +69,17 @@ const router = createBrowserRouter([
         path: 'forum/:postId',
         element: <PostDetailPage />,
       },
+
+      // Category pages
+      {
+        path: 'category/:categoryId',
+        element: <CategoryPage />,
+      },
+
+      // Admin pages
+      {
+        path: 'admin/categories',
+        element: <CategoryManagement />,
       {
         path: 'diagnosis',
         element: <DiagnosisPage />,
