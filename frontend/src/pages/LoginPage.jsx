@@ -82,7 +82,12 @@ const LoginPage = () => {
       // { user, access_token, token_type }
       login(response.user, response.access_token);
 
-      navigate("/"); // about: chuyển về HomePage
+      // Redirect based on user role
+      if (response.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/home');
+      }
     } catch (error) {
       // Fix: backend trả lỗi trong error.response.data.detail
       const errMessage =

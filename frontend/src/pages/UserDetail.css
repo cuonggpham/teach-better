@@ -1,0 +1,372 @@
+/* User Detail Page Styles */
+
+.user-detail {
+  padding: 2rem 0;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.user-detail.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+/* Back Button */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1.5rem;
+  color: #4A90E2;
+  font-weight: 500;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: #f8fafc;
+  border-color: #4A90E2;
+}
+
+/* User Info Card */
+.user-info-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+/* User Profile Header */
+.user-profile-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f1f5f9;
+  border: 3px solid #e2e8f0;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.user-identity {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 0.25rem;
+}
+
+.user-email {
+  font-size: 0.95rem;
+  color: #64748b;
+  margin-bottom: 0.75rem;
+}
+
+.user-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Action Buttons */
+.user-actions {
+  display: flex;
+  gap: 0.5rem;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.user-actions .action-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-actions .action-btn:hover {
+  transform: scale(1.1);
+}
+
+.edit-btn:hover {
+  border-color: #4A90E2;
+  background: #eff6ff;
+}
+
+.lock-btn:hover {
+  border-color: #f59e0b;
+  background: #fef3c7;
+}
+
+.delete-btn:hover {
+  border-color: #ef4444;
+  background: #fee2e2;
+}
+
+/* User Stats Grid */
+.user-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.1rem;
+  color: #1a202c;
+  font-weight: 600;
+}
+
+/* User Posts Card */
+.user-posts-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.posts-table-container {
+  overflow-x: auto;
+}
+
+.posts-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.posts-table thead {
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.posts-table th {
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.posts-table tbody tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s;
+}
+
+.posts-table tbody tr:hover {
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.posts-table td {
+  padding: 1rem;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+.post-title-cell {
+  font-weight: 500;
+  color: #1a202c;
+}
+
+.post-title-cell:hover {
+  color: #4A90E2;
+}
+
+.no-posts {
+  text-align: center;
+  padding: 3rem;
+  color: #94a3b8;
+  font-size: 1rem;
+}
+
+/* Badges (shared with UserManagement) */
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.role-badge.role-admin {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.role-badge.role-user {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.role-badge.role-moderator {
+  background: #f3e8ff;
+  color: #7c3aed;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-badge.active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.locked {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .user-detail {
+    padding: 1rem 0;
+  }
+
+  .user-info-card,
+  .user-posts-card {
+    padding: 1.5rem;
+  }
+
+  .user-profile-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .user-identity {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .user-actions {
+    position: static;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .user-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .posts-table {
+    font-size: 0.875rem;
+  }
+
+  .posts-table th,
+  .posts-table td {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-info-card,
+  .user-posts-card {
+    padding: 1rem;
+  }
+
+  .user-avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .user-name {
+    font-size: 1.25rem;
+  }
+
+  .user-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .user-actions .action-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+
+  .posts-table th,
+  .posts-table td {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+  }
+}
