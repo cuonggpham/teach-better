@@ -13,6 +13,9 @@ import CategoryManagement from '../components/ui/CategoryManagement';
 import CategoryPage from '../pages/CategoryPage';
 import DiagnosisPage from '../pages/DiagnosisPage';
 import DiagnosisHistoryPage from '../pages/DiagnosisHistoryPage';
+import AdminDashboard from '../pages/AdminDashboard';
+import UserManagement from '../pages/UserManagement';
+import UserDetail from '../pages/UserDetail';
 
 /**
  * Cấu hình React Router
@@ -77,6 +80,18 @@ const router = createBrowserRouter([
       },
 
       // Admin pages
+      {
+        path: 'admin',
+        element: <AdminDashboard />,
+      },
+      {
+        path: 'admin/users',
+        element: <UserManagement />,
+      },
+      {
+        path: 'admin/users/:userId',
+        element: <UserDetail />,
+      },
       {
         path: 'admin/categories',
         element: <CategoryManagement />,

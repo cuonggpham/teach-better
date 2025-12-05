@@ -68,7 +68,13 @@ const SignInPage = () => {
       const response = await signin(formData.email, formData.password);
       login(response.access_token, response.user);
       toast.success(t('auth.login_success'));
-      navigate(response.redirect || '/');
+      
+      // Redirect based on user role
+      if (response.user.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/home');
+      }
     } catch (error) {
       toast.error(error.message || t('auth.login_error'));
     } finally {
