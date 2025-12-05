@@ -401,5 +401,50 @@
       "invalid_image": "有効な画像ファイルを選択してください",
       "upload_failed": "画像のアップロードに失敗しました"
     }
+  },
+  "admin": {
+    "title": "カテゴリ・タグ管理",
+    "back_to_dashboard": "ダッシュボードに戻る",
+    "category": "カテゴリ",
+    "tag": "タグ",
+    "new_category": "+ 新しいカテゴリ",
+    "new_tag": "+ 新しいタグ",
+    "no_data": "データがありません",
+    "loading": "読み込み中...",
+    "category_name": "カテゴリ名",
+    "tag_name": "タグ名",
+    "description": "説明",
+    "post_count": "投稿数",
+    "actions": "操作",
+    "edit": "編集",
+    "delete": "削除",
+    "restore": "復元",
+    "inactive": "無効",
+    "create_modal": {
+      "title_category": "新しいカテゴリを追加",
+      "title_tag": "新しいタグを追加",
+      "name_label": "名前 *",
+      "description_label": "説明",
+      "add_button": "追加",
+      "cancel_button": "キャンセル",
+      "processing": "処理中..."
+    },
+    "edit_modal": {
+      "title_category": "カテゴリを編集",
+      "title_tag": "タグを編集",
+      "update_button": "更新",
+      "cancel_button": "キャンセル",
+      "processing": "処理中..."
+    },
+    "messages": {
+      "load_error": "データの読み込みエラー",
+      "create_success": "作成成功！",
+      "update_success": "更新成功！",
+      "toggle_success": "ステータスを変更しました！",
+      "delete_success": "削除成功！",
+      "confirm_delete": "本当に削除しますか？",
+      "name_required": "名前を入力してください",
+      "error": "エラーが発生しました"
+    }
   }
 }

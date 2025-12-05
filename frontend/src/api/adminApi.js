@@ -51,6 +51,16 @@ export const adminApi = {
         return response;
     },
 
+    deleteCategory: async (categoryId) => {
+        const response = await axios.delete(`/admin/categories/${categoryId}`);
+        return response;
+    },
+
+    deleteTag: async (tagId) => {
+        const response = await axios.delete(`/admin/tags/${tagId}`);
+        return response;
+    },
+
     // Combined category/tag operations
     getCategoriesAndTags: async (includeInactive = false) => {
         const [categoriesResponse, tagsResponse] = await Promise.all([

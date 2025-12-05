@@ -401,5 +401,50 @@
       "invalid_image": "Vui lòng chọn file ảnh hợp lệ",
       "upload_failed": "Tải ảnh lên thất bại"
     }
+  },
+  "admin": {
+    "title": "Quản lý danh mục và tag",
+    "back_to_dashboard": "Về trang chính",
+    "category": "Danh mục",
+    "tag": "Tag",
+    "new_category": "+ Danh mục mới",
+    "new_tag": "+ Tag mới",
+    "no_data": "Không có dữ liệu",
+    "loading": "Đang tải...",
+    "category_name": "Tên danh mục",
+    "tag_name": "Tên tag",
+    "description": "Mô tả",
+    "post_count": "Số bài đăng",
+    "actions": "Thao tác",
+    "edit": "Sửa",
+    "delete": "Xóa",
+    "restore": "Khôi phục",
+    "inactive": "Đã vô hiệu hóa",
+    "create_modal": {
+      "title_category": "Thêm danh mục mới",
+      "title_tag": "Thêm tag mới",
+      "name_label": "Tên *",
+      "description_label": "Mô tả",
+      "add_button": "Thêm",
+      "cancel_button": "Hủy",
+      "processing": "Đang xử lý..."
+    },
+    "edit_modal": {
+      "title_category": "Chỉnh sửa danh mục",
+      "title_tag": "Chỉnh sửa tag",
+      "update_button": "Cập nhật",
+      "cancel_button": "Hủy",
+      "processing": "Đang xử lý..."
+    },
+    "messages": {
+      "load_error": "Lỗi khi tải dữ liệu",
+      "create_success": "Tạo thành công!",
+      "update_success": "Cập nhật thành công!",
+      "toggle_success": "Đã thay đổi trạng thái!",
+      "delete_success": "Xóa thành công!",
+      "confirm_delete": "Bạn có chắc chắn muốn xóa không?",
+      "name_required": "Vui lòng nhập tên",
+      "error": "Có lỗi xảy ra"
+    }
   }
 }

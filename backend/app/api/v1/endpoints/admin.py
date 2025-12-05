@@ -482,11 +482,15 @@ async def update_category_admin(
 ):
     """Update category (admin only)"""
     try:
+        print(f"Updating category {category_id} with data: {category_data}")
+        print(f"Category data dict: {category_data.model_dump()}")
+        
         # Validate ObjectId
         from bson import ObjectId
         try:
             obj_id = ObjectId(category_id)
-        except Exception:
+        except Exception as e:
+            print(f"Invalid ObjectId {category_id}: {e}")
             raise HTTPException(status_code=400, detail="Invalid category ID")
         
         # Check if category exists
@@ -516,11 +520,16 @@ async def update_category_admin(
         # Return updated category
         updated_category = await db.categories.find_one({"_id": obj_id})
         updated_category["id"] = str(updated_category["_id"])
+        del updated_category["_id"]  # Remove _id to avoid conflicts
         return CategoryResponse(**updated_category)
         
     except HTTPException:
         raise
     except Exception as e:
+        print(f"Exception in update_category_admin: {e}")
+        print(f"Exception type: {type(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Failed to update category: {str(e)}")
 
 
@@ -559,6 +568,48 @@ async def toggle_category_status(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to toggle category status: {str(e)}")
+
+
+@router.delete("/categories/{category_id}")
+async def delete_category_admin(
+    category_id: str,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Delete category permanently (admin only)"""
+    try:
+        # Validate ObjectId
+        from bson import ObjectId
+        try:
+            obj_id = ObjectId(category_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid category ID")
+        
+        # Check if category exists
+        category = await db.categories.find_one({"_id": obj_id})
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found")
+        
+        # Check if category is used by any posts
+        posts_count = await db.posts.count_documents({"category_id": obj_id})
+        if posts_count > 0:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete category. It is used by {posts_count} posts."
+            )
+        
+        # Delete category
+        result = await db.categories.delete_one({"_id": obj_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=400, detail="Failed to delete category")
+        
+        return {"message": "Category deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete category: {str(e)}")
 
 
 # TAG MANAGEMENT ENDPOINTS
@@ -629,6 +680,9 @@ async def create_tag_admin(
         
         await db.tags.insert_one(tag_doc)
         tag_doc["id"] = str(tag_doc["_id"])
+        del tag_doc["_id"]  # Remove _id to avoid conflicts
+        
+        # created_by is already a string from current_user.id
         return TagResponse(**tag_doc)
         
     except HTTPException:
@@ -677,6 +731,12 @@ async def update_tag_admin(
         # Return updated tag
         updated_tag = await db.tags.find_one({"_id": obj_id})
         updated_tag["id"] = str(updated_tag["_id"])
+        del updated_tag["_id"]  # Remove _id to avoid conflicts
+        
+        # Convert ObjectId fields to strings
+        if "created_by" in updated_tag and updated_tag["created_by"]:
+            updated_tag["created_by"] = str(updated_tag["created_by"])
+            
         return TagResponse(**updated_tag)
         
     except HTTPException:
@@ -720,3 +780,45 @@ async def toggle_tag_status(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to toggle tag status: {str(e)}")
+
+
+@router.delete("/tags/{tag_id}")
+async def delete_tag_admin(
+    tag_id: str,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Delete tag permanently (admin only)"""
+    try:
+        # Validate ObjectId
+        from bson import ObjectId
+        try:
+            obj_id = ObjectId(tag_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid tag ID")
+        
+        # Check if tag exists
+        tag = await db.tags.find_one({"_id": obj_id})
+        if not tag:
+            raise HTTPException(status_code=404, detail="Tag not found")
+        
+        # Check if tag is used by any posts
+        posts_count = await db.posts.count_documents({"tags": obj_id})
+        if posts_count > 0:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete tag. It is used by {posts_count} posts."
+            )
+        
+        # Delete tag
+        result = await db.tags.delete_one({"_id": obj_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=400, detail="Failed to delete tag")
+        
+        return {"message": "Tag deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete tag: {str(e)}")
