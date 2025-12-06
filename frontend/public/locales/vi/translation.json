@@ -446,5 +446,31 @@
       "name_required": "Vui lòng nhập tên",
       "error": "Có lỗi xảy ra"
     }
+  },
+  "posts": {
+    "title": "Nội dung tổng quát",
+    "search": {
+      "placeholder": "Tìm kiếm theo tiêu đề hoặc tác giả",
+      "button": "Tìm kiếm",
+      "reset": "Đặt lại"
+    },
+    "filter": {
+      "all": "Tất cả"
+    },
+    "results": {
+      "total": "Tìm thấy {{count}} bài đăng"
+    },
+    "loading": "Đang tải...",
+    "no_posts": "Không có bài đăng nào",
+    "no_title": "Không có tiêu đề",
+    "no_content": "Không có nội dung",
+    "unknown_author": "Tác giả không rõ",
+    "actions": {
+      "details": "Chi tiết",
+      "delete": "Xóa"
+    },
+    "confirmDelete": "Bạn có chắc chắn muốn xóa bài viết này?",
+    "deleteSuccess": "Xóa bài viết thành công!",
+    "deleteError": "Có lỗi xảy ra khi xóa bài viết!"
   }
 }

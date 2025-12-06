@@ -822,3 +822,199 @@ async def delete_tag_admin(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete tag: {str(e)}")
+
+
+# =======================
+# ADMIN POST MANAGEMENT
+# =======================
+
+@router.get("/posts", response_model=dict)
+async def get_posts_admin(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    search: str = Query("", description="Search in title, content, or author"),
+    category: str = Query("", description="Filter by category ID"),
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """
+    Get all posts for admin management
+    """
+    try:
+        # Build query
+        query = {}
+        if search:
+            query["$or"] = [
+                {"title": {"$regex": search, "$options": "i"}},
+                {"content": {"$regex": search, "$options": "i"}}
+            ]
+        
+        if category:
+            query["category_id"] = category
+        
+        # Calculate skip
+        skip = (page - 1) * limit
+        
+        # Get posts with author information
+        pipeline = [
+            {"$match": query},
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "author_id",
+                    "foreignField": "_id",
+                    "as": "author"
+                }
+            },
+            {"$unwind": "$author"},
+            {"$sort": {"created_at": -1}},
+            {"$skip": skip},
+            {"$limit": limit}
+        ]
+        
+        posts_cursor = db.posts.aggregate(pipeline)
+        posts = await posts_cursor.to_list(None)
+        
+        # Get total count
+        total = await db.posts.count_documents(query)
+        
+        # Format response
+        formatted_posts = []
+        for post in posts:
+            formatted_post = {
+                "id": str(post["_id"]),
+                "title": post.get("title", ""),
+                "content": post.get("content", ""),
+                "author": {
+                    "id": str(post["author"]["_id"]),
+                    "name": post["author"].get("full_name", post["author"].get("email", "Unknown"))
+                },
+                "created_at": post.get("created_at"),
+                "updated_at": post.get("updated_at"),
+                "view_count": post.get("view_count", 0),
+                "answer_count": post.get("answer_count", 0),
+                "categories": post.get("categories", []),
+                "tags": post.get("tags", [])
+            }
+            formatted_posts.append(formatted_post)
+        
+        return {
+            "posts": formatted_posts,
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "total_pages": (total + limit - 1) // limit
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get posts: {str(e)}")
+
+
+@router.delete("/posts/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_post_admin(
+    post_id: str,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    audit_service: AuditLogService = Depends(get_audit_log_service)
+):
+    """
+    Delete any post (admin only)
+    """
+    try:
+        from bson import ObjectId
+        
+        # Validate ObjectId
+        try:
+            obj_id = ObjectId(post_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid post ID format")
+        
+        # Check if post exists
+        post = await db.posts.find_one({"_id": obj_id})
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        # Delete the post
+        result = await db.posts.delete_one({"_id": obj_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        # Log the admin action (simplified for now)
+        # TODO: Add proper audit logging later
+        
+        # Also delete related answers if any
+        await db.answers.delete_many({"post_id": obj_id})
+        
+        return None
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete post: {str(e)}")
+
+
+@router.get("/posts/{post_id}", response_model=dict)
+async def get_post_details_admin(
+    post_id: str,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """
+    Get post details for admin
+    """
+    try:
+        from bson import ObjectId
+        
+        # Validate ObjectId
+        try:
+            obj_id = ObjectId(post_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid post ID format")
+        
+        # Get post with author information
+        pipeline = [
+            {"$match": {"_id": obj_id}},
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "author_id",
+                    "foreignField": "_id",
+                    "as": "author"
+                }
+            },
+            {"$unwind": "$author"}
+        ]
+        
+        posts_cursor = db.posts.aggregate(pipeline)
+        posts = await posts_cursor.to_list(1)
+        
+        if not posts:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        post = posts[0]
+        
+        # Format response
+        formatted_post = {
+            "id": str(post["_id"]),
+            "title": post.get("title", ""),
+            "content": post.get("content", ""),
+            "author": {
+                "id": str(post["author"]["_id"]),
+                "name": post["author"].get("full_name", post["author"].get("email", "Unknown")),
+                "email": post["author"].get("email", "")
+            },
+            "created_at": post.get("created_at"),
+            "updated_at": post.get("updated_at"),
+            "view_count": post.get("view_count", 0),
+            "answer_count": post.get("answer_count", 0),
+            "categories": post.get("categories", []),
+            "tags": post.get("tags", [])
+        }
+        
+        return formatted_post
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get post details: {str(e)}")
