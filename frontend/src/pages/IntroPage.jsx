@@ -6,10 +6,13 @@ import "./IntroPage.css";
 
 const IntroPage = () => {
   const { t } = useTranslation();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
-  // Redirect to home if already logged in
+  // Redirect based on user role if already logged in
   if (isAuthenticated) {
+    if (user?.role === 'admin') {
+      return <Navigate to="/admin" replace />;
+    }
     return <Navigate to="/home" replace />;
   }
 

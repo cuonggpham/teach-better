@@ -1,7 +1,8 @@
-from typing import Optional
-from datetime import datetime
+from typing import Optional, List
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Query
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from bson import ObjectId
 
 from app.core.database import get_database
 from app.schemas.user import User
@@ -50,6 +51,245 @@ async def get_current_admin(
             detail="Admin access required"
         )
     return current_user
+
+
+# DASHBOARD ENDPOINTS
+
+@router.get("/stats")
+async def get_admin_stats(
+    current_admin: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """
+    Get dashboard statistics
+    
+    Returns:
+    - total_users: Total number of users
+    - user_growth: User growth percentage compared to previous week
+    - total_posts: Total number of posts
+    - post_growth: Post growth percentage compared to previous week
+    - total_comments: Total number of comments (answers)
+    - comment_growth: Comment growth percentage compared to previous week
+    - total_diagnoses: Total number of AI diagnoses
+    - diagnosis_growth: Diagnosis growth percentage compared to previous week
+    """
+    try:
+        now = datetime.utcnow()
+        week_ago = now - timedelta(days=7)
+        two_weeks_ago = now - timedelta(days=14)
+        
+        # Get total users and growth
+        total_users = await db.users.count_documents({})
+        users_this_week = await db.users.count_documents({"created_at": {"$gte": week_ago}})
+        users_last_week = await db.users.count_documents({
+            "created_at": {"$gte": two_weeks_ago, "$lt": week_ago}
+        })
+        user_growth = 0
+        if users_last_week > 0:
+            user_growth = round(((users_this_week - users_last_week) / users_last_week) * 100, 1)
+        
+        # Get total posts and growth
+        total_posts = await db.posts.count_documents({})
+        posts_this_week = await db.posts.count_documents({"created_at": {"$gte": week_ago}})
+        posts_last_week = await db.posts.count_documents({
+            "created_at": {"$gte": two_weeks_ago, "$lt": week_ago}
+        })
+        post_growth = 0
+        if posts_last_week > 0:
+            post_growth = round(((posts_this_week - posts_last_week) / posts_last_week) * 100, 1)
+        
+        # Get total comments (answers) and growth
+        total_comments = await db.answers.count_documents({})
+        comments_this_week = await db.answers.count_documents({"created_at": {"$gte": week_ago}})
+        comments_last_week = await db.answers.count_documents({
+            "created_at": {"$gte": two_weeks_ago, "$lt": week_ago}
+        })
+        comment_growth = 0
+        if comments_last_week > 0:
+            comment_growth = round(((comments_this_week - comments_last_week) / comments_last_week) * 100, 1)
+        
+        # Get total diagnoses and growth (if collection exists)
+        total_diagnoses = 0
+        diagnosis_growth = 0
+        if "ai_diagnoses" in await db.list_collection_names():
+            total_diagnoses = await db.ai_diagnoses.count_documents({})
+            diagnoses_this_week = await db.ai_diagnoses.count_documents({"created_at": {"$gte": week_ago}})
+            diagnoses_last_week = await db.ai_diagnoses.count_documents({
+                "created_at": {"$gte": two_weeks_ago, "$lt": week_ago}
+            })
+            if diagnoses_last_week > 0:
+                diagnosis_growth = round(((diagnoses_this_week - diagnoses_last_week) / diagnoses_last_week) * 100, 1)
+        
+        return {
+            "total_users": total_users,
+            "user_growth": user_growth,
+            "total_posts": total_posts,
+            "post_growth": post_growth,
+            "total_comments": total_comments,
+            "comment_growth": comment_growth,
+            "total_diagnoses": total_diagnoses,
+            "diagnosis_growth": diagnosis_growth
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch stats: {str(e)}")
+
+
+@router.get("/activities")
+async def get_recent_activities(
+    limit: int = Query(10, ge=1, le=50, description="Maximum number of activities to return"),
+    current_admin: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """
+    Get recent activities for dashboard
+    
+    Returns a list of recent activities including:
+    - User registrations
+    - New posts
+    - Reports
+    """
+    try:
+        activities = []
+        
+        # Get recent user registrations
+        recent_users = await db.users.find({}).sort("created_at", -1).limit(limit).to_list(length=limit)
+        for user in recent_users:
+            activities.append({
+                "id": str(user["_id"]),
+                "type": "user_registration",
+                "user_name": user.get("email", "Unknown"),
+                "description": "New user registration",
+                "created_at": user.get("created_at", datetime.utcnow()).isoformat()
+            })
+        
+        # Get recent posts
+        recent_posts = await db.posts.find({}).sort("created_at", -1).limit(limit).to_list(length=limit)
+        for post in recent_posts:
+            activities.append({
+                "id": str(post["_id"]),
+                "type": "post",
+                "user_name": post.get("title", "Untitled post"),
+                "description": "New forum post",
+                "created_at": post.get("created_at", datetime.utcnow()).isoformat()
+            })
+        
+        # Get recent reports (if collection exists)
+        if "reports" in await db.list_collection_names():
+            recent_reports = await db.reports.find({}).sort("created_at", -1).limit(limit).to_list(length=limit)
+            for report in recent_reports:
+                activities.append({
+                    "id": str(report["_id"]),
+                    "type": "report",
+                    "user_name": report.get("description", "Content reported"),
+                    "description": "Content report",
+                    "created_at": report.get("created_at", datetime.utcnow()).isoformat()
+                })
+        
+        # Sort all activities by created_at and limit
+        activities.sort(key=lambda x: x["created_at"], reverse=True)
+        activities = activities[:limit]
+        
+        return activities
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch activities: {str(e)}")
+
+
+@router.get("/charts/user-registrations")
+async def get_user_registration_chart(
+    days: int = Query(7, ge=1, le=30, description="Number of days to retrieve"),
+    current_admin: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """
+    Get user registration counts by day for chart visualization
+    
+    Returns a list of {date, count} objects for the specified number of days
+    """
+    try:
+        now = datetime.utcnow()
+        start_date = now - timedelta(days=days-1)
+        
+        # Initialize result array with all dates
+        result = []
+        for i in range(days):
+            date = start_date + timedelta(days=i)
+            result.append({
+                "date": date.strftime("%Y-%m-%d"),
+                "count": 0
+            })
+        
+        # Aggregate user registrations by date
+        pipeline = [
+            {
+                "$match": {
+                    "created_at": {"$gte": start_date, "$lte": now}
+                }
+            },
+            {
+                "$group": {
+                    "_id": {
+                        "$dateToString": {"format": "%Y-%m-%d", "date": "$created_at"}
+                    },
+                    "count": {"$sum": 1}
+                }
+            },
+            {
+                "$sort": {"_id": 1}
+            }
+        ]
+        
+        registrations = await db.users.aggregate(pipeline).to_list(length=None)
+        
+        # Update counts for dates with registrations
+        for reg in registrations:
+            for item in result:
+                if item["date"] == reg["_id"]:
+                    item["count"] = reg["count"]
+                    break
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch user registration chart: {str(e)}")
+
+
+@router.get("/charts/posts-by-category")
+async def get_posts_by_category_chart(
+    current_admin: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """
+    Get post counts grouped by category for chart visualization
+    Returns top 5 categories by count, sorted alphabetically if counts are equal
+    
+    Returns a list of {category, count} objects
+    """
+    try:
+        # Aggregate posts by category string field
+        pipeline = [
+            {
+                "$group": {
+                    "_id": "$category",
+                    "count": {"$sum": 1}
+                }
+            }
+        ]
+        
+        category_counts = await db.posts.aggregate(pipeline).to_list(length=None)
+        
+        # Sort by count (descending) then by category name (ascending)
+        category_counts.sort(key=lambda x: (-x["count"], x["_id"] if x["_id"] else "ZZZ"))
+        
+        # Take only top 5
+        result = []
+        for item in category_counts[:5]:
+            result.append({
+                "category": item["_id"] if item["_id"] else "Uncategorized",
+                "count": item["count"]
+            })
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch posts by category chart: {str(e)}")
 
 
 @router.get("/users", response_model=UserListResponse)
