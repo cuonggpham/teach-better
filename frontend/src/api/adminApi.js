@@ -51,6 +51,39 @@ export const adminApi = {
         return response;
     },
 
+    deleteCategory: async (categoryId) => {
+        const response = await axios.delete(`/admin/categories/${categoryId}`);
+        return response;
+    },
+
+    deleteTag: async (tagId) => {
+        const response = await axios.delete(`/admin/tags/${tagId}`);
+        return response;
+    },
+
+    // Post management
+    getPosts: async (page = 1, limit = 10, search = '', category = '') => {
+        const response = await axios.get('/admin/posts', {
+            params: {
+                page,
+                limit,
+                search,
+                category
+            }
+        });
+        return response;
+    },
+
+    deletePost: async (postId) => {
+        const response = await axios.delete(`/admin/posts/${postId}`);
+        return response;
+    },
+
+    getPostDetails: async (postId) => {
+        const response = await axios.get(`/admin/posts/${postId}`);
+        return response;
+    },
+
     // Combined category/tag operations
     getCategoriesAndTags: async (includeInactive = false) => {
         const [categoriesResponse, tagsResponse] = await Promise.all([

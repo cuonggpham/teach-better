@@ -463,6 +463,68 @@
     "fetch_user_error": "Không thể tải thông tin người dùng",
     "confirm_delete_user": "Bạn có chắc muốn xóa người dùng này?",
     "user_deleted": "Đã xóa người dùng",
-    "user_delete_error": "Không thể xóa người dùng"
+    "user_delete_error": "Không thể xóa người dùng",
+    "tag": "Tag",
+    "new_category": "+ Danh mục mới",
+    "new_tag": "+ Tag mới",
+    "no_data": "Không có dữ liệu",
+    "loading": "Đang tải...",
+    "category_name": "Tên danh mục",
+    "tag_name": "Tên tag",
+    "description": "Mô tả",
+    "restore": "Khôi phục",
+    "inactive": "Đã vô hiệu hóa",
+    "create_modal": {
+      "title_category": "Thêm danh mục mới",
+      "title_tag": "Thêm tag mới",
+      "name_label": "Tên *",
+      "description_label": "Mô tả",
+      "add_button": "Thêm",
+      "cancel_button": "Hủy",
+      "processing": "Đang xử lý..."
+    },
+    "edit_modal": {
+      "title_category": "Chỉnh sửa danh mục",
+      "title_tag": "Chỉnh sửa tag",
+      "update_button": "Cập nhật",
+      "cancel_button": "Hủy",
+      "processing": "Đang xử lý..."
+    },
+    "messages": {
+      "load_error": "Lỗi khi tải dữ liệu",
+      "create_success": "Tạo thành công!",
+      "update_success": "Cập nhật thành công!",
+      "toggle_success": "Đã thay đổi trạng thái!",
+      "delete_success": "Xóa thành công!",
+      "confirm_delete": "Bạn có chắc chắn muốn xóa không?",
+      "name_required": "Vui lòng nhập tên",
+      "error": "Có lỗi xảy ra"
+    }
+  },
+  "posts": {
+    "title": "Nội dung tổng quát",
+    "search": {
+      "placeholder": "Tìm kiếm theo tiêu đề hoặc tác giả",
+      "button": "Tìm kiếm",
+      "reset": "Đặt lại"
+    },
+    "filter": {
+      "all": "Tất cả"
+    },
+    "results": {
+      "total": "Tìm thấy {{count}} bài đăng"
+    },
+    "loading": "Đang tải...",
+    "no_posts": "Không có bài đăng nào",
+    "no_title": "Không có tiêu đề",
+    "no_content": "Không có nội dung",
+    "unknown_author": "Tác giả không rõ",
+    "actions": {
+      "details": "Chi tiết",
+      "delete": "Xóa"
+    },
+    "confirmDelete": "Bạn có chắc chắn muốn xóa bài viết này?",
+    "deleteSuccess": "Xóa bài viết thành công!",
+    "deleteError": "Có lỗi xảy ra khi xóa bài viết!"
   }
 }

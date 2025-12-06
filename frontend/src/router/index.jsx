@@ -10,6 +10,7 @@ import ForumPage from '../pages/ForumPage';
 import PostDetailPage from '../pages/PostDetailPage';
 import CreatePostPage from '../pages/CreatePostPage';
 import CategoryManagement from '../components/ui/CategoryManagement';
+import PostManagement from '../components/ui/PostManagement';
 import CategoryPage from '../pages/CategoryPage';
 import DiagnosisPage from '../pages/DiagnosisPage';
 import DiagnosisHistoryPage from '../pages/DiagnosisHistoryPage';
@@ -95,6 +96,10 @@ const router = createBrowserRouter([
       {
         path: 'admin/categories',
         element: <CategoryManagement />,
+      },
+      {
+        path: 'admin/posts',
+        element: <PostManagement />,
       },
       {
         path: 'diagnosis',

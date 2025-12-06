@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import './CategoryManagement.css';
 import CategoryCard from './CategoryCard';
 import { adminApi } from '../../api/adminApi';
+import axiosConfig from '../../api/axiosConfig';
 
 const CategoryManagement = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('all'); // all, category, tag
+  const [activeTab, setActiveTab] = useState('category'); // category, tag
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    type: 'category' // category hoặc tag
+    type: 'category'
   });
-  const [editingId, setEditingId] = useState(null);
+  const [editingItem, setEditingItem] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -27,11 +32,64 @@ const CategoryManagement = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const data = await adminApi.getCategoriesAndTags(true); // Include inactive items
-      setCategories(data.categories || []);
-      setTags(data.tags || []);
+
+      let categoriesData, tagsData;
+
+      // Try admin API first, fallback to public API
+      try {
+        const [categoriesResponse, tagsResponse] = await Promise.all([
+          adminApi.getCategories(true), // include inactive
+          adminApi.getTags(true) // include inactive
+        ]);
+
+
+        categoriesData = categoriesResponse.data || categoriesResponse || [];
+        tagsData = tagsResponse.data || tagsResponse || [];
+
+      } catch (adminError) {
+
+        // Fallback to public API
+        try {
+          const [categoriesResponse, tagsResponse] = await Promise.all([
+            axiosConfig.get('/categories/?skip=0&limit=100'),
+            axiosConfig.get('/tags/?skip=0&limit=100')
+          ]);
+
+
+          categoriesData = categoriesResponse.categories || categoriesResponse.data || [];
+          tagsData = tagsResponse.tags || tagsResponse.data || [];
+
+        } catch (axiosError) {
+
+          // Fallback to direct fetch
+          const baseUrl = 'http://localhost:8000/api/v1';
+          const [categoriesResponse, tagsResponse] = await Promise.all([
+            fetch(`${baseUrl}/categories/?skip=0&limit=100`),
+            fetch(`${baseUrl}/tags/?skip=0&limit=100`)
+          ]);
+
+
+          if (!categoriesResponse.ok || !tagsResponse.ok) {
+            throw new Error(`HTTP error! Categories: ${categoriesResponse.status}, Tags: ${tagsResponse.status}`);
+          }
+
+          const categoriesJson = await categoriesResponse.json();
+          const tagsJson = await tagsResponse.json();
+
+
+          categoriesData = categoriesJson?.categories || categoriesJson || [];
+          tagsData = tagsJson?.tags || tagsJson || [];
+        }
+      }
+
+      setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+      setTags(Array.isArray(tagsData) ? tagsData : []);
+
+      // Clear any previous errors
+      setError('');
+
     } catch (err) {
-      setError('Lỗi khi tải dữ liệu: ' + (err.response?.data?.detail || err.message));
+      setError(t('admin.messages.load_error') + ': ' + err.message);
     }
     setLoading(false);
   };
@@ -44,39 +102,57 @@ const CategoryManagement = () => {
     }));
   };
 
-  const handleTypeChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      type: e.target.value
-    }));
+  const openCreateModal = () => {
+    resetForm();
+    setFormData(prev => ({ ...prev, type: activeTab }));
+    setShowCreateModal(true);
   };
 
-  const handleAddOrUpdate = async (e) => {
-    e.preventDefault();
+  const openEditModal = (item) => {
+    const itemType = item.created_by ? 'tag' : 'category';
+    setEditingItem(item);
+    setFormData({
+      name: item.name,
+      description: item.description || '',
+      type: itemType
+    });
+    setShowEditModal(true);
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!formData.name.trim()) {
-      setError('Vui lòng nhập tên');
       return;
     }
 
     setLoading(true);
     try {
-      if (editingId) {
-        // Chỉnh sửa
-        if (formData.type === 'category') {
-          await adminApi.updateCategory(editingId, {
-            name: formData.name,
-            description: formData.description
-          });
-        } else {
-          await adminApi.updateTag(editingId, {
-            name: formData.name,
-            description: formData.description
-          });
+      if (editingItem) {
+        // Update
+        const id = editingItem._id || editingItem.id;
+        const updateData = {
+          name: formData.name.trim()
+        };
+
+        // Only add description if it has a value
+        if (formData.description && formData.description.trim()) {
+          updateData.description = formData.description.trim();
         }
-        setSuccess('Cập nhật thành công!');
+
+
+        if (formData.type === 'category') {
+          await adminApi.updateCategory(id, updateData);
+        } else {
+          await adminApi.updateTag(id, updateData);
+        }
+
+        // Close modal and reload data
+        setShowEditModal(false);
+        await loadData();
+        resetForm();
+
       } else {
-        // Thêm mới
+        // Create
         if (formData.type === 'category') {
           await adminApi.createCategory({
             name: formData.name,
@@ -88,40 +164,43 @@ const CategoryManagement = () => {
             description: formData.description
           });
         }
-        setSuccess('Thêm mới thành công!');
+
+        // Close modal and reload data
+        setShowCreateModal(false);
+        await loadData();
+        resetForm();
       }
 
-      resetForm();
-      await loadData();
     } catch (err) {
-      setError('Lỗi: ' + (err.response?.data?.detail || err.message));
+      // Even if there's an error, close the modal
+      if (editingItem) {
+        setShowEditModal(false);
+      } else {
+        setShowCreateModal(false);
+      }
+      resetForm();
     }
     setLoading(false);
   };
 
-  const handleEdit = (item) => {
-    const itemType = item.created_by ? 'tag' : 'category'; // Tags have created_by field
-    setEditingId(item._id || item.id);
-    setFormData({
-      name: item.name,
-      description: item.description || '',
-      type: itemType
-    });
-  };
+  const handleDelete = async (item) => {
+    if (!window.confirm(t('admin.messages.confirm_delete'))) {
+      return;
+    }
 
-  const handleDelete = async (id, type) => {
+    const id = item._id || item.id;
+    const type = item.created_by ? 'tag' : 'category';
+
     setLoading(true);
     try {
-      // Toggle active status (soft delete/restore)
       if (type === 'category') {
-        await adminApi.toggleCategoryStatus(id);
+        await adminApi.deleteCategory(id);
       } else {
-        await adminApi.toggleTagStatus(id);
+        await adminApi.deleteTag(id);
       }
-      setSuccess('Trạng thái đã được thay đổi!');
       await loadData();
     } catch (err) {
-      setError('Lỗi: ' + (err.response?.data?.detail || err.message));
+      console.error('Delete operation failed:', err);
     }
     setLoading(false);
   };
@@ -132,169 +211,201 @@ const CategoryManagement = () => {
       description: '',
       type: 'category'
     });
-    setEditingId(null);
-    setError('');
-    setSuccess('');
+    setEditingItem(null);
   };
 
-  const getFilteredData = () => {
-    if (activeTab === 'category') {
-      return categories.map(cat => ({ ...cat, type: 'category' }));
-    } else if (activeTab === 'tag') {
-      return tags.map(tag => ({ ...tag, type: 'tag' }));
-    } else {
-      return [
-        ...categories.map(cat => ({ ...cat, type: 'category' })),
-        ...tags.map(tag => ({ ...tag, type: 'tag' }))
-      ];
-    }
+  const getCurrentData = () => {
+    return activeTab === 'category' ? categories : tags;
   };
 
-  const filteredData = getFilteredData();
+  const currentData = getCurrentData();
 
   return (
     <div className="category-management-container">
-      <h2 className="page-title">Quản lý danh mục và tag</h2>
+      {/* Header */}
+      <div className="admin-header">
+        <h1 className="admin-title">{t('admin.title')}</h1>
+        <button
+          className="dashboard-btn"
+          onClick={() => window.history.back()}
+        >
+          {t('admin.back_to_dashboard')}
+        </button>
+      </div>
 
-      {/* Alert Messages */}
-      {error && (
-        <div className="alert alert-error">
-          <span>{error}</span>
-          <button onClick={() => setError('')} className="alert-close">&times;</button>
+
+
+      {/* Tabs */}
+      <div className="admin-tabs">
+        <div className="tabs-left">
+          <button
+            className={`tab-button ${activeTab === 'category' ? 'active' : ''}`}
+            onClick={() => setActiveTab('category')}
+          >
+            {t('admin.category')}
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'tag' ? 'active' : ''}`}
+            onClick={() => setActiveTab('tag')}
+          >
+            {t('admin.tag')}
+          </button>
         </div>
-      )}
-      {success && (
-        <div className="alert alert-success">
-          <span>{success}</span>
-          <button onClick={() => setSuccess('')} className="alert-close">&times;</button>
-        </div>
-      )}
-
-      <div className="content-wrapper">
-        {/* Form Section */}
-        <div className="form-section">
-          <h3 className="section-title">
-            {editingId ? '✎ Chỉnh sửa' : '+ Thêm mới'}
-          </h3>
-
-          <form onSubmit={handleAddOrUpdate} className="category-form">
-            <div className="form-group">
-              <label htmlFor="name">Tên danh mục / Tag *</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                placeholder="Nhập tên danh mục"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                className="form-input"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="description">Mô tả</label>
-              <textarea
-                id="description"
-                name="description"
-                placeholder="Nhập mô tả"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows="4"
-                className="form-textarea"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="type">Loại *</label>
-              <select
-                id="type"
-                name="type"
-                value={formData.type}
-                onChange={handleTypeChange}
-                className="form-select"
-                disabled={editingId !== null}
-              >
-                <option value="category">Danh mục môn học</option>
-                <option value="tag">Tag loại bài đăng</option>
-              </select>
-            </div>
-
-            <div className="form-actions">
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                {loading ? 'Đang xử lý...' : editingId ? 'Cập nhật' : 'Thêm mới'}
-              </button>
-              {editingId && (
-                <button
-                  type="button"
-                  onClick={resetForm}
-                  className="btn btn-secondary"
-                >
-                  Hủy
-                </button>
-              )}
-            </div>
-          </form>
-        </div>
-
-        {/* List Section */}
-        <div className="list-section">
-          <div className="section-header">
-            <h3 className="section-title">Danh sách danh mục và tag</h3>
-            <span className="item-count">({filteredData.length})</span>
-          </div>
-
-          {/* Tabs */}
-          <div className="tabs-container">
-            <button
-              className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
-              onClick={() => setActiveTab('all')}
-            >
-              Tất cả
-            </button>
-            <button
-              className={`tab-btn ${activeTab === 'category' ? 'active' : ''}`}
-              onClick={() => setActiveTab('category')}
-            >
-              Danh mục môn học ({categories.length})
-            </button>
-            <button
-              className={`tab-btn ${activeTab === 'tag' ? 'active' : ''}`}
-              onClick={() => setActiveTab('tag')}
-            >
-              Tag loại bài ({tags.length})
-            </button>
-          </div>
-
-          {/* List Items */}
-          <div className="items-list">
-            {loading && filteredData.length === 0 ? (
-              <div className="loading-state">
-                <p>Đang tải dữ liệu...</p>
-              </div>
-            ) : filteredData.length === 0 ? (
-              <div className="empty-state">
-                <p>🎯 Không có dữ liệu</p>
-                <small>Hãy thêm danh mục hoặc tag mới</small>
-              </div>
-            ) : (
-              filteredData.map(item => (
-                <CategoryCard
-                  key={item._id || item.id}
-                  item={item}
-                  type={item.type}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
-              ))
-            )}
-          </div>
+        <div className="tabs-right">
+          <button className="add-new-btn" onClick={openCreateModal}>
+            {activeTab === 'category' ? t('admin.new_category') : t('admin.new_tag')}
+          </button>
         </div>
       </div>
+
+      {/* Content Area */}
+      <div className="admin-content">
+
+        {/* Table */}
+        <div className="data-table-container">
+          {loading ? (
+            <div className="loading-state">
+              <p>{t('admin.loading')}</p>
+            </div>
+          ) : currentData.length === 0 ? (
+            <div className="empty-state">
+              <p>{t('admin.no_data')}</p>
+            </div>
+          ) : (
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>{activeTab === 'category' ? t('admin.category_name') : t('admin.tag_name')}</th>
+                  <th>{t('admin.description')}</th>
+                  <th>{t('admin.post_count')}</th>
+                  <th>{t('admin.actions')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentData.map(item => (
+                  <tr key={item._id || item.id} className={!item.is_active ? 'inactive-row' : ''}>
+                    <td className="name-cell">
+                      <span className="item-name">{item.name}</span>
+                    </td>
+                    <td className="description-cell">
+                      {item.description || '-'}
+                    </td>
+                    <td className="count-cell">
+                      {item.post_count || 0}
+                    </td>
+                    <td className="actions-cell">
+                      <button
+                        className="action-btn edit-btn"
+                        onClick={() => openEditModal(item)}
+                        title={t('admin.edit')}
+                      >
+                        ✎
+                      </button>
+                      <button
+                        className="action-btn delete-btn"
+                        onClick={() => handleDelete(item)}
+                        title={t('admin.delete')}
+                      >
+                        🗑
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+
+      {/* Create Modal */}
+      {showCreateModal && (
+        <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
+          <div className="modal-dialog" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{formData.type === 'category' ? t('admin.create_modal.title_category') : t('admin.create_modal.title_tag')}</h3>
+              <button className="modal-close" onClick={() => setShowCreateModal(false)}>×</button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>{t('admin.create_modal.name_label')}</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>{t('admin.create_modal.description_label')}</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="form-textarea"
+                    rows={3}
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? t('admin.create_modal.processing') : t('admin.create_modal.add_button')}
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowCreateModal(false)}>
+                  {t('admin.create_modal.cancel_button')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
+          <div className="modal-dialog" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{formData.type === 'category' ? t('admin.edit_modal.title_category') : t('admin.edit_modal.title_tag')}</h3>
+              <button className="modal-close" onClick={() => setShowEditModal(false)}>×</button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>{t('admin.create_modal.name_label')}</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="form-input"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>{t('admin.create_modal.description_label')}</label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="form-textarea"
+                    rows={3}
+                  />
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? t('admin.edit_modal.processing') : t('admin.edit_modal.update_button')}
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>
+                  {t('admin.edit_modal.cancel_button')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

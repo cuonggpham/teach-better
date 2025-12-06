@@ -259,41 +259,29 @@ async def get_posts_by_category_chart(
 ):
     """
     Get post counts grouped by category for chart visualization
+    Returns top 5 categories by count, sorted alphabetically if counts are equal
     
     Returns a list of {category, count} objects
     """
     try:
-        # Aggregate posts by category
+        # Aggregate posts by category string field
         pipeline = [
             {
-                "$lookup": {
-                    "from": "categories",
-                    "localField": "category_id",
-                    "foreignField": "_id",
-                    "as": "category_info"
-                }
-            },
-            {
-                "$unwind": {
-                    "path": "$category_info",
-                    "preserveNullAndEmptyArrays": True
-                }
-            },
-            {
                 "$group": {
-                    "_id": "$category_info.name",
+                    "_id": "$category",
                     "count": {"$sum": 1}
                 }
-            },
-            {
-                "$sort": {"count": -1}
             }
         ]
         
         category_counts = await db.posts.aggregate(pipeline).to_list(length=None)
         
+        # Sort by count (descending) then by category name (ascending)
+        category_counts.sort(key=lambda x: (-x["count"], x["_id"] if x["_id"] else "ZZZ"))
+        
+        # Take only top 5
         result = []
-        for item in category_counts:
+        for item in category_counts[:5]:
             result.append({
                 "category": item["_id"] if item["_id"] else "Uncategorized",
                 "count": item["count"]
@@ -734,11 +722,15 @@ async def update_category_admin(
 ):
     """Update category (admin only)"""
     try:
+        print(f"Updating category {category_id} with data: {category_data}")
+        print(f"Category data dict: {category_data.model_dump()}")
+        
         # Validate ObjectId
         from bson import ObjectId
         try:
             obj_id = ObjectId(category_id)
-        except Exception:
+        except Exception as e:
+            print(f"Invalid ObjectId {category_id}: {e}")
             raise HTTPException(status_code=400, detail="Invalid category ID")
         
         # Check if category exists
@@ -768,11 +760,16 @@ async def update_category_admin(
         # Return updated category
         updated_category = await db.categories.find_one({"_id": obj_id})
         updated_category["id"] = str(updated_category["_id"])
+        del updated_category["_id"]  # Remove _id to avoid conflicts
         return CategoryResponse(**updated_category)
         
     except HTTPException:
         raise
     except Exception as e:
+        print(f"Exception in update_category_admin: {e}")
+        print(f"Exception type: {type(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Failed to update category: {str(e)}")
 
 
@@ -811,6 +808,48 @@ async def toggle_category_status(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to toggle category status: {str(e)}")
+
+
+@router.delete("/categories/{category_id}")
+async def delete_category_admin(
+    category_id: str,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Delete category permanently (admin only)"""
+    try:
+        # Validate ObjectId
+        from bson import ObjectId
+        try:
+            obj_id = ObjectId(category_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid category ID")
+        
+        # Check if category exists
+        category = await db.categories.find_one({"_id": obj_id})
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found")
+        
+        # Check if category is used by any posts
+        posts_count = await db.posts.count_documents({"category_id": obj_id})
+        if posts_count > 0:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete category. It is used by {posts_count} posts."
+            )
+        
+        # Delete category
+        result = await db.categories.delete_one({"_id": obj_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=400, detail="Failed to delete category")
+        
+        return {"message": "Category deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete category: {str(e)}")
 
 
 # TAG MANAGEMENT ENDPOINTS
@@ -881,6 +920,9 @@ async def create_tag_admin(
         
         await db.tags.insert_one(tag_doc)
         tag_doc["id"] = str(tag_doc["_id"])
+        del tag_doc["_id"]  # Remove _id to avoid conflicts
+        
+        # created_by is already a string from current_user.id
         return TagResponse(**tag_doc)
         
     except HTTPException:
@@ -929,6 +971,12 @@ async def update_tag_admin(
         # Return updated tag
         updated_tag = await db.tags.find_one({"_id": obj_id})
         updated_tag["id"] = str(updated_tag["_id"])
+        del updated_tag["_id"]  # Remove _id to avoid conflicts
+        
+        # Convert ObjectId fields to strings
+        if "created_by" in updated_tag and updated_tag["created_by"]:
+            updated_tag["created_by"] = str(updated_tag["created_by"])
+            
         return TagResponse(**updated_tag)
         
     except HTTPException:
@@ -972,3 +1020,241 @@ async def toggle_tag_status(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to toggle tag status: {str(e)}")
+
+
+@router.delete("/tags/{tag_id}")
+async def delete_tag_admin(
+    tag_id: str,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """Delete tag permanently (admin only)"""
+    try:
+        # Validate ObjectId
+        from bson import ObjectId
+        try:
+            obj_id = ObjectId(tag_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid tag ID")
+        
+        # Check if tag exists
+        tag = await db.tags.find_one({"_id": obj_id})
+        if not tag:
+            raise HTTPException(status_code=404, detail="Tag not found")
+        
+        # Check if tag is used by any posts
+        posts_count = await db.posts.count_documents({"tags": obj_id})
+        if posts_count > 0:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Cannot delete tag. It is used by {posts_count} posts."
+            )
+        
+        # Delete tag
+        result = await db.tags.delete_one({"_id": obj_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=400, detail="Failed to delete tag")
+        
+        return {"message": "Tag deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete tag: {str(e)}")
+
+
+# =======================
+# ADMIN POST MANAGEMENT
+# =======================
+
+@router.get("/posts", response_model=dict)
+async def get_posts_admin(
+    page: int = Query(1, ge=1),
+    limit: int = Query(10, ge=1, le=100),
+    search: str = Query("", description="Search in title, content, or author"),
+    category: str = Query("", description="Filter by category ID"),
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """
+    Get all posts for admin management
+    """
+    try:
+        # Build query
+        query = {}
+        if search:
+            query["$or"] = [
+                {"title": {"$regex": search, "$options": "i"}},
+                {"content": {"$regex": search, "$options": "i"}}
+            ]
+        
+        if category:
+            query["category_id"] = category
+        
+        # Calculate skip
+        skip = (page - 1) * limit
+        
+        # Get posts with author information
+        pipeline = [
+            {"$match": query},
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "author_id",
+                    "foreignField": "_id",
+                    "as": "author"
+                }
+            },
+            {"$unwind": "$author"},
+            {"$sort": {"created_at": -1}},
+            {"$skip": skip},
+            {"$limit": limit}
+        ]
+        
+        posts_cursor = db.posts.aggregate(pipeline)
+        posts = await posts_cursor.to_list(None)
+        
+        # Get total count
+        total = await db.posts.count_documents(query)
+        
+        # Format response
+        formatted_posts = []
+        for post in posts:
+            formatted_post = {
+                "id": str(post["_id"]),
+                "title": post.get("title", ""),
+                "content": post.get("content", ""),
+                "author": {
+                    "id": str(post["author"]["_id"]),
+                    "name": post["author"].get("full_name", post["author"].get("email", "Unknown"))
+                },
+                "created_at": post.get("created_at"),
+                "updated_at": post.get("updated_at"),
+                "view_count": post.get("view_count", 0),
+                "answer_count": post.get("answer_count", 0),
+                "categories": post.get("categories", []),
+                "tags": post.get("tags", [])
+            }
+            formatted_posts.append(formatted_post)
+        
+        return {
+            "posts": formatted_posts,
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "total_pages": (total + limit - 1) // limit
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get posts: {str(e)}")
+
+
+@router.delete("/posts/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_post_admin(
+    post_id: str,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database),
+    audit_service: AuditLogService = Depends(get_audit_log_service)
+):
+    """
+    Delete any post (admin only)
+    """
+    try:
+        from bson import ObjectId
+        
+        # Validate ObjectId
+        try:
+            obj_id = ObjectId(post_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid post ID format")
+        
+        # Check if post exists
+        post = await db.posts.find_one({"_id": obj_id})
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        # Delete the post
+        result = await db.posts.delete_one({"_id": obj_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        # Log the admin action (simplified for now)
+        # TODO: Add proper audit logging later
+        
+        # Also delete related answers if any
+        await db.answers.delete_many({"post_id": obj_id})
+        
+        return None
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete post: {str(e)}")
+
+
+@router.get("/posts/{post_id}", response_model=dict)
+async def get_post_details_admin(
+    post_id: str,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """
+    Get post details for admin
+    """
+    try:
+        from bson import ObjectId
+        
+        # Validate ObjectId
+        try:
+            obj_id = ObjectId(post_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid post ID format")
+        
+        # Get post with author information
+        pipeline = [
+            {"$match": {"_id": obj_id}},
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "author_id",
+                    "foreignField": "_id",
+                    "as": "author"
+                }
+            },
+            {"$unwind": "$author"}
+        ]
+        
+        posts_cursor = db.posts.aggregate(pipeline)
+        posts = await posts_cursor.to_list(1)
+        
+        if not posts:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        post = posts[0]
+        
+        # Format response
+        formatted_post = {
+            "id": str(post["_id"]),
+            "title": post.get("title", ""),
+            "content": post.get("content", ""),
+            "author": {
+                "id": str(post["author"]["_id"]),
+                "name": post["author"].get("full_name", post["author"].get("email", "Unknown")),
+                "email": post["author"].get("email", "")
+            },
+            "created_at": post.get("created_at"),
+            "updated_at": post.get("updated_at"),
+            "view_count": post.get("view_count", 0),
+            "answer_count": post.get("answer_count", 0),
+            "categories": post.get("categories", []),
+            "tags": post.get("tags", [])
+        }
+        
+        return formatted_post
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get post details: {str(e)}")

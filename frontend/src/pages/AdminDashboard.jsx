@@ -50,62 +50,20 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
       toast.error(t('admin.fetch_error'));
-      // Set mock data for development
+      // Set empty data on error
       setStats({
-        total_users: 1284,
-        user_growth: 12,
-        total_posts: 856,
-        post_growth: 8,
-        total_comments: 2341,
-        comment_growth: 15,
-        total_diagnoses: 432,
-        diagnosis_growth: 23
+        total_users: 0,
+        user_growth: 0,
+        total_posts: 0,
+        post_growth: 0,
+        total_comments: 0,
+        comment_growth: 0,
+        total_diagnoses: 0,
+        diagnosis_growth: 0
       });
-      setActivities([
-        {
-          id: 1,
-          type: 'user_registration',
-          user_name: 'tanaka@example.com',
-          description: '新規ユーザー登録',
-          created_at: new Date(Date.now() - 2 * 60 * 1000).toISOString()
-        },
-        {
-          id: 2,
-          type: 'post',
-          user_name: '不適切なコメント',
-          description: '掲示板投稿',
-          created_at: new Date(Date.now() - 15 * 60 * 1000).toISOString()
-        },
-        {
-          id: 3,
-          type: 'user_registration',
-          user_name: 'yamada@example.com',
-          description: '新規ユーザー登録',
-          created_at: new Date(Date.now() - 30 * 60 * 1000).toISOString()
-        },
-        {
-          id: 4,
-          type: 'report',
-          user_name: '授業クラスの教え方について',
-          description: '投稿報告',
-          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-        }
-      ]);
-      setUserChart([
-        { date: '2025-04-07', count: 18 },
-        { date: '2025-04-08', count: 22 },
-        { date: '2025-04-09', count: 25 },
-        { date: '2025-04-10', count: 28 },
-        { date: '2025-04-11', count: 30 },
-        { date: '2025-04-12', count: 26 },
-        { date: '2025-04-13', count: 24 }
-      ]);
-      setCategoryChart([
-        { category: '教育方法', count: 45 },
-        { category: '教材', count: 52 },
-        { category: '授業', count: 65 },
-        { category: 'その他', count: 38 }
-      ]);
+      setActivities([]);
+      setUserChart([]);
+      setCategoryChart([]);
     } finally {
       setLoading(false);
     }
