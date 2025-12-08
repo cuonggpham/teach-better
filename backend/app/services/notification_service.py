@@ -67,12 +67,81 @@ class NotificationService:
         if not ObjectId.is_valid(notification_id) or not ObjectId.is_valid(user_id):
             return False
 
-        result = await self.collection.update_one(
-            {"_id": ObjectId(notification_id), "user_id": ObjectId(user_id)},
+        # Mark as read
+        await self.collection.update_one(
+            {"_id": ObjectId(notification_id)},
             {"$set": {"is_read": True}}
         )
 
-        return result.modified_count > 0
+        return True
+
+    async def create_ban_notification(
+        self,
+        user_id: str,
+        ban_duration: str,
+        reason: str
+    ) -> NotificationModel:
+        """
+        Create notification for banned user
+        """
+        notification_dict = {
+            "user_id": ObjectId(user_id),
+            "type": NotificationType.ACCOUNT_BANNED,
+            "message": f"Your account has been banned for {ban_duration}. Reason: {reason}",
+            "link": None,
+            "is_read": False,
+            "created_at": datetime.utcnow()
+        }
+
+        result = await self.collection.insert_one(notification_dict)
+        notification_dict["_id"] = result.inserted_id
+
+        return NotificationModel(**notification_dict)
+
+    async def create_post_deleted_notification(
+        self,
+        user_id: str,
+        post_title: str,
+        reason: str
+    ) -> NotificationModel:
+        """
+        Create notification for post deletion
+        """
+        notification_dict = {
+            "user_id": ObjectId(user_id),
+            "type": NotificationType.POST_DELETED,
+            "message": f"Your post '{post_title}' has been deleted for violating community guidelines. Reason: {reason}",
+            "link": None,
+            "is_read": False,
+            "created_at": datetime.utcnow()
+        }
+
+        result = await self.collection.insert_one(notification_dict)
+        notification_dict["_id"] = result.inserted_id
+
+        return NotificationModel(**notification_dict)
+
+    async def create_report_resolved_notification(
+        self,
+        user_id: str,
+        action_taken: str
+    ) -> NotificationModel:
+        """
+        Create notification for reporter when report is resolved
+        """
+        notification_dict = {
+            "user_id": ObjectId(user_id),
+            "type": NotificationType.REPORT_RESOLVED,
+            "message": f"Your report has been reviewed and action has been taken: {action_taken}",
+            "link": None,
+            "is_read": False,
+            "created_at": datetime.utcnow()
+        }
+
+        result = await self.collection.insert_one(notification_dict)
+        notification_dict["_id"] = result.inserted_id
+
+        return NotificationModel(**notification_dict)
 
     async def mark_all_as_read(self, user_id: str) -> bool:
         """

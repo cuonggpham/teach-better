@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, Field
+from enum import Enum
 from app.models.report import (
     ReportType,
     ReasonCategory,
@@ -17,6 +18,25 @@ class ResolutionSchema(BaseModel):
     action_taken: Optional[ActionTaken] = None
     notes: Optional[str] = None
     resolved_at: Optional[datetime] = None
+
+
+class ReportAction(str, Enum):
+    """
+    Actions that can be taken on a report
+    """
+    DELETE_POST = "delete_post"
+    BAN_USER_3_DAYS = "ban_user_3_days"
+    BAN_USER_7_DAYS = "ban_user_7_days"
+    BAN_USER_PERMANENT = "ban_user_permanent"
+    NO_ACTION = "no_action"
+
+
+class ReportProcessRequest(BaseModel):
+    """
+    Request schema for processing a report
+    """
+    action: ReportAction
+    reason: str = Field(..., min_length=10)
 
 
 class ReportBase(BaseModel):

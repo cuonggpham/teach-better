@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from app.core.database import get_database
 from app.schemas.user import UserCreate, UserSignup, UserSignin, Token, User
@@ -140,6 +140,24 @@ async def signin(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=t("auth.invalid_credentials")
         )
+
+    # Check if user is banned
+    ban_status = await user_service.check_ban_status(str(user.id))
+    if ban_status["is_banned"]:
+        ban_expires = ban_status.get("expires_at")
+        if ban_expires:
+            # Temporary ban
+            days_left = (ban_expires - datetime.utcnow()).days + 1
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Your account has been banned for {days_left} more day(s). Reason: {ban_status.get('reason', 'Violation of community guidelines')}"
+            )
+        else:
+            # Permanent ban
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Your account has been permanently banned. Reason: {ban_status.get('reason', 'Violation of community guidelines')}"
+            )
     
     # Check if user account is active (if status field exists)
     if hasattr(user, 'status') and user.status != "active":

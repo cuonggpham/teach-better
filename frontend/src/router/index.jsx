@@ -17,6 +17,8 @@ import DiagnosisHistoryPage from '../pages/DiagnosisHistoryPage';
 import AdminDashboard from '../pages/AdminDashboard';
 import UserManagement from '../pages/UserManagement';
 import UserDetail from '../pages/UserDetail';
+import PostReportDetailPage from '../pages/PostReportDetailPage';
+import ReportManagement from '../pages/ReportManagement';
 
 /**
  * Cấu hình React Router
@@ -100,6 +102,14 @@ const router = createBrowserRouter([
       {
         path: 'admin/posts',
         element: <PostManagement />,
+      },
+      {
+        path: 'admin/reports',
+        element: <ReportManagement />,
+      },
+      {
+        path: 'admin/reports/:reportId',
+        element: <PostReportDetailPage />,
       },
       {
         path: 'diagnosis',

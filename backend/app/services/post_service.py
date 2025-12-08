@@ -194,6 +194,29 @@ class PostService:
 
         return result.modified_count > 0
 
+    async def delete_post_by_admin(self, post_id: str) -> Optional[PostModel]:
+        """
+        Soft delete a post (admin only) by setting is_deleted flag
+        """
+        if not ObjectId.is_valid(post_id):
+            return None
+
+        result = await self.collection.find_one_and_update(
+            {"_id": ObjectId(post_id)},
+            {
+                "$set": {
+                    "is_deleted": True,
+                    "updated_at": datetime.utcnow()
+                }
+            },
+            return_document=True
+        )
+
+        if result:
+            return PostModel(**result)
+        return None
+
+
     async def decrement_answer_count(self, post_id: str) -> bool:
         """
         Decrement answer count for a post

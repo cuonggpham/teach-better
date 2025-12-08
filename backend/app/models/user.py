@@ -73,6 +73,9 @@ class UserModel(BaseModel):
     bio: Optional[str] = None
     role: UserRole = Field(default=UserRole.USER)
     status: UserStatus = Field(default=UserStatus.ACTIVE)
+    violation_count: int = Field(default=0)  # Track number of violations for progressive bans
+    ban_expires_at: Optional[datetime] = None  # When the ban expires (None if not banned or permanent)
+    ban_reason: Optional[str] = None  # Reason for the ban
     bookmarks: List[BookmarkItem] = Field(default_factory=list)
     bookmarked_post_ids: List[PyObjectId] = Field(default_factory=list)  # Deprecated, kept for backward compatibility
     created_at: datetime = Field(default_factory=datetime.utcnow)

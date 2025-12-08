@@ -259,7 +259,7 @@ async def get_posts_by_category_chart(
 ):
     """
     Get post counts grouped by category for chart visualization
-    Returns top 5 categories by count, sorted alphabetically if counts are equal
+    Returns all categories sorted by count (descending), then alphabetically
     
     Returns a list of {category, count} objects
     """
@@ -279,9 +279,9 @@ async def get_posts_by_category_chart(
         # Sort by count (descending) then by category name (ascending)
         category_counts.sort(key=lambda x: (-x["count"], x["_id"] if x["_id"] else "ZZZ"))
         
-        # Take only top 5
+        # Return all categories
         result = []
-        for item in category_counts[:5]:
+        for item in category_counts:
             result.append({
                 "category": item["_id"] if item["_id"] else "Uncategorized",
                 "count": item["count"]

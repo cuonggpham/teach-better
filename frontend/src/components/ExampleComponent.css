@@ -125,7 +125,7 @@
   flex-wrap: wrap;
 }
 
-button {
+.example-container button {
   padding: 10px 20px;
   border: none;
   border-radius: 10px;
@@ -133,6 +133,8 @@ button {
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  min-height: 40px;
+  box-sizing: border-box;
 }
 
 .btn-primary {
@@ -235,7 +237,7 @@ button {
     flex-direction: column;
   }
 
-  button {
+  .example-container button {
     width: 100%;
   }
 }

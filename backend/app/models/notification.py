@@ -12,6 +12,9 @@ class NotificationType(str, Enum):
     POST_UPVOTE = "post_upvote"
     ANSWER_ACCEPTED = "answer_accepted"
     SYSTEM_NOTICE = "system_notice"
+    ACCOUNT_BANNED = "account_banned"
+    POST_DELETED = "post_deleted"
+    REPORT_RESOLVED = "report_resolved"
 
 
 class NotificationModel(BaseModel):

@@ -57,6 +57,9 @@ class UserInDB(UserBase):
     bio: Optional[str] = None
     role: UserRole
     status: UserStatus
+    violation_count: int = 0
+    ban_expires_at: Optional[datetime] = None
+    ban_reason: Optional[str] = None
     bookmarked_post_ids: List[str] = Field(default_factory=list)
     created_at: datetime
     updated_at: datetime

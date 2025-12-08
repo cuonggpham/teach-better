@@ -16,7 +16,6 @@
   --background-color: #ffffff;
   --background-light: #fff5f8;
   --background-soft: #fafafa;
-  --hover-color: #fce4ec;
   --text-color: #555;
   --text-primary: #d81b60;
   --text-secondary: #666;
@@ -246,7 +245,7 @@ h4 {
   width: 100%;
 }
 
-body {
+/* body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
@@ -298,4 +297,4 @@ body {
 .category-actions {
   display: flex;
   gap: 10px;
-}
+} */

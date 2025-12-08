@@ -1,9 +1,9 @@
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, timedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 
-from app.models.user import UserModel
+from app.models.user import UserModel, UserStatus
 from app.schemas.user import UserCreate, UserUpdate
 from app.core.security import get_password_hash, verify_password
 
@@ -193,3 +193,99 @@ class UserService:
         if user and "bookmarked_post_ids" in user:
             return [str(post_id) for post_id in user["bookmarked_post_ids"]]
         return []
+
+    def calculate_ban_duration(self, violation_count: int) -> Optional[timedelta]:
+        """
+        Calculate ban duration based on violation count
+        Returns None for permanent ban
+        """
+        if violation_count == 1:
+            return timedelta(days=3)
+        elif violation_count == 2:
+            return timedelta(days=7)
+        else:  # >= 3 violations
+            return None  # Permanent ban
+
+    async def ban_user_with_violations(
+        self,
+        user_id: str,
+        reason: str,
+        admin_id: str
+    ) -> Optional[UserModel]:
+        """
+        Ban user and increment violation count with progressive duration
+        """
+        if not ObjectId.is_valid(user_id):
+            return None
+
+        # Get current user
+        user = await self.collection.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            return None
+
+        # Increment violation count
+        new_violation_count = user.get("violation_count", 0) + 1
+
+        # Calculate ban duration
+        ban_duration = self.calculate_ban_duration(new_violation_count)
+        
+        update_data = {
+            "status": UserStatus.LOCKED,
+            "violation_count": new_violation_count,
+            "ban_reason": reason,
+            "updated_at": datetime.utcnow()
+        }
+
+        if ban_duration:
+            # Temporary ban
+            ban_expires_at = datetime.utcnow() + ban_duration
+            update_data["ban_expires_at"] = ban_expires_at
+        else:
+            # Permanent ban
+            update_data["ban_expires_at"] = None
+
+        # Update user
+        updated_user = await self.collection.find_one_and_update(
+            {"_id": ObjectId(user_id)},
+            {"$set": update_data},
+            return_document=True
+        )
+
+        if updated_user:
+            return UserModel(**updated_user)
+        return None
+
+    async def check_ban_status(self, user_id: str) -> dict:
+        """
+        Check if user is currently banned
+        Returns: {"is_banned": bool, "reason": str, "expires_at": datetime or None}
+        """
+        if not ObjectId.is_valid(user_id):
+            return {"is_banned": False, "reason": None, "expires_at": None}
+
+        user = await self.collection.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            return {"is_banned": False, "reason": None, "expires_at": None}
+
+        # Check if user is locked
+        if user.get("status") != UserStatus.LOCKED:
+            return {"is_banned": False, "reason": None, "expires_at": None}
+
+        ban_expires_at = user.get("ban_expires_at")
+        
+        # If ban has expiration and it's passed, unlock user
+        if ban_expires_at and ban_expires_at < datetime.utcnow():
+            await self.collection.update_one(
+                {"_id": ObjectId(user_id)},
+                {"$set": {"status": UserStatus.ACTIVE, "ban_expires_at": None, "ban_reason": None}}
+            )
+            return {"is_banned": False, "reason": None, "expires_at": None}
+
+        # User is currently banned
+        return {
+            "is_banned": True,
+            "reason": user.get("ban_reason", "Violation of community guidelines"),
+            "expires_at": ban_expires_at,
+            "violation_count": user.get("violation_count", 0)
+        }
+

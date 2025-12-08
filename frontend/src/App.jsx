@@ -6,7 +6,6 @@ import { useToast } from './contexts/ToastContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import { ToastContainer } from './components/ui/Toast';
-import React from 'react';
 
 /**
  * Component App chính - Chỉ chứa layout và router-view

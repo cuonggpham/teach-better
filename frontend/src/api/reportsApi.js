@@ -47,3 +47,24 @@ export const getReportById = async (reportId) => {
 export const getAllReports = async (params = {}) => {
   return await axiosInstance.get('/reports/', { params });
 };
+
+/**
+ * Lấy chi tiết báo cáo kèm thông tin reporter và target (Admin only)
+ * @param {string} reportId - ID báo cáo
+ * @returns {Promise<Object>} Chi tiết báo cáo với thông tin đầy đủ
+ */
+export const getReportDetails = async (reportId) => {
+  return await axiosInstance.get(`/reports/${reportId}/details`);
+};
+
+/**
+ * Xử lý báo cáo - thực hiện hành động (Admin only)
+ * @param {string} reportId - ID báo cáo
+ * @param {Object} processData - Dữ liệu xử lý
+ * @param {string} processData.action - Hành động ('delete_post', 'ban_user_3_days', 'ban_user_7_days', 'ban_user_permanent', 'no_action')
+ * @param {string} processData.reason - Lý do xử lý
+ * @returns {Promise<Object>} Kết quả xử lý
+ */
+export const processReport = async (reportId, processData) => {
+  return await axiosInstance.post(`/reports/${reportId}/process`, processData);
+};

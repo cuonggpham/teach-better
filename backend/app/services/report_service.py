@@ -248,3 +248,212 @@ class ReportService:
         
         reports = await cursor.to_list(length=None)
         return [ReportModel(**report) for report in reports]
+
+    async def get_report_with_details(self, report_id: str) -> Optional[dict]:
+        """
+        Get report with detailed information about target (post or user)
+        """
+        if not ObjectId.is_valid(report_id):
+            return None
+
+        report = await self.collection.find_one({"_id": ObjectId(report_id)})
+        if not report:
+            return None
+
+        result = {
+            "report": ReportModel(**report),
+            "reporter": None,
+            "target": None
+        }
+
+        # Get reporter info
+        reporter = await self.users_collection.find_one({"_id": report["reporter_id"]})
+        if reporter:
+            result["reporter"] = {
+                "id": str(reporter["_id"]),
+                "name": reporter.get("name", "Unknown"),
+                "email": reporter.get("email", "")
+            }
+
+        # Get target info based on type
+        report_type = report["report_type"]
+        target_id = report["target_id"]
+
+        if report_type == ReportType.POST:
+            target = await self.posts_collection.find_one({"_id": target_id})
+            if target:
+                author = await self.users_collection.find_one({"_id": target["author_id"]})
+                result["target"] = {
+                    "type": "post",
+                    "id": str(target["_id"]),
+                    "title": target.get("title", ""),
+                    "content": target.get("content", "")[:200],  # Preview
+                    "author_id": str(target["author_id"]),
+                    "author_name": author.get("name", "Unknown") if author else "Unknown",
+                    "is_deleted": target.get("is_deleted", False)
+                }
+        elif report_type == ReportType.USER:
+            target = await self.users_collection.find_one({"_id": target_id})
+            if target:
+                result["target"] = {
+                    "type": "user",
+                    "id": str(target["_id"]),
+                    "name": target.get("name", ""),
+                    "email": target.get("email", ""),
+                    "status": target.get("status", "active"),
+                    "violation_count": target.get("violation_count", 0)
+                }
+        elif report_type == ReportType.ANSWER:
+            target = await self.answers_collection.find_one({"_id": target_id})
+            if target:
+                author = await self.users_collection.find_one({"_id": target["author_id"]})
+                result["target"] = {
+                    "type": "answer",
+                    "id": str(target["_id"]),
+                    "content": target.get("content", "")[:200],  # Preview
+                    "author_id": str(target["author_id"]),
+                    "author_name": author.get("name", "Unknown") if author else "Unknown"
+                }
+
+        return result
+
+    async def process_report_action(
+        self,
+        report_id: str,
+        action: str,
+        reason: str,
+        admin_id: str
+    ) -> Optional[dict]:
+        """
+        Process a report by taking appropriate action
+        Returns: {"report": ReportModel, "action_result": dict}
+        """
+        from app.schemas.report import ReportAction
+        
+        if not ObjectId.is_valid(report_id):
+            return None
+
+        report = await self.collection.find_one({"_id": ObjectId(report_id)})
+        if not report:
+            return None
+
+        action_result = {
+            "success": False,
+            "message": "",
+            "ban_duration": None
+        }
+
+        report_type = report["report_type"]
+        target_id = report["target_id"]
+
+        # Process action based on type
+        if action == ReportAction.DELETE_POST and report_type == ReportType.POST:
+            # Delete the post
+            post = await self.posts_collection.find_one_and_update(
+                {"_id": target_id},
+                {"$set": {"is_deleted": True, "updated_at": datetime.utcnow()}},
+                return_document=True
+            )
+            if post:
+                action_result["success"] = True
+                action_result["message"] = "Post deleted successfully"
+                action_result["target_author_id"] = str(post["author_id"])
+                action_result["post_title"] = post.get("title", "")
+
+        elif action in [ReportAction.BAN_USER_3_DAYS, ReportAction.BAN_USER_7_DAYS, ReportAction.BAN_USER_PERMANENT]:
+            # Ban the user
+            if report_type == ReportType.USER:
+                user_to_ban_id = target_id
+            elif report_type == ReportType.POST:
+                post = await self.posts_collection.find_one({"_id": target_id})
+                user_to_ban_id = post["author_id"] if post else None
+            elif report_type == ReportType.ANSWER:
+                answer = await self.answers_collection.find_one({"_id": target_id})
+                user_to_ban_id = answer["author_id"] if answer else None
+            else:
+                user_to_ban_id = None
+
+            if user_to_ban_id:
+                user = await self.users_collection.find_one({"_id": user_to_ban_id})
+                if user:
+                    new_violation_count = user.get("violation_count", 0) + 1
+
+                    # Determine ban duration
+                    if action == ReportAction.BAN_USER_3_DAYS or new_violation_count == 1:
+                        from datetime import timedelta
+                        ban_duration = timedelta(days=3)
+                        ban_duration_str = "3 days"
+                    elif action == ReportAction.BAN_USER_7_DAYS or new_violation_count == 2:
+                        from datetime import timedelta
+                        ban_duration = timedelta(days=7)
+                        ban_duration_str = "7 days"
+                    else:  # PERMANENT or >= 3 violations
+                        ban_duration = None
+                        ban_duration_str = "permanent"
+
+                    update_data = {
+                        "status": "locked",
+                        "violation_count": new_violation_count,
+                        "ban_reason": reason,
+                        "updated_at": datetime.utcnow()
+                    }
+
+                    if ban_duration:
+                        update_data["ban_expires_at"] = datetime.utcnow() + ban_duration
+                    else:
+                        update_data["ban_expires_at"] = None
+
+                    # Update user
+                    await self.users_collection.update_one(
+                        {"_id": user_to_ban_id},
+                        {"$set": update_data}
+                    )
+
+                    action_result["success"] = True
+                    action_result["message"] = f"User banned for {ban_duration_str}"
+                    action_result["ban_duration"] = ban_duration_str
+                    action_result["banned_user_id"] = str(user_to_ban_id)
+
+        elif action == ReportAction.NO_ACTION:
+            action_result["success"] = True
+            action_result["message"] = "No action taken"
+
+        # Update report status
+        resolution = {
+            "admin_id": ObjectId(admin_id),
+            "action_taken": self._map_action_to_taken(action),
+            "notes": reason,
+            "resolved_at": datetime.utcnow()
+        }
+
+        updated_report = await self.collection.find_one_and_update(
+            {"_id": ObjectId(report_id)},
+            {
+                "$set": {
+                    "status": ReportStatus.RESOLVED,
+                    "resolution": resolution
+                }
+            },
+            return_document=True
+        )
+
+        return {
+            "report": ReportModel(**updated_report) if updated_report else None,
+            "action_result": action_result
+        }
+
+    def _map_action_to_taken(self, action: str) -> ActionTaken:
+        """
+        Map ReportAction to ActionTaken enum
+        """
+        from app.schemas.report import ReportAction
+        
+        if action == ReportAction.DELETE_POST:
+            return ActionTaken.DELETED_CONTENT
+        elif action in [ReportAction.BAN_USER_3_DAYS, ReportAction.BAN_USER_7_DAYS, ReportAction.BAN_USER_PERMANENT]:
+            return ActionTaken.LOCKED_USER
+        elif action == ReportAction.NO_ACTION:
+            return ActionTaken.NO_ACTION
+        else:
+            return ActionTaken.NO_ACTION
+

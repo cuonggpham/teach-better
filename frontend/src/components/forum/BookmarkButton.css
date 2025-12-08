@@ -1,13 +1,15 @@
 .bookmark-button {
   transition: all 0.2s ease;
-  padding: 0.5rem !important;
-  min-width: auto !important;
+  padding: 0.5rem;
+  min-width: 40px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px !important;
-  font-size: 14px;
-  cursor: pointer;
+  border-radius: 10px;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .bookmark-button svg {
@@ -15,29 +17,20 @@
   height: 20px;
 }
 
-/* Khi đã bookmark */
 .bookmark-button.bookmarked {
-  background: linear-gradient(145deg, #4caf50, #388e3c) !important; /* Màu xanh khi đã chọn */
+  background: linear-gradient(145deg, #ec407a, #d81b60) !important;
   color: white !important;
-  border-color: #4caf50 !important;
+  border-color: #ec407a !important;
 }
 
 .bookmark-button:not(.bookmarked) {
-  background: rgba(76, 175, 80, 0.1) !important; /* Màu nền nhẹ khi chưa chọn */
-  color: #4caf50 !important;  /* Màu chữ */
-  border: 1px solid rgba(76, 175, 80, 0.2) !important;
+  background: rgba(236, 64, 122, 0.05) !important;
+  color: #ec407a !important;
+  border: 1px solid rgba(236, 64, 122, 0.2) !important;
 }
 
-/* Hover khi chưa bookmark */
 .bookmark-button:hover:not(.bookmarked) {
-  background: rgba(76, 175, 80, 0.2) !important;  /* Nền khi hover */
-  color: #388e3c !important;  /* Chữ khi hover */
-  border-color: #4caf50 !important;
-}
-
-/* Hover khi đã bookmark */
-.bookmark-button.bookmarked:hover {
-  background: linear-gradient(145deg, #388e3c, #4caf50) !important;  /* Đổi màu khi hover */
-  color: white !important;
-  border-color: #388e3c !important;
+  background: rgba(236, 64, 122, 0.1) !important;
+  color: #d81b60 !important;
+  border-color: #ec407a !important;
 }
