@@ -265,7 +265,7 @@ docker run -d -p 27017:27017 --name mongodb mongo:latest
   ```bash
   sudo apt-get update
   sudo apt-get install -y mongodb
-  sudo systemctl start mongodb
+ sudo systemctl start mongod
   ```
 
 #### Bước 2: Chạy Backend (FastAPI)

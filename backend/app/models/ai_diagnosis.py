@@ -43,7 +43,7 @@ class AIResultModel(BaseModel):
     """
     misunderstanding_points: List[str] = Field(default_factory=list)
     simulation: Optional[str] = None
-    suggestions: Optional[str] = None
+    suggestions: List[str] = Field(default_factory=list)
     comparison_to_previous: Optional[str] = None
 
 
