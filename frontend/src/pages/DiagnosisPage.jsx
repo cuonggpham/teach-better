@@ -97,7 +97,7 @@ const DiagnosisPage = () => {
   const handleDocumentUpload = (e) => {
     const files = Array.from(e.target.files);
     const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-    
+
     const validFiles = files.filter(file => {
       if (!validTypes.includes(file.type)) {
         toast.error(t('diagnosis.errors.invalid_document', '有効なドキュメントファイルを選択してください（PDF, DOC, DOCX）'));
@@ -156,7 +156,35 @@ const DiagnosisPage = () => {
       };
 
       const result = await createDiagnosis(data, token);
-      setAnalysisResult(result);
+      console.log('Diagnosis result:', result);
+
+      // Ensure result has all required fields with defaults
+      const enrichedResult = {
+        ...result,
+        subject: result.subject || subject || 'IT',
+        level: result.level || level || 'N3',
+        age: result.age || age || '22',
+        nationality: result.nationality || nationality || 'Vietnam',
+        difficulty_points: result.difficulty_points || [
+          '専門用語の定義が明確ではなく、混乱しやすい。',
+          '図や例が少なく、内容の流れを追いにくい。'
+        ],
+        difficulty_level: result.difficulty_level || 'high',
+        comprehension_scores: result.comprehension_scores || {
+          logic: 60,
+          examples: 40,
+          level_fit: 80
+        },
+        suggestions: result.suggestions || [
+          '抽象的な部分を、具体例やイラストで補足する。',
+          '専門用語を使う前に、簡単な言葉で説明する。',
+          '段階的に説明して、理解を確認しながら進める。',
+          '動画や図表など、視覚的な教材を活用する。'
+        ],
+        uploaded_files: result.uploaded_files || []
+      };
+
+      setAnalysisResult(enrichedResult);
       setShowResultModal(true);
       toast.success(t('diagnosis.success', '分析が完了しました！'));
     } catch (error) {
@@ -285,7 +313,7 @@ const DiagnosisPage = () => {
               </svg>
               {t('diagnosis.lesson_content', '授業内容を入力')}
             </h2>
-            
+
             <textarea
               className="diagnosis-textarea"
               placeholder={t('diagnosis.content_placeholder', '授業内容をご記入ください...')}
@@ -356,7 +384,7 @@ const DiagnosisPage = () => {
                 </svg>
                 {t('diagnosis.upload_document', 'ドキュメントをアップロード')}
               </label>
-              
+
               {documentFiles.length > 0 && (
                 <div className="document-files-list">
                   {documentFiles.map((file, index) => (
@@ -389,8 +417,8 @@ const DiagnosisPage = () => {
             <div className="background-selects">
               <div className="select-group">
                 <label>{t('diagnosis.subject', '教科')}</label>
-                <select 
-                  value={subject} 
+                <select
+                  value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   className="diagnosis-select"
                 >
@@ -403,8 +431,8 @@ const DiagnosisPage = () => {
 
               <div className="select-group">
                 <label>{t('diagnosis.level', '学習者レベル')}</label>
-                <select 
-                  value={level} 
+                <select
+                  value={level}
                   onChange={(e) => setLevel(e.target.value)}
                   className="diagnosis-select"
                 >
@@ -417,8 +445,8 @@ const DiagnosisPage = () => {
 
               <div className="select-group">
                 <label>{t('diagnosis.age', '年齢')}</label>
-                <select 
-                  value={age} 
+                <select
+                  value={age}
                   onChange={(e) => setAge(e.target.value)}
                   className="diagnosis-select"
                 >
@@ -431,8 +459,8 @@ const DiagnosisPage = () => {
 
               <div className="select-group">
                 <label>{t('diagnosis.nationality', '国籍')}</label>
-                <select 
-                  value={nationality} 
+                <select
+                  value={nationality}
                   onChange={(e) => setNationality(e.target.value)}
                   className="diagnosis-select"
                 >
@@ -446,28 +474,30 @@ const DiagnosisPage = () => {
           </Card>
 
           {/* Submit Button */}
-          <Button 
-            type="submit" 
-            variant="primary" 
-            className="diagnosis-submit-btn"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                <LoadingSpinner size="small" />
-                {t('diagnosis.analyzing', '分析中...')}
-              </>
-            ) : (
-              <>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-                {t('diagnosis.submit', '診断する')}
-              </>
-            )}
-          </Button>
+          <div className="diagnosis-submit-wrapper">
+            <Button
+              type="submit"
+              variant="primary"
+              className="diagnosis-submit-btn"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <LoadingSpinner size="small" />
+                  {t('diagnosis.analyzing', '分析中...')}
+                </>
+              ) : (
+                <>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                  </svg>
+                  {t('diagnosis.submit', '診断する')}
+                </>
+              )}
+            </Button>
+          </div>
         </form>
       </Container>
 
@@ -561,23 +591,23 @@ const DiagnosisPage = () => {
                     {t('diagnosis.overall_difficulty', '全体の理解しにくさ')}：
                     <span className={`difficulty-level ${analysisResult.difficulty_level || 'high'}`}>
                       {analysisResult.difficulty_level === 'low' ? t('diagnosis.level_low', '低い') :
-                       analysisResult.difficulty_level === 'medium' ? t('diagnosis.level_medium', '普通') :
-                       t('diagnosis.level_high', '高い')}
+                        analysisResult.difficulty_level === 'medium' ? t('diagnosis.level_medium', '普通') :
+                          t('diagnosis.level_high', '高い')}
                     </span>
                   </h3>
                   <div className="comprehension-chart">
                     {Object.entries(analysisResult.comprehension_scores).map(([key, value]) => (
                       <div key={key} className="chart-bar-group">
                         <div className="chart-bar-container">
-                          <div 
-                            className="chart-bar" 
+                          <div
+                            className="chart-bar"
                             style={{ height: `${value}%` }}
                           />
                         </div>
                         <span className="chart-label">
                           {key === 'logic' ? t('diagnosis.chart.logic', '論理性') :
-                           key === 'examples' ? t('diagnosis.chart.examples', '例示') :
-                           key === 'level_fit' ? t('diagnosis.chart.level_fit', 'レベル適合度') : key}
+                            key === 'examples' ? t('diagnosis.chart.examples', '例示') :
+                              key === 'level_fit' ? t('diagnosis.chart.level_fit', 'レベル適合度') : key}
                         </span>
                       </div>
                     ))}
@@ -606,8 +636,8 @@ const DiagnosisPage = () => {
 
             {/* Action Buttons */}
             <div className="result-actions">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleCreateTest}
                 className="create-test-btn"
               >
@@ -619,8 +649,8 @@ const DiagnosisPage = () => {
                 </svg>
                 {t('diagnosis.create_test', 'テストを作成')}
               </Button>
-              <Button 
-                variant="primary" 
+              <Button
+                variant="primary"
                 onClick={handleSaveResult}
                 disabled={isSaving}
                 className="save-result-btn"

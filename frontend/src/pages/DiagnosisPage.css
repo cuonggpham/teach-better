@@ -3,7 +3,7 @@
   min-height: calc(100vh - 200px);
   padding: 3rem 1rem;
   background: #fff5f8;
-  background-image: 
+  background-image:
     radial-gradient(circle at 20% 50%, rgba(252, 228, 236, 0.5) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, rgba(252, 228, 236, 0.4) 0%, transparent 50%);
   position: relative;
@@ -31,7 +31,7 @@
   background: #ffffff;
   border: 1px solid rgba(236, 64, 122, 0.1);
   border-radius: 20px;
-  box-shadow: 
+  box-shadow:
     8px 8px 16px rgba(236, 129, 158, 0.12),
     -8px -8px 16px rgba(255, 255, 255, 0.95);
   position: relative;
@@ -58,7 +58,7 @@
   background: #ffffff;
   border: 1px solid rgba(236, 64, 122, 0.1);
   border-radius: 24px;
-  box-shadow: 
+  box-shadow:
     12px 12px 24px rgba(236, 129, 158, 0.15),
     -12px -12px 24px rgba(255, 255, 255, 0.95);
 }
@@ -90,8 +90,15 @@
 .diagnosis-form {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1.5rem;
   position: relative;
+  padding-bottom: 4rem;
+}
+
+.diagnosis-form>.diagnosis-input-card,
+.diagnosis-form>.diagnosis-background-card {
+  width: 100%;
 }
 
 .diagnosis-input-card,
@@ -99,7 +106,7 @@
   background: #ffffff;
   border: 1px solid rgba(236, 64, 122, 0.1);
   border-radius: 20px;
-  box-shadow: 
+  box-shadow:
     8px 8px 16px rgba(236, 129, 158, 0.1),
     -8px -8px 16px rgba(255, 255, 255, 0.95);
 }
@@ -131,7 +138,7 @@
   background: #fafafa;
   resize: vertical;
   transition: all 0.3s ease;
-  box-shadow: 
+  box-shadow:
     inset 3px 3px 6px rgba(236, 129, 158, 0.08),
     inset -3px -3px 6px rgba(255, 255, 255, 0.95);
 }
@@ -139,7 +146,7 @@
 .diagnosis-textarea:focus {
   outline: none;
   border-color: #ec407a;
-  box-shadow: 
+  box-shadow:
     inset 4px 4px 8px rgba(236, 129, 158, 0.12),
     inset -4px -4px 8px rgba(255, 255, 255, 0.95),
     0 0 0 3px rgba(236, 64, 122, 0.1);
@@ -325,7 +332,7 @@
   color: #555;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 
+  box-shadow:
     inset 3px 3px 6px rgba(236, 129, 158, 0.08),
     inset -3px -3px 6px rgba(255, 255, 255, 0.95);
 }
@@ -333,15 +340,25 @@
 .diagnosis-select:focus {
   outline: none;
   border-color: #ec407a;
-  box-shadow: 
+  box-shadow:
     inset 4px 4px 8px rgba(236, 129, 158, 0.12),
     inset -4px -4px 8px rgba(255, 255, 255, 0.95),
     0 0 0 3px rgba(236, 64, 122, 0.1);
 }
 
+/* Submit Button Wrapper */
+.diagnosis-submit-wrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 1.5rem 0;
+  position: relative;
+  z-index: 100;
+}
+
 /* Submit Button */
 .diagnosis-submit-btn {
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
   justify-content: center;
   gap: 0.625rem;
@@ -349,8 +366,8 @@
   font-size: 1.1rem;
   font-weight: 600;
   border-radius: 14px;
-  margin-top: 0.5rem;
-  box-shadow: 
+  min-width: 200px;
+  box-shadow:
     8px 8px 16px rgba(236, 129, 158, 0.2),
     -8px -8px 16px rgba(255, 255, 255, 0.9);
   transition: all 0.3s ease;
@@ -358,7 +375,7 @@
 
 .diagnosis-submit-btn:hover:not(:disabled) {
   transform: translateY(-3px);
-  box-shadow: 
+  box-shadow:
     12px 12px 24px rgba(236, 129, 158, 0.25),
     -12px -12px 24px rgba(255, 255, 255, 0.95);
 }
@@ -400,7 +417,7 @@
   padding: 0.75rem;
   background: #ffffff;
   border-radius: 10px;
-  box-shadow: 
+  box-shadow:
     4px 4px 8px rgba(236, 129, 158, 0.08),
     -4px -4px 8px rgba(255, 255, 255, 0.9);
 }
@@ -428,7 +445,7 @@
   background: #ffffff;
   border: 1px solid rgba(236, 64, 122, 0.1);
   border-radius: 14px;
-  box-shadow: 
+  box-shadow:
     4px 4px 8px rgba(236, 129, 158, 0.06),
     -4px -4px 8px rgba(255, 255, 255, 0.9);
 }
@@ -703,14 +720,14 @@
 }
 
 .save-result-btn {
-  box-shadow: 
+  box-shadow:
     4px 4px 8px rgba(236, 129, 158, 0.2),
     -4px -4px 8px rgba(255, 255, 255, 0.9);
 }
 
 .save-result-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     6px 6px 12px rgba(236, 129, 158, 0.25),
     -6px -6px 12px rgba(255, 255, 255, 0.95);
 }

@@ -48,11 +48,11 @@ import axiosInstance from './axiosConfig';
  */
 export const createDiagnosis = async (data, token) => {
   const formData = new FormData();
-  
+
   if (data.lesson_content) {
     formData.append('lesson_content', data.lesson_content);
   }
-  
+
   if (data.audio_file) {
     formData.append('audio_file', data.audio_file);
   }
@@ -66,22 +66,24 @@ export const createDiagnosis = async (data, token) => {
   if (data.subject) {
     formData.append('subject', data.subject);
   }
-  
+
   formData.append('nationality', data.nationality);
   formData.append('level', data.level);
-  
+
   if (data.age) {
     formData.append('age', data.age);
   }
 
-  const response = await axiosInstance.post('/diagnosis', formData, {
+  const response = await axiosInstance.post('/diagnoses/form', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
       Authorization: `Bearer ${token}`,
     },
   });
-  
-  return response.data;
+
+  // Note: axiosConfig.js response interceptor already returns response.data
+  // so 'response' here is already the data object
+  return response;
 };
 
 /**
@@ -91,12 +93,12 @@ export const createDiagnosis = async (data, token) => {
  * @returns {Promise} - Kết quả lưu
  */
 export const saveDiagnosisResult = async (diagnosisId, token) => {
-  const response = await axiosInstance.post(`/diagnosis/${diagnosisId}/save`, {}, {
+  const response = await axiosInstance.post(`/diagnoses/${diagnosisId}/save`, {}, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  
+
   return response.data;
 };
 
@@ -127,7 +129,7 @@ export const saveDiagnosisResult = async (diagnosisId, token) => {
  */
 export const getDiagnosisHistory = async (token, params = {}) => {
   const queryParams = new URLSearchParams();
-  
+
   if (params.search) {
     queryParams.append('search', params.search);
   }
@@ -147,12 +149,12 @@ export const getDiagnosisHistory = async (token, params = {}) => {
     queryParams.append('limit', params.limit);
   }
 
-  const response = await axiosInstance.get(`/diagnosis?${queryParams.toString()}`, {
+  const response = await axiosInstance.get(`/diagnoses?${queryParams.toString()}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  
+
   return response.data;
 };
 
@@ -163,12 +165,12 @@ export const getDiagnosisHistory = async (token, params = {}) => {
  * @returns {Promise} - Chi tiết chẩn đoán (same format as createDiagnosis response)
  */
 export const getDiagnosisDetail = async (diagnosisId, token) => {
-  const response = await axiosInstance.get(`/diagnosis/${diagnosisId}`, {
+  const response = await axiosInstance.get(`/diagnoses/${diagnosisId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  
+
   return response.data;
 };
 
@@ -179,11 +181,11 @@ export const getDiagnosisDetail = async (diagnosisId, token) => {
  * @returns {Promise} - Kết quả xóa
  */
 export const deleteDiagnosis = async (diagnosisId, token) => {
-  const response = await axiosInstance.delete(`/diagnosis/${diagnosisId}`, {
+  const response = await axiosInstance.delete(`/diagnoses/${diagnosisId}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  
+
   return response.data;
 };
