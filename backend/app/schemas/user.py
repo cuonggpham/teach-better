@@ -72,7 +72,8 @@ class User(UserInDB):
     """
     User response schema
     """
-    pass
+    post_count: Optional[int] = Field(default=0, description="Number of posts created by user (computed field)")
+    comment_count: Optional[int] = Field(default=0, description="Number of comments created by user (computed field)")
 
 
 class UserLogin(BaseModel):
