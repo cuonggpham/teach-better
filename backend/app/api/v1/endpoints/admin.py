@@ -9,6 +9,7 @@ from app.schemas.user import User
 from app.schemas.admin import (
     AdminUserUpdate,
     AdminChangeRole,
+    AdminChangeStatus,
     UserListResponse,
     UserDetailResponse
 )
@@ -303,12 +304,14 @@ async def get_all_users(
     end_date: Optional[datetime] = Query(None, description="Filter by registration date (to)"),
     admin_service: AdminService = Depends(get_admin_service),
     current_admin: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database),
     t: Translator = Depends(get_translator)
 ):
     """
     Get all users with filtering, searching, and pagination
 
     Admin only endpoint
+    Includes post_count and comment_count for each user
     """
     users, total = await admin_service.get_all_users(
         skip=skip,
@@ -320,11 +323,20 @@ async def get_all_users(
         end_date=end_date
     )
 
-    # Convert to response models
+    # Convert to response models with post and comment counts
     user_list = []
     for user in users:
         user_dict = user.model_dump(by_alias=True)
         user_dict["_id"] = str(user_dict["_id"])
+
+        # Count posts and comments for this user
+        user_id = user_dict["_id"]
+        post_count = await db.posts.count_documents({"author_id": ObjectId(user_id)})
+        comment_count = await db.comments.count_documents({"author_id": ObjectId(user_id)})
+
+        user_dict["post_count"] = post_count
+        user_dict["comment_count"] = comment_count
+
         user_list.append(User(**user_dict))
 
     return UserListResponse(
@@ -340,12 +352,14 @@ async def get_user_detail(
     user_id: str,
     admin_service: AdminService = Depends(get_admin_service),
     current_admin: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database),
     t: Translator = Depends(get_translator)
 ):
     """
     Get detailed information of a specific user
 
     Admin only endpoint
+    Includes post_count and comment_count
     """
     user = await admin_service.get_user_detail(user_id)
 
@@ -358,6 +372,13 @@ async def get_user_detail(
     # Convert to response model
     user_dict = user.model_dump(by_alias=True)
     user_dict["_id"] = str(user_dict["_id"])
+
+    # Count posts and comments for this user
+    post_count = await db.posts.count_documents({"author_id": ObjectId(user_id)})
+    comment_count = await db.comments.count_documents({"author_id": ObjectId(user_id)})
+
+    user_dict["post_count"] = post_count
+    user_dict["comment_count"] = comment_count
 
     return UserDetailResponse(user=User(**user_dict))
 
@@ -507,6 +528,74 @@ async def unlock_user(
     }
 
 
+@router.patch("/users/{user_id}/status")
+async def update_user_status(
+    user_id: str,
+    status_data: AdminChangeStatus,
+    request: Request,
+    admin_service: AdminService = Depends(get_admin_service),
+    current_admin: User = Depends(get_current_admin),
+    t: Translator = Depends(get_translator)
+):
+    """
+    Update user status (active/locked) via PATCH
+
+    This endpoint provides a unified way to change user status using a boolean flag.
+    Frontend can call PATCH /admin/users/{user_id}/status with { "is_active": true/false }
+
+    Admin only endpoint
+    Automatically logs the action to audit log
+    Cannot lock/unlock yourself
+    """
+    # Prevent admin from changing their own status
+    if current_admin.id == user_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot change your own account status"
+        )
+
+    # Get request metadata
+    ip_address = request.client.host if request.client else None
+    user_agent = request.headers.get("user-agent")
+
+    # Call lock or unlock based on is_active flag
+    if status_data.is_active:
+        # Unlock user
+        updated_user = await admin_service.unlock_user(
+            user_id=user_id,
+            admin_id=current_admin.id,
+            admin_email=current_admin.email,
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
+        message = "User account unlocked successfully"
+    else:
+        # Lock user
+        updated_user = await admin_service.lock_user(
+            user_id=user_id,
+            admin_id=current_admin.id,
+            admin_email=current_admin.email,
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
+        message = "User account locked successfully"
+
+    if not updated_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found or cannot update status"
+        )
+
+    # Convert to response model
+    user_dict = updated_user.model_dump(by_alias=True)
+    user_dict["_id"] = str(user_dict["_id"])
+
+    return {
+        "message": message,
+        "data": User(**user_dict)
+    }
+
+
 @router.put("/users/{user_id}/role")
 async def change_user_role(
     user_id: str,
@@ -518,6 +607,60 @@ async def change_user_role(
 ):
     """
     Change user role (USER <-> ADMIN)
+
+    Admin only endpoint
+    Automatically logs the action to audit log
+    """
+    # Prevent admin from changing their own role
+    if current_admin.id == user_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot change your own role"
+        )
+
+    # Get request metadata
+    ip_address = request.client.host if request.client else None
+    user_agent = request.headers.get("user-agent")
+
+    updated_user = await admin_service.change_user_role(
+        user_id=user_id,
+        new_role=role_data.role,
+        admin_id=current_admin.id,
+        admin_email=current_admin.email,
+        ip_address=ip_address,
+        user_agent=user_agent
+    )
+
+    if not updated_user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=t("user.not_found")
+        )
+
+    # Convert to response model
+    user_dict = updated_user.model_dump(by_alias=True)
+    user_dict["_id"] = str(user_dict["_id"])
+
+    return {
+        "message": "User role changed successfully",
+        "data": User(**user_dict)
+    }
+
+
+@router.patch("/users/{user_id}/role")
+async def patch_user_role(
+    user_id: str,
+    role_data: AdminChangeRole,
+    request: Request,
+    admin_service: AdminService = Depends(get_admin_service),
+    current_admin: User = Depends(get_current_admin),
+    t: Translator = Depends(get_translator)
+):
+    """
+    Change user role (USER <-> ADMIN) via PATCH
+
+    This endpoint provides the same functionality as PUT /users/{user_id}/role
+    but uses PATCH method to align with frontend expectations.
 
     Admin only endpoint
     Automatically logs the action to audit log

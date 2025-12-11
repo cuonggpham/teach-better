@@ -22,6 +22,13 @@ class AdminChangeRole(BaseModel):
     role: UserRole = Field(..., description="New role for the user")
 
 
+class AdminChangeStatus(BaseModel):
+    """
+    Schema for admin to change user status (active/locked)
+    """
+    is_active: bool = Field(..., description="New status for the user (True = active, False = locked)")
+
+
 class UserListResponse(BaseModel):
     """
     Response schema for user list with pagination
