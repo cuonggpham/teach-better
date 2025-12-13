@@ -242,9 +242,22 @@ const PostManagement = () => {
                                         >
                                             {getPostField(post, 'title', t('posts.no_title'))}
                                         </h3>
-                                        <p className="post-description">{getPostField(post, 'content', t('posts.no_content')).substring(0, 100)}...</p>                                        <div className="post-meta">
-                                            <span className="post-author">{authorName}</span>
-                                            <span className="post-time">⏰ {formatDate(post.created_at)}</span>
+                                        <p className="post-description">{getPostField(post, 'content', t('posts.no_content')).substring(0, 100)}...</p>
+                                        <div className="post-meta">
+                                            <span className="post-author">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                                    <circle cx="12" cy="7" r="4" />
+                                                </svg>
+                                                {authorName}
+                                            </span>
+                                            <span className="post-time">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <circle cx="12" cy="12" r="10" />
+                                                    <polyline points="12 6 12 12 16 14" />
+                                                </svg>
+                                                {formatDate(post.created_at)}
+                                            </span>
                                         </div>
 
                                         <div className="post-tags">
@@ -260,19 +273,40 @@ const PostManagement = () => {
                                                 className="detail-btn"
                                                 onClick={() => handleViewDetails(postId)}
                                             >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                    <circle cx="12" cy="12" r="3" />
+                                                </svg>
                                                 {t('posts.actions.details')}
                                             </button>
                                             <button
                                                 className="delete-btn"
                                                 onClick={() => handleDelete(postId)}
                                             >
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <polyline points="3 6 5 6 21 6" />
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                                    <line x1="10" y1="11" x2="10" y2="17" />
+                                                    <line x1="14" y1="11" x2="14" y2="17" />
+                                                </svg>
                                                 {t('posts.actions.delete')}
                                             </button>
                                         </div>
 
                                         <div className="post-stats">
-                                            <span className="comment-count">💬 {getPostField(post, 'answer_count', 0)}</span>
-                                            <span className="view-count">👁 {getPostField(post, 'view_count', 0)} views</span>
+                                            <span className="comment-count">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                                </svg>
+                                                {getPostField(post, 'answer_count', 0)}
+                                            </span>
+                                            <span className="view-count">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                    <circle cx="12" cy="12" r="3" />
+                                                </svg>
+                                                {getPostField(post, 'view_count', 0)}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

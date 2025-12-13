@@ -114,8 +114,12 @@ const ReportManagement = () => {
         return statusClasses[status] || 'status-pending';
     };
 
-    const handleViewReport = (reportId) => {
-        navigate(`/admin/reports/${reportId}`);
+    const handleViewReport = (report) => {
+        if (report.report_type === 'user') {
+            navigate(`/admin/user-reports/${report._id}`);
+        } else {
+            navigate(`/admin/reports/${report._id}`);
+        }
     };
 
     // Pagination
@@ -261,7 +265,7 @@ const ReportManagement = () => {
                                             <div className="col-actions">
                                                 <button
                                                     className="view-btn"
-                                                    onClick={() => handleViewReport(report._id)}
+                                                    onClick={() => handleViewReport(report)}
                                                 >
                                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />

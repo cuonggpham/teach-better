@@ -283,36 +283,32 @@
   }
 }
 
-/* Additional button styles for soft delete functionality */
+/* Button overrides for CategoryCard - uses base styles from Button.css */
 .btn-restore {
-  background-color: #4CAF50;
-  color: white;
-  border-color: #4CAF50;
+  background: #4caf50 !important;
+  color: white !important;
+  border-color: #4caf50 !important;
 }
 
-.btn-restore:hover {
-  background-color: #45a049;
-  border-color: #45a049;
+.btn-restore:hover:not(:disabled) {
+  background: #43a047 !important;
+  border-color: #43a047 !important;
 }
 
-.btn-warning {
-  background-color: #ff9800;
-  color: white;
-  border-color: #ff9800;
+.btn-edit {
+  background: #ec407a !important;
+  color: white !important;
 }
 
-.btn-warning:hover {
-  background-color: #e68900;
-  border-color: #e68900;
+.btn-edit:hover:not(:disabled) {
+  background: #d81b60 !important;
 }
 
-.btn-success {
-  background-color: #4CAF50;
-  color: white;
-  border-color: #4CAF50;
+.btn-delete {
+  background: #f06292 !important;
+  color: white !important;
 }
 
-.btn-success:hover {
-  background-color: #45a049;
-  border-color: #45a049;
+.btn-delete:hover:not(:disabled) {
+  background: #ec407a !important;
 }

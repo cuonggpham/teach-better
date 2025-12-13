@@ -13,32 +13,31 @@ const HomePage = () => {
 
   const features = [
     {
-      icon: '📚',
-      title: t('home.features.learn.title'),
-      description: t('home.features.learn.desc'),
-    },
-    {
-      icon: '💬',
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      ),
       title: t('home.features.community.title'),
       description: t('home.features.community.desc'),
+      link: '/forum'
     },
     {
-      icon: '🎯',
-      title: t('home.features.practice.title'),
+      icon: (
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M12 2a10 10 0 1 0 10 10H12V2z" />
+          <path d="M12 2a7 7 0 0 1 7 7h-7V2z" />
+          <circle cx="12" cy="14" r="2" />
+          <path d="M12 16v4" />
+          <path d="M8 20h8" />
+        </svg>
+      ),
+      title: t('navigation.diagnosis'),
       description: t('home.features.practice.desc'),
+      link: '/diagnosis'
     },
-    {
-      icon: '⭐',
-      title: t('home.features.quality.title'),
-      description: t('home.features.quality.desc'),
-    },
-  ];
-
-  const stats = [
-    { number: '10K+', label: t('home.stats.users') },
-    { number: '500+', label: t('home.stats.courses') },
-    { number: '50K+', label: t('home.stats.posts') },
-    { number: '99%', label: t('home.stats.satisfaction') },
   ];
 
   return (
@@ -47,45 +46,35 @@ const HomePage = () => {
       <section className="hero-section">
         <Container size="large">
           <div className="hero-content">
-            <div className="hero-badge">
-              {t('home.badge')}
-            </div>
-            <h1 className="hero-title">
-              {t('welcome')}
-            </h1>
-            <p className="hero-subtitle">
-              {t('home.subtitle')}
-            </p>
-            <div className="hero-actions">
-              {!isAuthenticated ? (
-                <>
-                  <Button as={Link} to="/signup" variant="primary" size="large">
-                    {t('auth.register')}
-                  </Button>
-                  <Button as={Link} to="/signin" variant="outline" size="large" className="btn-white-outline">
-                    {t('auth.login')}
-                  </Button>
-                </>
-              ) : (
-                <Button as={Link} to="/forum" variant="primary" size="large">
-                  {t('navigation.forum')}
-                </Button>
-              )}
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Stats Section */}
-      <section className="stats-section">
-        <Container size="large">
-          <div className="stats-grid">
-            {stats.map((stat, index) => (
-              <div key={index} className="stat-item">
-                <div className="stat-number">{stat.number}</div>
-                <div className="stat-label">{stat.label}</div>
+            <div className="hero-card">
+              <div className="hero-decoration">
+                <span className="decoration-dot"></span>
+                <span className="decoration-dot"></span>
+                <span className="decoration-dot"></span>
               </div>
-            ))}
+              <h1 className="hero-title">
+                {t('welcome')}
+              </h1>
+              <p className="hero-subtitle">
+                {t('home.subtitle')}
+              </p>
+              <div className="hero-actions">
+                {!isAuthenticated ? (
+                  <>
+                    <Button as={Link} to="/signin" variant="outline" size="medium" className="btn-outline">
+                      {t('auth.login')}
+                    </Button>
+                    <Button as={Link} to="/signup" variant="outline" size="medium" className="btn-outline">
+                      {t('auth.register')}
+                    </Button>
+                  </>
+                ) : (
+                  <Button as={Link} to="/forum" variant="primary" size="medium" className="btn-primary-action">
+                    {t('navigation.forum')}
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </Container>
       </section>
@@ -101,7 +90,14 @@ const HomePage = () => {
           </div>
           <div className="features-grid">
             {features.map((feature, index) => (
-              <Card key={index} variant="elevated" padding="large" className="feature-card">
+              <Card
+                key={index}
+                variant="elevated"
+                padding="large"
+                className="feature-card"
+                as={Link}
+                to={feature.link}
+              >
                 <div className="feature-icon">{feature.icon}</div>
                 <h3 className="feature-title">{feature.title}</h3>
                 <p className="feature-description">{feature.description}</p>
@@ -110,25 +106,6 @@ const HomePage = () => {
           </div>
         </Container>
       </section>
-
-      {/* CTA Section */}
-      {!isAuthenticated && (
-        <section className="cta-section">
-          <Container size="medium">
-            <Card variant="elevated" padding="large" className="cta-card">
-              <h2 className="cta-title">
-                {t('home.cta.title')}
-              </h2>
-              <p className="cta-description">
-                {t('home.cta.desc')}
-              </p>
-              <Button as={Link} to="/signup" variant="primary" size="large">
-                {t('auth.register')}
-              </Button>
-            </Card>
-          </Container>
-        </section>
-      )}
     </div>
   );
 };

@@ -125,21 +125,24 @@ export const adminApi = {
         return response;
     },
 
-    // User management - Using real API endpoints
+    // User management - Using admin API endpoints
     getAllUsers: async (params = {}) => {
-        // Using /api/v1/users/ endpoint
-        const response = await axios.get('/users/', { 
+        // Using /api/v1/admin/users endpoint
+        const response = await axios.get('/admin/users', {
             params: {
                 skip: params.skip || 0,
-                limit: params.limit || 100
+                limit: params.limit || 100,
+                search: params.search,
+                role: params.role,
+                status: params.status
             }
         });
         return response;
     },
 
     getUserById: async (userId) => {
-        // Using /api/v1/users/{user_id} endpoint
-        const response = await axios.get(`/users/${userId}`);
+        // Using /api/v1/admin/users/{user_id} endpoint for admin-specific data
+        const response = await axios.get(`/admin/users/${userId}`);
         return response;
     },
 

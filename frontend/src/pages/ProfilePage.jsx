@@ -236,182 +236,180 @@ const ProfilePage = () => {
           {/* Main Content */}
           <main className="profile-main">
             <Card variant="elevated" padding="none" className="content-card">
-            {activeTab === 'info' && (
-              <div className="content-section">
-                <div className="section-header">
-                  <div>
-                    <h2 className="section-title">{t('user.personal_info')}</h2>
-                    <p className="section-subtitle">{t('user.manage_personal_info')}</p>
-                  </div>
+              {activeTab === 'info' && (
+                <div className="content-section">
                   {!isEditing && (
-                    <Button onClick={() => setIsEditing(true)} variant="primary" size="medium">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '0.5rem' }}>
+                    <Button onClick={() => setIsEditing(true)} variant="primary" size="small" className="edit-btn-floating">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                       </svg>
                       {t('common.edit')}
                     </Button>
                   )}
-                </div>
+                  <div className="section-header">
+                    <div>
+                      <h2 className="section-title">{t('user.personal_info')}</h2>
+                      <p className="section-subtitle">{t('user.manage_personal_info')}</p>
+                    </div>
+                  </div>
 
-                {isEditing ? (
-                  <div className="edit-form-container">
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label className="form-label">{t('user.name')}</label>
-                        <Input
-                          value={editForm.name}
-                          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                          placeholder={t('user.name')}
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">{t('auth.email')}</label>
-                        <Input
-                          value={user.email}
-                          disabled
-                          placeholder={t('auth.email')}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">{t('user.bio')}</label>
-                      <Input
-                        as="textarea"
-                        rows={5}
-                        value={editForm.bio}
-                        onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
-                        placeholder={t('user.bio_placeholder')}
-                      />
-                    </div>
-                    <div className="form-actions">
-                      <Button onClick={handleUpdate} disabled={loading} variant="primary">
-                        {loading ? <LoadingSpinner size="small" /> : t('common.save')}
-                      </Button>
-                      <Button variant="secondary" onClick={() => setIsEditing(false)} disabled={loading}>
-                        {t('common.cancel')}
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="info-display">
-                    <div className="info-row">
-                      <div className="info-field">
-                        <span className="field-label">{t('user.name')}</span>
-                        <span className="field-value">{user.name || t('common.not_set')}</span>
-                      </div>
-                      <div className="info-field">
-                        <span className="field-label">{t('auth.email')}</span>
-                        <span className="field-value">{user.email}</span>
-                      </div>
-                    </div>
-                    <div className="info-row full-width">
-                      <div className="info-field">
-                        <span className="field-label">{t('user.bio')}</span>
-                        <span className="field-value bio-text">{user.bio || t('common.not_set')}</span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'posts' && (
-              <div className="content-section">
-                <div className="section-header">
-                  <div>
-                    <h2 className="section-title">{t('user.my_posts')}</h2>
-                    <p className="section-subtitle">{t('user.all_your_posts')}</p>
-                  </div>
-                </div>
-                {loading ? (
-                  <div className="loading-container">
-                    <LoadingSpinner size="medium" />
-                  </div>
-                ) : userPosts.length === 0 ? (
-                  <div className="empty-state">
-                    <svg className="empty-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                      <polyline points="14 2 14 8 20 8" />
-                      <line x1="16" y1="13" x2="8" y2="13" />
-                      <line x1="16" y1="17" x2="8" y2="17" />
-                      <polyline points="10 9 9 9 8 9" />
-                    </svg>
-                    <h3>{t('user.no_posts')}</h3>
-                    <p>{t('user.start_sharing')}</p>
-                    <Button onClick={() => navigate('/forum/create')} variant="primary">
-                      {t('user.create_first_post')}
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="posts-grid">
-                    {userPosts.map((post) => (
-                      <div
-                        key={post._id}
-                        className="post-card"
-                        onClick={() => navigate(`/forum/${post._id}`)}
-                      >
-                        <h3 className="post-title">{post.title}</h3>
-                        {post.content && (
-                          <p className="post-content">
-                            {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
-                          </p>
-                        )}
-                        <div className="post-info">
-                          <div className="post-stats-group">
-                            <span className="post-stat">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                              </svg>
-                              {post.answer_count}
-                            </span>
-                            <span className="post-stat">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                <circle cx="12" cy="12" r="3" />
-                              </svg>
-                              {post.view_count || 0}
-                            </span>
-                          </div>
-                          <span className="post-date">{formatDate(post.created_at, i18n.language)}</span>
+                  {isEditing ? (
+                    <div className="edit-form-container">
+                      <div className="form-row">
+                        <div className="form-group">
+                          <label className="form-label">{t('user.name')}</label>
+                          <Input
+                            value={editForm.name}
+                            onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                            placeholder={t('user.name')}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label className="form-label">{t('auth.email')}</label>
+                          <Input
+                            value={user.email}
+                            disabled
+                            placeholder={t('auth.email')}
+                          />
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'bookmarks' && (
-              <div className="content-section">
-                <div className="section-header">
-                  <div>
-                    <h2 className="section-title">{t('user.bookmarks')}</h2>
-                    <p className="section-subtitle">{t('user.saved_posts')}</p>
-                  </div>
+                      <div className="form-group">
+                        <label className="form-label">{t('user.bio')}</label>
+                        <Input
+                          as="textarea"
+                          rows={5}
+                          value={editForm.bio}
+                          onChange={(e) => setEditForm({ ...editForm, bio: e.target.value })}
+                          placeholder={t('user.bio_placeholder')}
+                        />
+                      </div>
+                      <div className="form-actions">
+                        <Button onClick={handleUpdate} disabled={loading} variant="primary">
+                          {loading ? <LoadingSpinner size="small" /> : t('common.save')}
+                        </Button>
+                        <Button variant="secondary" onClick={() => setIsEditing(false)} disabled={loading}>
+                          {t('common.cancel')}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="info-display">
+                      <div className="info-row">
+                        <div className="info-field">
+                          <span className="field-label">{t('user.name')}</span>
+                          <span className="field-value">{user.name || t('common.not_set')}</span>
+                        </div>
+                        <div className="info-field">
+                          <span className="field-label">{t('auth.email')}</span>
+                          <span className="field-value">{user.email}</span>
+                        </div>
+                      </div>
+                      <div className="info-row full-width">
+                        <div className="info-field">
+                          <span className="field-label">{t('user.bio')}</span>
+                          <span className="field-value bio-text">{user.bio || t('common.not_set')}</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                {loading ? (
-                  <div className="loading-container">
-                    <LoadingSpinner size="medium" />
+              )}
+
+              {activeTab === 'posts' && (
+                <div className="content-section">
+                  <div className="section-header">
+                    <div>
+                      <h2 className="section-title">{t('user.my_posts')}</h2>
+                      <p className="section-subtitle">{t('user.all_your_posts')}</p>
+                    </div>
                   </div>
-                ) : bookmarkedPosts.length === 0 ? (
-                  <div className="empty-state">
-                    <svg className="empty-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                    </svg>
-                    <h3>{t('user.no_bookmarks')}</h3>
-                    <p>{t('user.you_have_no_saved_posts')}</p>
-                  </div>
-                ) : (
-                  <div className="posts-grid">
-                    {bookmarkedPosts.map((post) => (
-                      <div
-                        key={post._id}
-                        className="post-card"
-                        onClick={() => navigate(`/forum/${post._id}`)}
-                      >
-                        <div className="post-header">
+                  {loading ? (
+                    <div className="loading-container">
+                      <LoadingSpinner size="medium" />
+                    </div>
+                  ) : userPosts.length === 0 ? (
+                    <div className="empty-state">
+                      <svg className="empty-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                      </svg>
+                      <h3>{t('user.no_posts')}</h3>
+                      <p>{t('user.start_sharing')}</p>
+                      <Button onClick={() => navigate('/forum/create')} variant="primary">
+                        {t('user.create_first_post')}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="posts-grid">
+                      {userPosts.map((post) => (
+                        <div
+                          key={post._id}
+                          className="post-card"
+                          onClick={() => navigate(`/forum/${post._id}`)}
+                        >
                           <h3 className="post-title">{post.title}</h3>
+                          {post.content && (
+                            <p className="post-content">
+                              {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
+                            </p>
+                          )}
+                          <div className="post-info">
+                            <div className="post-stats-group">
+                              <span className="post-stat">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>
+                                {post.answer_count}
+                              </span>
+                              <span className="post-stat">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                  <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                {post.view_count || 0}
+                              </span>
+                              <span className="post-date">{formatDate(post.created_at, i18n.language)}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'bookmarks' && (
+                <div className="content-section">
+                  <div className="section-header">
+                    <div>
+                      <h2 className="section-title">{t('user.bookmarks')}</h2>
+                      <p className="section-subtitle">{t('user.saved_posts')}</p>
+                    </div>
+                  </div>
+                  {loading ? (
+                    <div className="loading-container">
+                      <LoadingSpinner size="medium" />
+                    </div>
+                  ) : bookmarkedPosts.length === 0 ? (
+                    <div className="empty-state">
+                      <svg className="empty-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                      </svg>
+                      <h3>{t('user.no_bookmarks')}</h3>
+                      <p>{t('user.you_have_no_saved_posts')}</p>
+                    </div>
+                  ) : (
+                    <div className="posts-grid">
+                      {bookmarkedPosts.map((post) => (
+                        <div
+                          key={post._id}
+                          className="post-card"
+                          onClick={() => navigate(`/forum/${post._id}`)}
+                        >
                           {post.bookmarked_at && (
                             <span className="bookmark-date-badge">
                               <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -420,36 +418,36 @@ const ProfilePage = () => {
                               {formatDate(post.bookmarked_at, i18n.language)}
                             </span>
                           )}
-                        </div>
-                        {post.content && (
-                          <p className="post-content">
-                            {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
-                          </p>
-                        )}
-                        <div className="post-info">
-                          <div className="post-stats-group">
-                            <span className="post-stat">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                              </svg>
-                              {post.answer_count}
-                            </span>
-                            <span className="post-stat">
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                                <circle cx="12" cy="12" r="3" />
-                              </svg>
-                              {post.view_count || 0}
-                            </span>
+                          <h3 className="post-title">{post.title}</h3>
+                          {post.content && (
+                            <p className="post-content">
+                              {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
+                            </p>
+                          )}
+                          <div className="post-info">
+                            <div className="post-stats-group">
+                              <span className="post-stat">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>
+                                {post.answer_count}
+                              </span>
+                              <span className="post-stat">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                  <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                {post.view_count || 0}
+                              </span>
+                              <span className="post-date">{formatDate(post.created_at, i18n.language)}</span>
+                            </div>
                           </div>
-                          <span className="post-date">{formatDate(post.created_at, i18n.language)}</span>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </Card>
           </main>
         </div>

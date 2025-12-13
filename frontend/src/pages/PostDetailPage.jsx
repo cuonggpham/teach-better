@@ -67,6 +67,8 @@ const PostDetailPage = () => {
         prev.map((answer) => (answer._id === answerId ? updatedAnswer : answer))
       );
       toast.success(t('answer.vote_success'));
+      // Reload page after successful vote
+      window.location.reload();
     } catch (error) {
       console.error('Failed to vote answer:', error);
       toast.error(t('answer.vote_error'));

@@ -338,18 +338,23 @@
     border: 1px solid rgba(117, 117, 117, 0.15);
 }
 
-/* View Button */
+/* View Button - Consistent with btn-small */
 .view-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
-    padding: 0.5rem 0.875rem;
+    padding: 0.5rem 1rem;
+    /* Consistent with btn-small */
     background: linear-gradient(145deg, #ec407a, #d81b60);
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
+    /* Consistent with Button.css */
     color: white;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
+    /* Consistent with btn-small */
     font-weight: 600;
+    min-height: 36px;
+    /* Consistent with btn-small */
     cursor: pointer;
     transition: all 0.2s ease;
     white-space: nowrap;
