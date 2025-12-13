@@ -61,7 +61,8 @@ const CommentSection = ({ answerId, comments = [], onCommentAdded, onCommentDele
       {isAuthenticated && (
         <form onSubmit={handleSubmit} className="comment-form">
           <Input
-            type="text"
+            as="textarea"
+            rows={2}
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder={t('comment.placeholder')}

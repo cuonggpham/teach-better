@@ -236,7 +236,6 @@ const ForumPage = () => {
                     onClick={() => handleCategoryClick(category.name)}
                   >
                     <span className="category-name">{category.name}</span>
-                    <span className="category-count">{category.post_count || 0}</span>
                   </li>
                 ))}
               </ul>
@@ -254,7 +253,6 @@ const ForumPage = () => {
                       onClick={() => handleTagClick(tag._id)}
                     >
                       {tag.name}
-                      <span className="tag-count">({tag.count})</span>
                     </button>
                   ))}
                 </div>

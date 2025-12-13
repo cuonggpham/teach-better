@@ -22,7 +22,7 @@ const UserManagement = () => {
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [filters, setFilters] = useState({
     status: 'all', // all, active, locked
-    role: 'all' // all, admin, user, moderator
+    role: 'all' // all, admin, user
   });
 
   useEffect(() => {
@@ -43,9 +43,9 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await adminApi.getAllUsers({ limit: 1000 });
-      const userData = response.data || [];
-      
+      const response = await adminApi.getAllUsers({ limit: 100 });
+      const userData = response.users || [];
+
       // Map API response to include post_count (default to 0 if not available)
       const mappedUsers = userData.map(user => ({
         ...user,
@@ -53,7 +53,7 @@ const UserManagement = () => {
         post_count: user.post_count || 0,
         is_active: user.is_active !== undefined ? user.is_active : true
       }));
-      
+
       setUsers(mappedUsers);
       setFilteredUsers(mappedUsers);
     } catch (error) {
@@ -117,8 +117,7 @@ const UserManagement = () => {
   const getRoleLabel = (role) => {
     const roleMap = {
       admin: t('admin.role_admin'),
-      user: t('admin.role_user'),
-      moderator: t('admin.role_moderator')
+      user: t('admin.role_user')
     };
     return roleMap[role] || role;
   };
@@ -147,16 +146,9 @@ const UserManagement = () => {
   return (
     <div className="user-management">
       <Container size="large">
-        {/* Header with back button */}
+        {/* Header */}
         <div className="user-management-header">
           <h1 className="page-title">{t('admin.user_management')}</h1>
-          <Button
-            variant="outlined"
-            onClick={() => navigate('/admin')}
-            className="back-to-dashboard-btn"
-          >
-            {t('admin.back_to_dashboard')}
-          </Button>
         </div>
 
         <Card className="user-management-card">
@@ -170,7 +162,12 @@ const UserManagement = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
               />
-              <span className="search-icon">🔍</span>
+              <span className="search-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8" />
+                  <path d="M21 21l-4.35-4.35" />
+                </svg>
+              </span>
             </div>
 
             <div className="filter-container">
@@ -179,6 +176,9 @@ const UserManagement = () => {
                 onClick={() => setShowFilterMenu(!showFilterMenu)}
                 className="filter-btn"
               >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '0.5rem' }}>
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                </svg>
                 {t('admin.filter')}
               </Button>
 
@@ -205,7 +205,6 @@ const UserManagement = () => {
                       <option value="all">{t('admin.all')}</option>
                       <option value="admin">{t('admin.role_admin')}</option>
                       <option value="user">{t('admin.role_user')}</option>
-                      <option value="moderator">{t('admin.role_moderator')}</option>
                     </select>
                   </div>
 
@@ -278,7 +277,10 @@ const UserManagement = () => {
                             }}
                             className="action-btn detail-btn"
                           >
-                            👁
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                              <circle cx="12" cy="12" r="3" />
+                            </svg>
                           </Button>
                           <Button
                             variant="ghost"
@@ -289,7 +291,17 @@ const UserManagement = () => {
                             }}
                             className="action-btn lock-btn"
                           >
-                            {user.is_active ? '🔒' : '🔓'}
+                            {user.is_active ? (
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                              </svg>
+                            ) : (
+                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                                <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                              </svg>
+                            )}
                           </Button>
                         </td>
                       </tr>

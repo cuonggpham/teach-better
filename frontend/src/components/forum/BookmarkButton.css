@@ -1,36 +1,55 @@
 .bookmark-button {
-  transition: all 0.2s ease;
-  padding: 0.5rem;
-  min-width: 40px;
-  width: 40px;
-  height: 40px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0.625rem;
+  min-width: 48px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 12px;
   flex-shrink: 0;
   box-sizing: border-box;
+  box-shadow:
+    6px 6px 12px rgba(236, 129, 158, 0.12),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
 }
 
 .bookmark-button svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
+  transition: transform 0.3s ease;
 }
 
 .bookmark-button.bookmarked {
   background: linear-gradient(145deg, #ec407a, #d81b60) !important;
   color: white !important;
   border-color: #ec407a !important;
+  box-shadow:
+    8px 8px 16px rgba(236, 129, 158, 0.2),
+    -8px -8px 16px rgba(255, 255, 255, 0.95);
 }
 
 .bookmark-button:not(.bookmarked) {
   background: rgba(236, 64, 122, 0.05) !important;
   color: #ec407a !important;
-  border: 1px solid rgba(236, 64, 122, 0.2) !important;
+  border: 2px solid rgba(236, 64, 122, 0.2) !important;
 }
 
 .bookmark-button:hover:not(.bookmarked) {
   background: rgba(236, 64, 122, 0.1) !important;
   color: #d81b60 !important;
   border-color: #ec407a !important;
+  transform: scale(1.05) translateY(-2px);
+  box-shadow:
+    8px 8px 16px rgba(236, 129, 158, 0.18),
+    -8px -8px 16px rgba(255, 255, 255, 0.95);
+}
+
+.bookmark-button:hover svg {
+  transform: scale(1.1);
+}
+
+.bookmark-button:active {
+  transform: scale(0.98);
 }

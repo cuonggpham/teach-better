@@ -3,7 +3,7 @@
   min-height: calc(100vh - 200px);
   padding: 3rem 1rem;
   background: #fff5f8;
-  background-image: 
+  background-image:
     radial-gradient(circle at 20% 50%, rgba(252, 228, 236, 0.5) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, rgba(252, 228, 236, 0.4) 0%, transparent 50%);
   position: relative;
@@ -45,7 +45,7 @@
   background: #ffffff;
   border-radius: 24px;
   padding: 2rem;
-  box-shadow: 
+  box-shadow:
     12px 12px 24px rgba(236, 129, 158, 0.15),
     -12px -12px 24px rgba(255, 255, 255, 0.95);
 }
@@ -69,13 +69,13 @@
   position: relative;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 
+  box-shadow:
     8px 8px 16px rgba(236, 129, 158, 0.3),
     -8px -8px 16px rgba(255, 255, 255, 0.9);
 }
 
 .avatar-container.editable:hover {
-  box-shadow: 
+  box-shadow:
     10px 10px 20px rgba(236, 129, 158, 0.4),
     -10px -10px 20px rgba(255, 255, 255, 0.95);
   transform: translateY(-3px);
@@ -151,7 +151,7 @@
   text-transform: uppercase;
   letter-spacing: 0.8px;
   font-weight: 700;
-  box-shadow: 
+  box-shadow:
     4px 4px 8px rgba(236, 129, 158, 0.15),
     -4px -4px 8px rgba(255, 255, 255, 0.9);
 }
@@ -178,7 +178,7 @@
   color: #666;
   font-weight: 500;
   border-radius: 12px;
-  box-shadow: 
+  box-shadow:
     4px 4px 8px rgba(236, 129, 158, 0.08),
     -4px -4px 8px rgba(255, 255, 255, 0.9);
 }
@@ -188,7 +188,7 @@
   color: #ec407a;
   border-left-color: #ec407a;
   transform: translateX(4px);
-  box-shadow: 
+  box-shadow:
     6px 6px 12px rgba(236, 129, 158, 0.12),
     -6px -6px 12px rgba(255, 255, 255, 0.95);
 }
@@ -198,7 +198,7 @@
   background: linear-gradient(145deg, #ffffff, #fafafa);
   color: #d81b60;
   font-weight: 600;
-  box-shadow: 
+  box-shadow:
     inset 3px 3px 6px rgba(236, 129, 158, 0.1),
     6px 6px 12px rgba(236, 129, 158, 0.15);
 }
@@ -228,13 +228,28 @@
   background: #ffffff;
   border-radius: 24px;
   padding: 3rem;
-  box-shadow: 
+  box-shadow:
     12px 12px 24px rgba(236, 129, 158, 0.15),
     -12px -12px 24px rgba(255, 255, 255, 0.95);
 }
 
 .content-section {
   padding: 0;
+  position: relative;
+}
+
+/* Floating edit button - positioned at top right corner */
+.edit-btn-floating {
+  position: absolute !important;
+  top: 0;
+  right: 0;
+  padding: 0.5rem 1rem !important;
+  font-size: 0.813rem !important;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.4rem;
+  width: auto !important;
+  z-index: 10;
 }
 
 /* Section Header */
@@ -301,7 +316,7 @@
   background: #fafafa;
   border: 1px solid rgba(236, 64, 122, 0.1);
   border-radius: 14px;
-  box-shadow: 
+  box-shadow:
     inset 3px 3px 6px rgba(236, 129, 158, 0.08),
     inset -3px -3px 6px rgba(255, 255, 255, 0.9);
   font-weight: 500;
@@ -359,14 +374,15 @@
   cursor: pointer;
   transition: all 0.3s ease;
   background: #fafafa;
-  box-shadow: 
+  box-shadow:
     8px 8px 16px rgba(236, 129, 158, 0.1),
     -8px -8px 16px rgba(255, 255, 255, 0.9);
+  position: relative;
 }
 
 .post-card:hover {
   background: #ffffff;
-  box-shadow: 
+  box-shadow:
     10px 10px 20px rgba(236, 129, 158, 0.15),
     -10px -10px 20px rgba(255, 255, 255, 0.95);
   transform: translateY(-3px);
@@ -378,10 +394,11 @@
   align-items: flex-start;
   gap: 1rem;
   margin-bottom: 1rem;
+  padding-right: 0;
 }
 
 .post-title {
-  margin: 0;
+  margin: 0 0 1rem 0;
   font-size: 1rem;
   font-weight: 600;
   color: #d81b60;
@@ -392,9 +409,13 @@
   line-clamp: 2;
   overflow: hidden;
   flex: 1;
+  padding-right: 7rem;
 }
 
 .bookmark-date-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -424,13 +445,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
   font-size: 0.813rem;
   color: #999;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(236, 129, 158, 0.1);
 }
 
 .post-stats-group {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
   gap: 0.75rem;
 }
 
@@ -448,6 +474,13 @@
 .post-date {
   white-space: nowrap;
   color: #f48fb1;
+}
+
+/* Small edit button style */
+.edit-btn-small {
+  padding: 0.4rem 0.8rem !important;
+  font-size: 0.813rem !important;
+  gap: 0.35rem;
 }
 
 /* Empty State */
@@ -500,8 +533,15 @@
   }
 
   .section-header {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .section-header .edit-btn-small {
+    flex-shrink: 0;
+    align-self: flex-start;
   }
 
   .content-card {

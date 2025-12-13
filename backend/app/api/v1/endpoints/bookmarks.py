@@ -110,6 +110,8 @@ async def get_bookmarks(
                 post_dict["_id"] = str(post_dict["_id"])
                 post_dict["author_id"] = str(post_dict["author_id"])
                 post_dict["tag_ids"] = [str(tag_id) for tag_id in post_dict.get("tag_ids", [])]
+                # Add bookmarked_at as the post creation date for legacy bookmarks
+                post_dict["bookmarked_at"] = post_dict.get("created_at")
                 posts.append(post_dict)
         return posts
 
