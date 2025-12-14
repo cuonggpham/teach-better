@@ -1401,3 +1401,122 @@ async def get_post_details_admin(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get post details: {str(e)}")
+
+
+# =======================
+# ADMIN ANSWER MANAGEMENT
+# =======================
+
+from pydantic import BaseModel as PydanticBaseModel
+
+class AdminDeleteRequest(PydanticBaseModel):
+    reason: str
+
+
+@router.delete("/answers/{answer_id}")
+async def delete_answer_admin(
+    answer_id: str,
+    delete_request: AdminDeleteRequest,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """
+    Delete an answer (admin only) with reason logging
+    """
+    try:
+        # Validate ObjectId
+        try:
+            obj_id = ObjectId(answer_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid answer ID format")
+        
+        # Check if answer exists
+        answer = await db.answers.find_one({"_id": obj_id})
+        if not answer:
+            raise HTTPException(status_code=404, detail="Answer not found")
+        
+        # Get the post_id for updating answer count
+        post_id = answer.get("post_id")
+        
+        # Delete the answer (soft delete by setting is_deleted flag)
+        result = await db.answers.update_one(
+            {"_id": obj_id},
+            {
+                "$set": {
+                    "is_deleted": True,
+                    "deleted_by_admin": str(current_user.id),
+                    "delete_reason": delete_request.reason,
+                    "deleted_at": datetime.utcnow()
+                }
+            }
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Answer not found")
+        
+        # Decrement answer count on the post
+        if post_id:
+            await db.posts.update_one(
+                {"_id": post_id},
+                {"$inc": {"answer_count": -1}}
+            )
+        
+        return {"message": "Answer deleted successfully", "reason": delete_request.reason}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete answer: {str(e)}")
+
+
+@router.delete("/answers/{answer_id}/comments/{comment_id}")
+async def delete_comment_admin(
+    answer_id: str,
+    comment_id: str,
+    delete_request: AdminDeleteRequest,
+    current_user: User = Depends(get_current_admin),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """
+    Delete a comment from an answer (admin only) with reason logging
+    """
+    try:
+        # Validate ObjectIds
+        try:
+            answer_obj_id = ObjectId(answer_id)
+            comment_obj_id = ObjectId(comment_id)
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid ID format")
+        
+        # Check if answer exists and has the comment
+        answer = await db.answers.find_one({
+            "_id": answer_obj_id,
+            "is_deleted": {"$ne": True},
+            "comments.id": comment_obj_id
+        })
+        
+        if not answer:
+            raise HTTPException(status_code=404, detail="Answer or comment not found")
+        
+        # Remove the comment from the answer
+        result = await db.answers.update_one(
+            {"_id": answer_obj_id},
+            {
+                "$pull": {"comments": {"id": comment_obj_id}},
+                "$set": {"updated_at": datetime.utcnow()}
+            }
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Comment not found")
+        
+        # Log the deletion (optional: could be stored in a separate audit log)
+        # For now, we just return success with the reason
+        
+        return {"message": "Comment deleted successfully", "reason": delete_request.reason}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete comment: {str(e)}")
+

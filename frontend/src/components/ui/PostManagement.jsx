@@ -138,12 +138,12 @@ const PostManagement = () => {
     };
 
     const handleViewDetails = (postId) => {
-        // Navigate to forum post detail page
-        navigate(`/forum/${postId}`);
+        // Navigate to admin post detail management page
+        navigate(`/admin/posts/${postId}`);
     };
 
     const handleTitleClick = (postId) => {
-        // Same as view details - navigate to post
+        // Same as view details - navigate to admin post detail
         handleViewDetails(postId);
     };
 

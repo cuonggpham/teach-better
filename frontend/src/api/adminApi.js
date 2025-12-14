@@ -79,6 +79,22 @@ export const adminApi = {
         return response;
     },
 
+    // Admin delete answer with reason
+    deleteAnswerByAdmin: async (answerId, reason) => {
+        const response = await axios.delete(`/admin/answers/${answerId}`, {
+            data: { reason }
+        });
+        return response;
+    },
+
+    // Admin delete comment with reason
+    deleteCommentByAdmin: async (answerId, commentId, reason) => {
+        const response = await axios.delete(`/admin/answers/${answerId}/comments/${commentId}`, {
+            data: { reason }
+        });
+        return response;
+    },
+
     getPostDetails: async (postId) => {
         const response = await axios.get(`/admin/posts/${postId}`);
         return response;

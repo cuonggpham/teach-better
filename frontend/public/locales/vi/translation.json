@@ -584,6 +584,19 @@
       "confirm_delete": "Bạn có chắc chắn muốn xóa không?",
       "name_required": "Vui lòng nhập tên",
       "error": "Có lỗi xảy ra"
+    },
+    "post_detail": "Chi tiết bài viết",
+    "delete_confirmation": {
+      "title": "Xác nhận xóa",
+      "post_title": "Xóa bài viết",
+      "answer_title": "Xóa câu trả lời",
+      "comment_title": "Xóa bình luận",
+      "deleting": "Bạn đang xóa",
+      "reason_label": "Lý do xóa",
+      "reason_placeholder": "Bài đăng này đã bị xóa vì chứa nội dung không phù hợp.",
+      "reason_required": "Vui lòng nhập lý do xóa",
+      "confirm": "Xác nhận",
+      "cancel": "Hủy"
     }
   },
   "posts": {

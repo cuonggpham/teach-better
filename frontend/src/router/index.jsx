@@ -20,6 +20,7 @@ import UserDetail from '../pages/UserDetail';
 import PostReportDetailPage from '../pages/PostReportDetailPage';
 import ReportManagement from '../pages/ReportManagement';
 import UserReportDetailPage from '../pages/UserReportDetailPage';
+import AdminPostDetailPage from '../pages/AdminPostDetailPage';
 
 /**
  * Cấu hình React Router
@@ -103,6 +104,10 @@ const router = createBrowserRouter([
       {
         path: 'admin/posts',
         element: <PostManagement />,
+      },
+      {
+        path: 'admin/posts/:postId',
+        element: <AdminPostDetailPage />,
       },
       {
         path: 'admin/reports',
