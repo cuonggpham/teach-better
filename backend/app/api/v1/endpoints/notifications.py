@@ -26,11 +26,14 @@ async def get_notifications(
     unread_only: bool = Query(False),
     current_user: User = Depends(get_current_user),
     notification_service: NotificationService = Depends(get_notification_service),
+    db: AsyncIOMotorDatabase = Depends(get_database),
     t: Translator = Depends(get_translator)
 ):
     """
     Get notifications for current user
     """
+    from bson import ObjectId
+    
     notifications = await notification_service.get_user_notifications(
         current_user.id,
         skip,
@@ -38,12 +41,29 @@ async def get_notifications(
         unread_only
     )
 
-    # Convert to response models
+    # Convert to response models and lookup actor info
     notification_list = []
     for notification in notifications:
         notification_dict = notification.model_dump(by_alias=True)
         notification_dict["_id"] = str(notification_dict["_id"])
         notification_dict["user_id"] = str(notification_dict["user_id"])
+        
+        # Lookup actor info if actor_id exists
+        actor_name = None
+        actor_avatar = None
+        if notification_dict.get("actor_id"):
+            actor_id = notification_dict["actor_id"]
+            notification_dict["actor_id"] = str(actor_id)
+            
+            # Lookup user info
+            if ObjectId.is_valid(str(actor_id)):
+                actor = await db.users.find_one({"_id": ObjectId(str(actor_id))})
+                if actor:
+                    actor_name = actor.get("name", "Unknown User")
+                    actor_avatar = actor.get("avatar_url")
+        
+        notification_dict["actor_name"] = actor_name
+        notification_dict["actor_avatar"] = actor_avatar
         notification_list.append(Notification(**notification_dict))
 
     return notification_list

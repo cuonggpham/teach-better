@@ -170,8 +170,27 @@ const NotificationBell = () => {
                   className={`notification-item ${!notification.is_read ? 'unread' : ''}`}
                   onClick={() => handleNotificationClick(notification)}
                 >
+                  {/* Actor Avatar */}
+                  <div className="notification-avatar">
+                    {notification.actor_avatar ? (
+                      <img
+                        src={notification.actor_avatar}
+                        alt={notification.actor_name || 'User'}
+                        className="notification-avatar-img"
+                      />
+                    ) : (
+                      <div className="notification-avatar-placeholder">
+                        {notification.actor_name ? notification.actor_name.charAt(0).toUpperCase() : '?'}
+                      </div>
+                    )}
+                  </div>
                   <div className="notification-content">
-                    <p className="notification-message">{notification.message}</p>
+                    <p className="notification-message">
+                      {notification.actor_name && (
+                        <span className="notification-actor-name">{notification.actor_name} </span>
+                      )}
+                      {notification.message}
+                    </p>
                     <span className="notification-time">{formatDate(notification.created_at)}</span>
                   </div>
                   {!notification.is_read && <div className="notification-dot"></div>}

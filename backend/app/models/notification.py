@@ -23,6 +23,7 @@ class NotificationModel(BaseModel):
     """
     id: Optional[PyObjectId] = Field(default=None, alias="_id")
     user_id: PyObjectId = Field(..., index=True)
+    actor_id: Optional[PyObjectId] = Field(default=None)  # User who triggered the notification
     type: NotificationType
     message: str
     link: Optional[str] = None

@@ -19,7 +19,8 @@ class NotificationService:
         user_id: str,
         notification_type: NotificationType,
         message: str,
-        link: Optional[str] = None
+        link: Optional[str] = None,
+        actor_id: Optional[str] = None
     ) -> NotificationModel:
         """
         Create a new notification
@@ -32,6 +33,9 @@ class NotificationService:
             "is_read": False,
             "created_at": datetime.utcnow()
         }
+        
+        if actor_id and ObjectId.is_valid(actor_id):
+            notification_dict["actor_id"] = ObjectId(actor_id)
 
         result = await self.collection.insert_one(notification_dict)
         notification_dict["_id"] = result.inserted_id

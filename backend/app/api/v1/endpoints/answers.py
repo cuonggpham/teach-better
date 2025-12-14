@@ -65,7 +65,8 @@ async def send_answer_notification(
             user_id=str(post.author_id),
             notification_type=NotificationType.NEW_ANSWER,
             message="Có câu trả lời mới cho bài viết của bạn",
-            link=f"/forum/{post_id}"
+            link=f"/forum/{post_id}",
+            actor_id=answer_author_id
         )
         print(f"[DEBUG] Notification created successfully")
     
@@ -87,7 +88,8 @@ async def send_answer_notification(
                 user_id=user_id,
                 notification_type=NotificationType.NEW_ANSWER,
                 message="Có câu trả lời mới trong bài viết bạn đã lưu",
-                link=f"/forum/{post_id}"
+                link=f"/forum/{post_id}",
+                actor_id=answer_author_id
             )
 
 
@@ -115,7 +117,8 @@ async def send_comment_notification(
             user_id=str(answer.author_id),
             notification_type=NotificationType.NEW_COMMENT,
             message="Có bình luận mới cho câu trả lời của bạn",
-            link=f"/forum/{post_id}"
+            link=f"/forum/{post_id}",
+            actor_id=comment_author_id
         )
         print(f"[DEBUG] Notification created successfully")
     
@@ -131,7 +134,8 @@ async def send_comment_notification(
             user_id=str(post.author_id),
             notification_type=NotificationType.NEW_COMMENT,
             message="Có bình luận mới trong bài viết của bạn",
-            link=f"/forum/{post_id}"
+            link=f"/forum/{post_id}",
+            actor_id=comment_author_id
         )
     
     # Get all users who bookmarked this post
@@ -154,7 +158,8 @@ async def send_comment_notification(
                 user_id=user_id,
                 notification_type=NotificationType.NEW_COMMENT,
                 message="Có bình luận mới trong bài viết bạn đã lưu",
-                link=f"/forum/{post_id}"
+                link=f"/forum/{post_id}",
+                actor_id=comment_author_id
             )
 
 
