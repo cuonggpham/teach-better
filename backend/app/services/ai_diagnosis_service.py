@@ -47,7 +47,8 @@ class AIDiagnosisService:
     async def create_diagnosis(
         self,
         diagnosis_data: AIDiagnosisCreate,
-        user_id: str
+        user_id: str,
+        subject: str = None
     ) -> AIDiagnosisModel:
         """
         Create a new AI diagnosis.
@@ -55,6 +56,7 @@ class AIDiagnosisService:
         Args:
             diagnosis_data: The diagnosis creation data
             user_id: The ID of the user creating the diagnosis
+            subject: Optional subject of the lesson
             
         Returns:
             The created diagnosis model
@@ -64,6 +66,8 @@ class AIDiagnosisService:
         diagnosis_dict["status"] = DiagnosisStatus.PENDING
         diagnosis_dict["ai_result"] = AIResultModel().model_dump()
         diagnosis_dict["generated_questions"] = []
+        diagnosis_dict["is_saved"] = False  # Not saved initially
+        diagnosis_dict["subject"] = subject
         diagnosis_dict["created_at"] = datetime.utcnow()
         
         result = await self.collection.insert_one(diagnosis_dict)
@@ -243,6 +247,34 @@ class AIDiagnosisService:
         })
         
         return result.deleted_count > 0
+    
+    async def mark_as_saved(
+        self,
+        diagnosis_id: str,
+        user_id: str
+    ) -> bool:
+        """
+        Mark a diagnosis as saved.
+        
+        Args:
+            diagnosis_id: The diagnosis ID
+            user_id: The user ID (for ownership check)
+            
+        Returns:
+            True if marked as saved, False otherwise
+        """
+        if not ObjectId.is_valid(diagnosis_id):
+            return False
+            
+        result = await self.collection.update_one(
+            {
+                "_id": ObjectId(diagnosis_id),
+                "user_id": ObjectId(user_id)
+            },
+            {"$set": {"is_saved": True}}
+        )
+        
+        return result.modified_count > 0
     
     # =========================================================================
     # AI Analysis Operations
