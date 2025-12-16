@@ -140,7 +140,7 @@ async def create_diagnosis_from_form(
     )
     
     # Create diagnosis
-    diagnosis = await service.create_diagnosis(diagnosis_data, current_user.id)
+    diagnosis = await service.create_diagnosis(diagnosis_data, current_user.id, subject=subject)
     
     # Trigger analysis
     analyzed_diagnosis = await service.analyze_lecture(str(diagnosis.id), current_user.id)
@@ -214,6 +214,9 @@ async def save_diagnosis_result(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=t("errors.not_found")
         )
+    
+    # Mark as saved
+    await service.mark_as_saved(diagnosis_id, current_user.id)
     
     return {"message": "Diagnosis saved successfully", "diagnosis_id": diagnosis_id}
 

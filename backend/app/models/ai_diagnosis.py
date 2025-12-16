@@ -70,6 +70,8 @@ class AIDiagnosisModel(BaseModel):
     ai_result: AIResultModel = Field(default_factory=AIResultModel)
     generated_questions: List[GeneratedQuestionModel] = Field(default_factory=list)
     status: DiagnosisStatus = Field(default=DiagnosisStatus.PENDING)
+    is_saved: bool = Field(default=False)  # Track if the diagnosis is saved
+    subject: Optional[str] = None  # Subject of the lesson
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     model_config = ConfigDict(
