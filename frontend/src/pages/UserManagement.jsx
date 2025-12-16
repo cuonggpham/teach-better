@@ -46,12 +46,14 @@ const UserManagement = () => {
       const response = await adminApi.getAllUsers({ limit: 100 });
       const userData = response.users || [];
 
-      // Map API response to include post_count (default to 0 if not available)
+      // Map API response to include post_count and is_active (converted from status field)
+      // Backend returns 'status' field with values 'active' or 'locked'
       const mappedUsers = userData.map(user => ({
         ...user,
         id: user._id || user.id,
         post_count: user.post_count || 0,
-        is_active: user.is_active !== undefined ? user.is_active : true
+        // Convert status field ('active'/'locked') to is_active boolean
+        is_active: user.status === 'active' || (user.status === undefined && user.is_active !== false)
       }));
 
       setUsers(mappedUsers);

@@ -281,34 +281,46 @@ const AdminDashboard = () => {
           <Card className="chart-card">
             <h2 className="section-title">{t('admin.new_user_registrations')}</h2>
             <div className="line-chart">
-              <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="none">
-                <polyline
-                  fill="none"
-                  stroke="#ec407a"
-                  strokeWidth="2"
-                  points={userChart.map((point, index) => {
-                    const x = (index / (userChart.length - 1)) * 400;
-                    const maxCount = Math.max(...userChart.map(p => p.count));
-                    const y = 180 - (point.count / maxCount) * 160;
-                    return `${x},${y}`;
-                  }).join(' ')}
-                />
-                {userChart.map((point, index) => {
-                  const x = (index / (userChart.length - 1)) * 400;
-                  const maxCount = Math.max(...userChart.map(p => p.count));
-                  const y = 180 - (point.count / maxCount) * 160;
-                  return (
-                    <circle key={index} cx={x} cy={y} r="4" fill="#d81b60" />
-                  );
-                })}
-              </svg>
-              <div className="chart-labels">
-                {userChart.map((point, index) => (
-                  <div key={index} className="chart-label">
-                    {new Date(point.date).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' })}
+              {userChart.length === 0 ? (
+                <div className="no-chart-data">{t('admin.no_data_available')}</div>
+              ) : (
+                <>
+                  <svg width="100%" height="200" viewBox="0 0 400 200" preserveAspectRatio="none">
+                    {(() => {
+                      const maxCount = Math.max(...userChart.map(p => p.count), 1);
+                      const dataLength = userChart.length > 1 ? userChart.length - 1 : 1;
+                      return (
+                        <>
+                          <polyline
+                            fill="none"
+                            stroke="#ec407a"
+                            strokeWidth="2"
+                            points={userChart.map((point, index) => {
+                              const x = (index / dataLength) * 400;
+                              const y = 180 - (point.count / maxCount) * 160;
+                              return `${x},${y}`;
+                            }).join(' ')}
+                          />
+                          {userChart.map((point, index) => {
+                            const x = (index / dataLength) * 400;
+                            const y = 180 - (point.count / maxCount) * 160;
+                            return (
+                              <circle key={index} cx={x} cy={y} r="4" fill="#d81b60" />
+                            );
+                          })}
+                        </>
+                      );
+                    })()}
+                  </svg>
+                  <div className="chart-labels">
+                    {userChart.map((point, index) => (
+                      <div key={index} className="chart-label">
+                        {new Date(point.date).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' })}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </>
+              )}
             </div>
           </Card>
 

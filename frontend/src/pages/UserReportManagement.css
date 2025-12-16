@@ -1,0 +1,515 @@
+/* User Report Management Page - Profile Style Design */
+.user-report-management {
+    min-height: calc(100vh - 200px);
+    padding: 3rem 1rem;
+    background: #fff5f8;
+    background-image:
+        radial-gradient(circle at 20% 50%, rgba(252, 228, 236, 0.5) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(252, 228, 236, 0.4) 0%, transparent 50%);
+    position: relative;
+    overflow: hidden;
+}
+
+.user-report-management::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ec819e' fill-opacity='0.02'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 1;
+    z-index: 0;
+}
+
+.user-report-management.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+/* Page Header */
+.user-report-management .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.user-report-management .header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-report-management .header-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #e3f2fd, #e8eaf6);
+    border: 1px solid rgba(21, 101, 192, 0.15);
+    border-radius: 14px;
+    color: #1565c0;
+    box-shadow:
+        6px 6px 12px rgba(21, 101, 192, 0.1),
+        -6px -6px 12px rgba(255, 255, 255, 0.9);
+}
+
+.user-report-management .page-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1565c0;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+/* Filters Card */
+.user-report-management .filters-card {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+    background: #ffffff;
+    border: 1px solid rgba(21, 101, 192, 0.1);
+    border-radius: 20px;
+    box-shadow:
+        12px 12px 24px rgba(21, 101, 192, 0.08),
+        -12px -12px 24px rgba(255, 255, 255, 0.95);
+    position: relative;
+    z-index: 1;
+}
+
+.user-report-management .filters-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-end;
+}
+
+.user-report-management .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 180px;
+}
+
+.user-report-management .filter-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1565c0;
+    letter-spacing: -0.2px;
+}
+
+.user-report-management .filter-select {
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(21, 101, 192, 0.15);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: #fafafa;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow:
+        inset 2px 2px 4px rgba(21, 101, 192, 0.04),
+        inset -2px -2px 4px rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+.user-report-management .filter-select:focus {
+    outline: none;
+    border-color: #1976d2;
+    background: #ffffff;
+    box-shadow:
+        0 0 0 3px rgba(21, 101, 192, 0.1);
+}
+
+.user-report-management .filter-stats {
+    display: flex;
+    gap: 1rem;
+    margin-left: auto;
+}
+
+.user-report-management .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    background: linear-gradient(145deg, #e3f2fd, #e8eaf6);
+    border: 1px solid rgba(21, 101, 192, 0.1);
+    border-radius: 14px;
+    min-width: 100px;
+}
+
+.user-report-management .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1565c0;
+    line-height: 1;
+}
+
+.user-report-management .stat-label {
+    font-size: 0.7rem;
+    color: #0d47a1;
+    margin-top: 0.25rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    text-align: center;
+}
+
+/* Reports List Card */
+.user-report-management .reports-list-card {
+    padding: 1.5rem;
+    background: #ffffff;
+    border: 1px solid rgba(21, 101, 192, 0.1);
+    border-radius: 20px;
+    box-shadow:
+        12px 12px 24px rgba(21, 101, 192, 0.08),
+        -12px -12px 24px rgba(255, 255, 255, 0.95);
+    position: relative;
+    z-index: 1;
+}
+
+/* No Reports */
+.user-report-management .no-reports {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.user-report-management .no-reports-icon {
+    margin-bottom: 1rem;
+    color: #90caf9;
+}
+
+.user-report-management .no-reports-text {
+    font-size: 1rem;
+    color: #0d47a1;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Reports Table */
+.user-report-management .reports-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.user-report-management .table-header {
+    display: grid;
+    grid-template-columns: 130px 140px 1fr 150px 100px 120px;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: linear-gradient(145deg, #e3f2fd, #e8eaf6);
+    border: 1px solid rgba(21, 101, 192, 0.08);
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #1565c0;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.user-report-management .table-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.user-report-management .table-row {
+    display: grid;
+    grid-template-columns: 130px 140px 1fr 150px 100px 120px;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #fafafa;
+    border: 1px solid rgba(21, 101, 192, 0.06);
+    border-radius: 12px;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.user-report-management .table-row:hover {
+    background: #ffffff;
+    box-shadow:
+        6px 6px 12px rgba(21, 101, 192, 0.08),
+        -6px -6px 12px rgba(255, 255, 255, 0.95);
+}
+
+.user-report-management .col-user,
+.user-report-management .col-category,
+.user-report-management .col-reason,
+.user-report-management .col-date,
+.user-report-management .col-status,
+.user-report-management .col-actions {
+    font-size: 0.875rem;
+    color: #555;
+    font-weight: 500;
+}
+
+/* User Badge */
+.user-report-management .user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: linear-gradient(145deg, #e3f2fd, #e8eaf6);
+    color: #1565c0;
+    border: 1px solid rgba(21, 101, 192, 0.15);
+}
+
+.user-report-management .col-category {
+    font-weight: 600;
+    color: #0d47a1;
+}
+
+/* Reason Text */
+.user-report-management .reason-text {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.user-report-management .col-date {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: 500;
+}
+
+/* Status Badge */
+.user-report-management .status-badge {
+    display: inline-block;
+    padding: 0.35rem 0.65rem;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.user-report-management .status-pending {
+    background: linear-gradient(145deg, #fff3e0, #fff8e1);
+    color: #e65100;
+    border: 1px solid rgba(230, 81, 0, 0.15);
+}
+
+.user-report-management .status-resolved {
+    background: linear-gradient(145deg, #e8f5e9, #f1f8e9);
+    color: #2e7d32;
+    border: 1px solid rgba(46, 125, 50, 0.15);
+}
+
+.user-report-management .status-dismissed {
+    background: linear-gradient(145deg, #fafafa, #f5f5f5);
+    color: #757575;
+    border: 1px solid rgba(117, 117, 117, 0.15);
+}
+
+/* View Button */
+.user-report-management .view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(145deg, #1976d2, #1565c0);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    min-height: 36px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.user-report-management .view-btn:hover {
+    background: linear-gradient(145deg, #1565c0, #0d47a1);
+    box-shadow: 0 4px 8px rgba(21, 101, 192, 0.3);
+}
+
+.user-report-management .view-btn svg {
+    flex-shrink: 0;
+}
+
+/* Pagination */
+.user-report-management .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(21, 101, 192, 0.1);
+}
+
+.user-report-management .pagination-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    background: #fafafa;
+    border: 1px solid rgba(21, 101, 192, 0.15);
+    border-radius: 10px;
+    color: #1565c0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.user-report-management .pagination-btn:hover:not(:disabled) {
+    background: #e3f2fd;
+    border-color: #1976d2;
+}
+
+.user-report-management .pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.user-report-management .pagination-info {
+    font-size: 0.9rem;
+    color: #0d47a1;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .user-report-management .table-header {
+        display: none;
+    }
+
+    .user-report-management .table-row {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto auto;
+        gap: 0.75rem 1rem;
+    }
+
+    .user-report-management .col-user {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .user-report-management .col-status {
+        grid-column: 2;
+        grid-row: 1;
+        justify-self: end;
+    }
+
+    .user-report-management .col-category {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .user-report-management .col-date {
+        grid-column: 2;
+        grid-row: 2;
+        justify-self: end;
+    }
+
+    .user-report-management .col-reason {
+        grid-column: 1 / -1;
+        grid-row: 3;
+    }
+
+    .user-report-management .col-actions {
+        grid-column: 1 / -1;
+        grid-row: 4;
+    }
+
+    .user-report-management .reason-text {
+        white-space: normal;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        display: -webkit-box;
+        overflow: hidden;
+    }
+
+    .user-report-management .view-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-report-management {
+        padding: 2rem 1rem;
+    }
+
+    .user-report-management .page-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .user-report-management .header-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+    }
+
+    .user-report-management .page-title {
+        font-size: 1.25rem;
+    }
+
+    .user-report-management .filters-grid {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .user-report-management .filter-group {
+        min-width: 100%;
+    }
+
+    .user-report-management .filter-stats {
+        width: 100%;
+        margin-left: 0;
+        justify-content: space-between;
+    }
+
+    .user-report-management .stat-item {
+        flex: 1;
+    }
+
+    .user-report-management .filters-card,
+    .user-report-management .reports-list-card {
+        padding: 1.25rem;
+        border-radius: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-report-management {
+        padding: 1.5rem 0.75rem;
+    }
+
+    .user-report-management .page-title {
+        font-size: 1.125rem;
+    }
+
+    .user-report-management .filters-card,
+    .user-report-management .reports-list-card {
+        padding: 1rem;
+        border-radius: 16px;
+    }
+
+    .user-report-management .table-row {
+        padding: 0.875rem;
+    }
+
+    .user-report-management .pagination {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+}
