@@ -6,7 +6,7 @@ import { useToast } from '../contexts/ToastContext';
 import { getPost } from '../api/postsApi';
 import { getAnswers, createAnswer, voteAnswer } from '../api/answersApi';
 import { Container, Card, Button, Input, LoadingSpinner } from '../components/ui';
-import { VoteButton, BookmarkButton, CommentSection, ReportButton } from '../components/forum';
+import { VoteButton, BookmarkButton, CommentSection, ReportButton, UserInfoPopup } from '../components/forum';
 import { formatDateTime } from '../utils/formatters';
 import './PostDetailPage.css';
 
@@ -186,7 +186,9 @@ const PostDetailPage = () => {
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                       <circle cx="12" cy="7" r="4" />
                     </svg>
-                    {post.author.name || post.author.email}
+                    <UserInfoPopup userId={post.author._id || post.author.id} userName={post.author.name}>
+                      {post.author.name || post.author.email}
+                    </UserInfoPopup>
                   </span>
                 )}
                 <span className="post-stats">
@@ -262,7 +264,10 @@ const PostDetailPage = () => {
 
                       <div className="answer-meta">
                         <span className="answer-author">
-                          {t('answer.by', 'Bởi')} {answer.author_name || t('common.anonymous', 'Ẩn danh')}
+                          {t('answer.by', 'Bởi')}{' '}
+                          <UserInfoPopup userId={answer.author_id} userName={answer.author_name}>
+                            {answer.author_name || t('common.anonymous', 'Ẩn danh')}
+                          </UserInfoPopup>
                         </span>
                         <span className="answer-date">{formatDateTime(answer.created_at, i18n.language)}</span>
                         <ReportButton targetType="answer" targetId={answer._id} />

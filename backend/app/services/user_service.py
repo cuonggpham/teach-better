@@ -289,3 +289,26 @@ class UserService:
             "violation_count": user.get("violation_count", 0)
         }
 
+    async def get_public_user_info(self, user_id: str, db: AsyncIOMotorDatabase) -> Optional[dict]:
+        """
+        Get public user info including post count for popup display
+        """
+        if not ObjectId.is_valid(user_id):
+            return None
+
+        user = await self.collection.find_one({"_id": ObjectId(user_id)})
+        if not user:
+            return None
+
+        # Count user's posts
+        posts_collection = db.posts
+        post_count = await posts_collection.count_documents({"author_id": ObjectId(user_id)})
+
+        return {
+            "name": user.get("name", ""),
+            "avatar_url": user.get("avatar_url"),
+            "created_at": user.get("created_at"),
+            "post_count": post_count
+        }
+
+

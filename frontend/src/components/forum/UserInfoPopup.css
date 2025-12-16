@@ -1,13 +1,16 @@
 /* User Info Popup - Soft UI Neumorphism Style */
 
 .user-info-trigger {
+    position: relative;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
 }
 
 .user-info-popup {
-    position: fixed;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 9999;
     width: 280px;
     padding: 1rem;
@@ -21,15 +24,26 @@
     animation: popupFadeIn 0.2s ease-out;
 }
 
+/* Popup appears below trigger */
+.user-info-popup.popup-below {
+    top: calc(100% + 8px);
+}
+
+/* Popup appears above trigger */
+.user-info-popup.popup-above {
+    bottom: calc(100% + 8px);
+    top: auto;
+}
+
 @keyframes popupFadeIn {
     from {
         opacity: 0;
-        transform: translateY(-8px);
+        transform: translateX(-50%) translateY(-8px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateX(-50%) translateY(0);
     }
 }
 

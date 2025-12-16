@@ -98,3 +98,14 @@ class TokenData(BaseModel):
     Token data schema
     """
     email: Optional[str] = None
+
+
+class PublicUserInfo(BaseModel):
+    """
+    Public user info schema - for displaying in user popups
+    No authentication required to view this info
+    """
+    name: str
+    avatar_url: Optional[str] = None
+    created_at: datetime
+    post_count: int = 0

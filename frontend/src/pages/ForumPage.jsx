@@ -6,9 +6,11 @@ import { useToast } from '../contexts/ToastContext';
 import { getPosts } from '../api/postsApi';
 import { categoriesApi } from '../api/categoriesApi';
 import { Container, Card, Button, LoadingSpinner } from '../components/ui';
-import { BookmarkButton, ReportButton } from '../components/forum';
+import { BookmarkButton, ReportButton, UserInfoPopup } from '../components/forum';
 import { formatDate } from '../utils/formatters';
 import './ForumPage.css';
+
+// UserInfoPopup integration - hover over author name to see user info popup
 
 /**
  * ForumPage - Trang danh sách bài viết (diễn đàn)
@@ -367,7 +369,9 @@ const ForumPage = () => {
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                                 <circle cx="12" cy="7" r="4" />
                               </svg>
-                              {post.author.name || post.author.email}
+                              <UserInfoPopup userId={post.author._id || post.author.id} userName={post.author.name}>
+                                {post.author.name || post.author.email}
+                              </UserInfoPopup>
                             </span>
                           )}
                           <span className="post-date">{formatDate(post.created_at, i18n.language)}</span>

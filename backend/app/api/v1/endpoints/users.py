@@ -68,6 +68,29 @@ async def get_current_user_info(
     return current_user
 
 
+from app.schemas.user import PublicUserInfo
+
+@router.get("/{user_id}/public", response_model=PublicUserInfo)
+async def get_public_user_info(
+    user_id: str,
+    user_service: UserService = Depends(get_user_service),
+    db: AsyncIOMotorDatabase = Depends(get_database)
+):
+    """
+    Get public user information (no authentication required)
+    Returns: name, avatar_url, created_at, post_count
+    """
+    user_info = await user_service.get_public_user_info(user_id, db)
+    
+    if not user_info:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    return PublicUserInfo(**user_info)
+
+
 @router.get("/{user_id}", response_model=User)
 async def get_user(
     user_id: str,
