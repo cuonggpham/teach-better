@@ -93,13 +93,14 @@ export const createDiagnosis = async (data, token) => {
  * @returns {Promise} - Kết quả lưu
  */
 export const saveDiagnosisResult = async (diagnosisId, token) => {
-  const response = await axiosInstance.post(`/diagnoses/${diagnosisId}/save`, {}, {
+  const response = await axiosInstance.post(`/diagnoses/${diagnosisId}/save/`, {}, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  return response.data;
+  // Note: axiosConfig.js response interceptor already returns response.data
+  return response;
 };
 
 /**
@@ -149,13 +150,14 @@ export const getDiagnosisHistory = async (token, params = {}) => {
     queryParams.append('limit', params.limit);
   }
 
-  const response = await axiosInstance.get(`/diagnoses?${queryParams.toString()}`, {
+  const response = await axiosInstance.get(`/diagnoses/?${queryParams.toString()}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  return response.data;
+  // Note: axiosConfig.js response interceptor already returns response.data
+  return response;
 };
 
 /**
@@ -165,13 +167,14 @@ export const getDiagnosisHistory = async (token, params = {}) => {
  * @returns {Promise} - Chi tiết chẩn đoán (same format as createDiagnosis response)
  */
 export const getDiagnosisDetail = async (diagnosisId, token) => {
-  const response = await axiosInstance.get(`/diagnoses/${diagnosisId}`, {
+  const response = await axiosInstance.get(`/diagnoses/${diagnosisId}/`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  return response.data;
+  // Note: axiosConfig.js response interceptor already returns response.data
+  return response;
 };
 
 /**
@@ -181,11 +184,12 @@ export const getDiagnosisDetail = async (diagnosisId, token) => {
  * @returns {Promise} - Kết quả xóa
  */
 export const deleteDiagnosis = async (diagnosisId, token) => {
-  const response = await axiosInstance.delete(`/diagnoses/${diagnosisId}`, {
+  const response = await axiosInstance.delete(`/diagnoses/${diagnosisId}/`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  return response.data;
+  // Note: axiosConfig.js response interceptor already returns response.data
+  return response;
 };
