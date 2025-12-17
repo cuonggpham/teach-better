@@ -45,10 +45,47 @@ async def call_llm(prompt: str) -> str:
 
 
 # =============================================================================
-# Prompt Templates
+# Language Detection
 # =============================================================================
 
-DIAGNOSIS_PROMPT_TEMPLATE = """Bạn là một chuyên gia giáo dục với nhiều năm kinh nghiệm giảng dạy. 
+import re
+
+def detect_language(text: str) -> str:
+    """
+    Detect if text is primarily Japanese or Vietnamese.
+    
+    Args:
+        text: Input text to analyze
+        
+    Returns:
+        'ja' for Japanese, 'vi' for Vietnamese/other
+    """
+    if not text:
+        return 'vi'
+    
+    # Japanese character ranges
+    # Hiragana: \u3040-\u309F
+    # Katakana: \u30A0-\u30FF
+    # Kanji: \u4E00-\u9FFF (CJK Unified Ideographs)
+    japanese_pattern = re.compile(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]')
+    
+    japanese_chars = len(japanese_pattern.findall(text))
+    total_chars = len(text.replace(' ', '').replace('\n', ''))
+    
+    if total_chars == 0:
+        return 'vi'
+    
+    # If more than 10% of non-space characters are Japanese, consider it Japanese
+    japanese_ratio = japanese_chars / total_chars
+    
+    return 'ja' if japanese_ratio > 0.1 else 'vi'
+
+
+# =============================================================================
+# Prompt Templates - Vietnamese
+# =============================================================================
+
+DIAGNOSIS_PROMPT_TEMPLATE_VI = """Bạn là một chuyên gia giáo dục với nhiều năm kinh nghiệm giảng dạy. 
 Hãy phân tích nội dung bài giảng sau đây và xác định các vấn đề tiềm ẩn.
 
 **Nội dung bài giảng:**
@@ -70,7 +107,7 @@ Hãy phân tích và trả về JSON với định dạng chính xác sau:
 Chỉ trả về JSON, không có text giải thích thêm."""
 
 
-QUESTION_GENERATION_PROMPT_TEMPLATE = """Dựa trên kết quả phân tích bài giảng sau, hãy tạo các câu hỏi đánh giá.
+QUESTION_GENERATION_PROMPT_TEMPLATE_VI = """Dựa trên kết quả phân tích bài giảng sau, hãy tạo các câu hỏi đánh giá.
 
 **Nội dung bài giảng:**
 {content}
@@ -101,7 +138,7 @@ Với câu hỏi short_answer, options là mảng rỗng [].
 Chỉ trả về JSON, không có text giải thích thêm."""
 
 
-EVALUATION_PROMPT_TEMPLATE = """Đánh giá câu trả lời của học viên.
+EVALUATION_PROMPT_TEMPLATE_VI = """Đánh giá câu trả lời của học viên.
 
 **Câu hỏi:** {question}
 **Đáp án đúng:** {correct_answer}
@@ -118,6 +155,88 @@ Chỉ trả về JSON, không có text giải thích thêm."""
 
 
 # =============================================================================
+# Prompt Templates - Japanese
+# =============================================================================
+
+DIAGNOSIS_PROMPT_TEMPLATE_JA = """あなたは長年の教育経験を持つ教育専門家です。
+以下の授業内容を分析し、潜在的な問題点を特定してください。
+
+**授業内容:**
+{content}
+
+**学習者情報:**
+- 国籍: {nationality}
+- レベル: {level}
+
+分析を行い、以下の形式で正確なJSONを返してください:
+{{
+    "misunderstanding_points": [
+        "誤解しやすい点や理解しにくい点をリストアップしてください。各項目は文字列です"
+    ],
+    "simulation": "学習者が内容をどのように誤解する可能性があるかを、その背景に基づいて詳細にシミュレーションしてください",
+    "suggestions": "学習者のレベルと文化的背景に適した、最適化された説明バージョンを提案してください"
+}}
+
+JSONのみを返してください。追加の説明テキストは不要です。"""
+
+
+QUESTION_GENERATION_PROMPT_TEMPLATE_JA = """以下の授業分析結果に基づいて、評価用の質問を作成してください。
+
+**授業内容:**
+{content}
+
+**特定された誤解しやすいポイント:**
+{misunderstanding_points}
+
+**学習者情報:**
+- 国籍: {nationality}  
+- レベル: {level}
+
+誤解しやすいポイントに焦点を当てた{num_questions}問の質問を作成してください。
+以下の形式でJSONを返してください:
+{{
+    "questions": [
+        {{
+            "question_text": "質問",
+            "type": "multiple_choice" または "short_answer",
+            "options": ["A. 選択肢1", "B. 選択肢2", "C. 選択肢3", "D. 選択肢4"],
+            "correct_answer": "A"
+        }}
+    ]
+}}
+
+multiple_choiceの質問には、常に4つの選択肢（A、B、C、D）があります。
+short_answerの質問には、optionsは空の配列[]です。
+
+JSONのみを返してください。追加の説明テキストは不要です。"""
+
+
+EVALUATION_PROMPT_TEMPLATE_JA = """学習者の回答を評価してください。
+
+**質問:** {question}
+**正解:** {correct_answer}
+**学習者の回答:** {user_answer}
+**質問タイプ:** {question_type}
+
+評価を行い、以下のJSONを返してください:
+{{
+    "is_correct": true または false,
+    "feedback": "なぜ正解/不正解かを簡潔に説明し、不正解の場合は改善のヒントを提供してください"
+}}
+
+JSONのみを返してください。追加の説明テキストは不要です。"""
+
+
+# =============================================================================
+# Backward compatibility - use Vietnamese as default
+# =============================================================================
+
+DIAGNOSIS_PROMPT_TEMPLATE = DIAGNOSIS_PROMPT_TEMPLATE_VI
+QUESTION_GENERATION_PROMPT_TEMPLATE = QUESTION_GENERATION_PROMPT_TEMPLATE_VI
+EVALUATION_PROMPT_TEMPLATE = EVALUATION_PROMPT_TEMPLATE_VI
+
+
+# =============================================================================
 # Helper Functions
 # =============================================================================
 
@@ -126,12 +245,21 @@ def build_diagnosis_prompt(
     nationality: Optional[str] = None,
     level: Optional[str] = None
 ) -> str:
-    """Build the prompt for lecture diagnosis."""
-    return DIAGNOSIS_PROMPT_TEMPLATE.format(
-        content=content,
-        nationality=nationality or "Không xác định",
-        level=level or "Không xác định"
-    )
+    """Build the prompt for lecture diagnosis based on input language."""
+    language = detect_language(content)
+    
+    if language == 'ja':
+        return DIAGNOSIS_PROMPT_TEMPLATE_JA.format(
+            content=content,
+            nationality=nationality or "不明",
+            level=level or "不明"
+        )
+    else:
+        return DIAGNOSIS_PROMPT_TEMPLATE_VI.format(
+            content=content,
+            nationality=nationality or "Không xác định",
+            level=level or "Không xác định"
+        )
 
 
 def build_question_generation_prompt(
@@ -141,15 +269,26 @@ def build_question_generation_prompt(
     level: Optional[str] = None,
     num_questions: int = 5
 ) -> str:
-    """Build the prompt for question generation."""
+    """Build the prompt for question generation based on input language."""
+    language = detect_language(content)
     points_text = "\n".join(f"- {point}" for point in misunderstanding_points)
-    return QUESTION_GENERATION_PROMPT_TEMPLATE.format(
-        content=content,
-        misunderstanding_points=points_text,
-        nationality=nationality or "Không xác định",
-        level=level or "Không xác định",
-        num_questions=num_questions
-    )
+    
+    if language == 'ja':
+        return QUESTION_GENERATION_PROMPT_TEMPLATE_JA.format(
+            content=content,
+            misunderstanding_points=points_text,
+            nationality=nationality or "不明",
+            level=level or "不明",
+            num_questions=num_questions
+        )
+    else:
+        return QUESTION_GENERATION_PROMPT_TEMPLATE_VI.format(
+            content=content,
+            misunderstanding_points=points_text,
+            nationality=nationality or "Không xác định",
+            level=level or "Không xác định",
+            num_questions=num_questions
+        )
 
 
 def build_evaluation_prompt(
@@ -158,13 +297,23 @@ def build_evaluation_prompt(
     user_answer: str,
     question_type: str
 ) -> str:
-    """Build the prompt for answer evaluation."""
-    return EVALUATION_PROMPT_TEMPLATE.format(
-        question=question,
-        correct_answer=correct_answer,
-        user_answer=user_answer,
-        question_type=question_type
-    )
+    """Build the prompt for answer evaluation based on input language."""
+    language = detect_language(question)
+    
+    if language == 'ja':
+        return EVALUATION_PROMPT_TEMPLATE_JA.format(
+            question=question,
+            correct_answer=correct_answer,
+            user_answer=user_answer,
+            question_type=question_type
+        )
+    else:
+        return EVALUATION_PROMPT_TEMPLATE_VI.format(
+            question=question,
+            correct_answer=correct_answer,
+            user_answer=user_answer,
+            question_type=question_type
+        )
 
 
 def parse_llm_json_response(response: str) -> dict:
