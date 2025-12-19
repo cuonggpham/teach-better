@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { useToast } from './contexts/ToastContext';
@@ -12,6 +12,10 @@ import { ToastContainer } from './components/ui/Toast';
  */
 function AppContent() {
   const { toasts, removeToast } = useToast();
+  const location = useLocation();
+
+  // Hide footer on forum pages (forum list and post detail)
+  const hideFooter = location.pathname === '/forum' || location.pathname.startsWith('/forum/');
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -20,7 +24,7 @@ function AppContent() {
         <main className="main-content">
           <Outlet />
         </main>
-        <Footer />
+        {!hideFooter && <Footer />}
         <ToastContainer toasts={toasts} onRemove={removeToast} />
       </div>
     </Suspense>

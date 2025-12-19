@@ -78,7 +78,6 @@
   box-shadow:
     inset 3px 3px 6px rgba(236, 129, 158, 0.08),
     inset -3px -3px 6px rgba(255, 255, 255, 0.9);
-  transition: all 0.3s ease;
 }
 
 .search-bar-wrapper:focus-within {
@@ -125,7 +124,6 @@
   box-shadow:
     4px 4px 8px rgba(236, 129, 158, 0.08),
     -4px -4px 8px rgba(255, 255, 255, 0.9);
-  transition: all 0.3s ease;
 }
 
 .subject-dropdown:hover {
@@ -180,7 +178,6 @@
   box-shadow:
     inset 2px 2px 4px rgba(236, 129, 158, 0.06),
     inset -2px -2px 4px rgba(255, 255, 255, 0.9);
-  transition: all 0.3s ease;
 }
 
 .date-input:hover {
@@ -206,7 +203,6 @@
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
   box-shadow:
     4px 4px 8px rgba(236, 129, 158, 0.3),
     -4px -4px 8px rgba(255, 255, 255, 0.9);
@@ -214,14 +210,9 @@
 
 .reset-button:hover {
   background: linear-gradient(145deg, #d81b60, #c2185b);
-  transform: translateY(-2px);
   box-shadow:
     6px 6px 12px rgba(236, 129, 158, 0.35),
     -6px -6px 12px rgba(255, 255, 255, 0.95);
-}
-
-.reset-button:active {
-  transform: translateY(0);
 }
 
 /* Table Container */
@@ -255,7 +246,6 @@
 }
 
 .history-table tbody tr {
-  transition: all 0.2s ease;
   border-bottom: 1px solid rgba(236, 129, 158, 0.08);
 }
 
@@ -328,7 +318,6 @@
   background: #fafafa;
   color: #ec407a;
   cursor: pointer;
-  transition: all 0.3s ease;
   box-shadow:
     4px 4px 8px rgba(236, 129, 158, 0.1),
     -4px -4px 8px rgba(255, 255, 255, 0.9);
@@ -336,7 +325,6 @@
 
 .action-btn:hover {
   background: #ffffff;
-  transform: translateY(-2px);
   box-shadow:
     6px 6px 12px rgba(236, 129, 158, 0.15),
     -6px -6px 12px rgba(255, 255, 255, 0.95);

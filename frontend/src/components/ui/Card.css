@@ -2,20 +2,13 @@
   background: #ffffff;
   border-radius: 16px;
   border: 1px solid rgba(236, 64, 122, 0.1);
-  box-shadow: 
+  box-shadow:
     6px 6px 12px rgba(236, 129, 158, 0.1),
     -6px -6px 12px rgba(255, 255, 255, 0.9);
-  transition: all 0.3s ease;
-}
-
-.card:hover {
-  box-shadow: 
-    8px 8px 16px rgba(236, 129, 158, 0.15),
-    -8px -8px 16px rgba(255, 255, 255, 0.95);
 }
 
 .card-elevated {
-  box-shadow: 
+  box-shadow:
     10px 10px 20px rgba(236, 129, 158, 0.2),
     -10px -10px 20px rgba(255, 255, 255, 0.95);
 }
@@ -23,13 +16,6 @@
 .card-outlined {
   border: 1px solid rgba(236, 64, 122, 0.2);
   box-shadow: none;
-}
-
-.card-outlined:hover {
-  border-color: #ec407a;
-  box-shadow: 
-    6px 6px 12px rgba(236, 129, 158, 0.1),
-    -6px -6px 12px rgba(255, 255, 255, 0.9);
 }
 
 .card-padding-none {
@@ -47,4 +33,3 @@
 .card-padding-large {
   padding: 2rem;
 }
-
