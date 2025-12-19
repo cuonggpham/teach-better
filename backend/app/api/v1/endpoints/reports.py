@@ -64,6 +64,11 @@ async def create_report(
         report_dict["target_id"] = str(report_dict["target_id"])
 
         return Report(**report_dict)
+    except PermissionError as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=t("report.self_report_not_allowed", default="Cannot report your own content")
+        )
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

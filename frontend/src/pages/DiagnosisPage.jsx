@@ -1,9 +1,10 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { createDiagnosis, saveDiagnosisResult } from '../api/diagnosisApi';
+import { categoriesApi } from '../api/categoriesApi';
 import { Container, Card, Button, LoadingSpinner, Modal } from '../components/ui';
 import './DiagnosisPage.css';
 
@@ -32,16 +33,32 @@ const DiagnosisPage = () => {
   const [analysisResult, setAnalysisResult] = useState(null);
   const [showResultModal, setShowResultModal] = useState(false);
 
-  // Subject options
-  const subjectOptions = [
-    { value: 'IT', label: 'IT' },
-    { value: 'math', label: t('diagnosis.subjects.math', '数学') },
-    { value: 'physics', label: t('diagnosis.subjects.physics', '物理') },
-    { value: 'chemistry', label: t('diagnosis.subjects.chemistry', '化学') },
-    { value: 'japanese', label: t('diagnosis.subjects.japanese', '国語') },
-    { value: 'english', label: t('diagnosis.subjects.english', '英語') },
-    { value: 'other', label: t('diagnosis.subjects.other', 'その他') },
-  ];
+  // Subject options - fetched from categories API
+  const [subjectOptions, setSubjectOptions] = useState([]);
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await categoriesApi.getCategories();
+        const categories = response.categories || [];
+        const options = categories.map(cat => ({
+          value: cat._id || cat.id,
+          label: cat.name
+        }));
+        // Add "Other" option at the end
+        options.push({ value: 'other', label: t('diagnosis.subjects.other', 'その他') });
+        setSubjectOptions(options);
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+        // Fallback to default options if API fails
+        setSubjectOptions([
+          { value: 'other', label: t('diagnosis.subjects.other', 'その他') },
+        ]);
+      }
+    };
+    fetchCategories();
+  }, [t]);
 
   // Nationality options
   const nationalityOptions = [
@@ -63,19 +80,18 @@ const DiagnosisPage = () => {
     { value: 'N1', label: 'N1' },
   ];
 
-  // Age options
+  // Age options - all ages from 1+
   const ageOptions = [
-    { value: '18', label: '18' },
-    { value: '19', label: '19' },
-    { value: '20', label: '20' },
-    { value: '21', label: '21' },
-    { value: '22', label: '22' },
-    { value: '23', label: '23' },
-    { value: '24', label: '24' },
-    { value: '25', label: '25' },
+    { value: '1-5', label: '1-5' },
+    { value: '6-10', label: '6-10' },
+    { value: '11-15', label: '11-15' },
+    { value: '16-18', label: '16-18' },
+    { value: '19-25', label: '19-25' },
     { value: '26-30', label: '26-30' },
     { value: '31-40', label: '31-40' },
-    { value: '41+', label: '41+' },
+    { value: '41-50', label: '41-50' },
+    { value: '51-60', label: '51-60' },
+    { value: '61+', label: '61+' },
   ];
 
   const handleFileUpload = (e) => {

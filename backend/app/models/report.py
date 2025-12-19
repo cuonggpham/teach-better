@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field, ConfigDict
 from enum import Enum
 from app.models.user import PyObjectId
@@ -54,7 +54,7 @@ class ReportModel(BaseModel):
     target_id: PyObjectId = Field(..., index=True)  # Dynamic reference
     reason_category: ReasonCategory
     reason_detail: str = Field(..., min_length=20)
-    evidence_url: Optional[str] = None
+    evidence_urls: List[str] = Field(default_factory=list)  # Max 5 images
     status: ReportStatus = Field(default=ReportStatus.PENDING)
     resolution: Optional[ResolutionModel] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)

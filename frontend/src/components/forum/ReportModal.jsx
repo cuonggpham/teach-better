@@ -8,6 +8,8 @@ import { createReport } from '../../api/reportsApi';
 import { uploadImage } from '../../api/imgbbApi';
 import './ReportModal.css';
 
+const MAX_IMAGES = 5;
+
 /**
  * ReportModal Component - Modal báo cáo vi phạm
  * @param {boolean} isOpen - Trạng thái mở/đóng modal
@@ -24,7 +26,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }) => {
   const [formData, setFormData] = useState({
     reasonCategory: '',
     reasonDetail: '',
-    evidenceUrl: '',
+    evidenceUrls: [],
   });
 
   const [errors, setErrors] = useState({});
@@ -72,6 +74,12 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Kiểm tra số lượng ảnh tối đa
+    if (formData.evidenceUrls.length >= MAX_IMAGES) {
+      error(t('report.errors.max_images', `Tối đa ${MAX_IMAGES} ảnh`));
+      return;
+    }
+
     // Kiểm tra kích thước file (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       error(t('report.errors.image_too_large'));
@@ -87,18 +95,26 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }) => {
     try {
       setUploadingImage(true);
       const imageUrl = await uploadImage(file);
-      setFormData((prev) => ({ ...prev, evidenceUrl: imageUrl }));
+      setFormData((prev) => ({
+        ...prev,
+        evidenceUrls: [...prev.evidenceUrls, imageUrl],
+      }));
     } catch (err) {
       error(t('report.errors.upload_failed'));
       console.error('Upload error:', err);
     } finally {
       setUploadingImage(false);
+      // Reset input để có thể upload lại cùng file
+      e.target.value = '';
     }
   };
 
   // Xóa ảnh đã upload
-  const handleRemoveImage = () => {
-    setFormData((prev) => ({ ...prev, evidenceUrl: '' }));
+  const handleRemoveImage = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      evidenceUrls: prev.evidenceUrls.filter((_, i) => i !== index),
+    }));
   };
 
   // Xử lý submit form
@@ -117,7 +133,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }) => {
         target_id: targetId,
         reason_category: formData.reasonCategory,
         reason_detail: formData.reasonDetail.trim(),
-        evidence_url: formData.evidenceUrl || undefined,
+        evidence_urls: formData.evidenceUrls,
       };
 
       await createReport(reportData);
@@ -125,7 +141,8 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }) => {
       handleClose();
     } catch (err) {
       console.error('Report error:', err);
-      error(err?.detail || t('report.error_message'));
+      const errorMessage = err?.response?.data?.detail || err?.detail || t('report.error_message');
+      error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -136,7 +153,7 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }) => {
     setFormData({
       reasonCategory: '',
       reasonDetail: '',
-      evidenceUrl: '',
+      evidenceUrls: [],
     });
     setErrors({});
     onClose();
@@ -189,10 +206,34 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }) => {
         <div className="form-group">
           <label className="form-label">
             {t('report.evidence')}
-            <span className="optional-label"> ({t('common.optional')})</span>
+            <span className="optional-label"> ({t('common.optional')}) - {formData.evidenceUrls.length}/{MAX_IMAGES}</span>
           </label>
 
-          {!formData.evidenceUrl ? (
+          {/* Preview grid for multiple images */}
+          {formData.evidenceUrls.length > 0 && (
+            <div className="evidence-grid">
+              {formData.evidenceUrls.map((url, index) => (
+                <div key={index} className="evidence-preview-item">
+                  <img
+                    src={url}
+                    alt={`Evidence ${index + 1}`}
+                    className="evidence-image-thumb"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(index)}
+                    className="remove-image-btn"
+                    disabled={loading}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Upload button - show only if under max */}
+          {formData.evidenceUrls.length < MAX_IMAGES && (
             <div className="upload-area">
               <input
                 type="file"
@@ -204,9 +245,8 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }) => {
               />
               <label
                 htmlFor="evidence-upload"
-                className={`upload-label ${
-                  uploadingImage || loading ? 'disabled' : ''
-                }`}
+                className={`upload-label ${uploadingImage || loading ? 'disabled' : ''
+                  }`}
               >
                 {uploadingImage ? (
                   <>
@@ -220,22 +260,6 @@ const ReportModal = ({ isOpen, onClose, targetType, targetId }) => {
                   </>
                 )}
               </label>
-            </div>
-          ) : (
-            <div className="evidence-preview">
-              <img
-                src={formData.evidenceUrl}
-                alt="Evidence"
-                className="evidence-image"
-              />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                className="remove-image-btn"
-                disabled={loading}
-              >
-                ×
-              </button>
             </div>
           )}
         </div>

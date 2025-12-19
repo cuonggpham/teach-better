@@ -21,7 +21,7 @@ class CommentCreate(BaseModel):
     """
     Comment creation schema
     """
-    content: str = Field(..., min_length=1)
+    content: str = Field(...)
 
 
 class VotesSchema(BaseModel):
@@ -37,7 +37,7 @@ class AnswerBase(BaseModel):
     """
     Base answer schema
     """
-    content: str = Field(..., min_length=10)
+    content: str = Field(...)
 
 
 class AnswerCreate(AnswerBase):
@@ -51,7 +51,7 @@ class AnswerUpdate(BaseModel):
     """
     Answer update schema
     """
-    content: Optional[str] = Field(None, min_length=10)
+    content: Optional[str] = Field(None)
     is_accepted_solution: Optional[bool] = None
 
 

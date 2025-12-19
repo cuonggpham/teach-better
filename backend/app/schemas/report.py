@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 from enum import Enum
 from app.models.report import (
@@ -47,7 +47,7 @@ class ReportBase(BaseModel):
     target_id: str
     reason_category: ReasonCategory
     reason_detail: str = Field(..., min_length=20)
-    evidence_url: Optional[str] = None
+    evidence_urls: List[str] = Field(default_factory=list)  # Max 5 images
 
 
 class ReportCreate(ReportBase):

@@ -65,6 +65,7 @@
     "resolved": "Báo cáo đã được xử lý",
     "dismissed": "Báo cáo đã bị bỏ qua",
     "reason_too_short": "Lý do báo cáo phải có ít nhất 20 ký tự",
+    "self_report_not_allowed": "Bạn không thể báo cáo nội dung của chính mình",
     "types": {
       "spam": "Spam",
       "inappropriate": "Nội dung không phù hợp",

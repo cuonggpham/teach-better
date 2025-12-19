@@ -64,6 +64,7 @@
     "resolved": "報告が処理されました",
     "dismissed": "報告が却下されました",
     "reason_too_short": "報告理由は20文字以上必要です",
+    "self_report_not_allowed": "自分のコンテンツを報告することはできません",
     "types": {
       "spam": "スパム",
       "inappropriate": "不適切なコンテンツ",
@@ -85,4 +86,3 @@
     }
   }
 }
-

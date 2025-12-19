@@ -1,445 +1,611 @@
+"""
+Seed data script for teach-better application
+Creates: 10 users (2 admins), 10 categories, tags for each category, 20 posts
+"""
 import asyncio
-import sys
-from pathlib import Path
-from datetime import datetime, timedelta, timezone
-from bson import ObjectId
+from datetime import datetime, timedelta
 import random
-
-# Add parent directory to path
-sys.path.append(str(Path(__file__).parent.parent))
-
 from motor.motor_asyncio import AsyncIOMotorClient
-from app.core.config import settings
-from app.core.security import get_password_hash
+from bson import ObjectId
+from passlib.context import CryptContext
+
+# Database settings
+MONGODB_URL = "mongodb://localhost:27017"
+MONGODB_DB_NAME = "teach_better_db"
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+DEFAULT_PASSWORD = "password123"
 
 
-# Fixed Categories (10 categories)
+def get_password_hash(password: str) -> str:
+    return pwd_context.hash(password)
+
+
+# ============ USERS DATA ============
+USERS = [
+    # Admins
+    {
+        "name": "Admin Nguyễn",
+        "email": "admin@teachbetter.com",
+        "role": "admin",
+        "bio": "Quản trị viên hệ thống Teach Better",
+        "avatar_url": None
+    },
+    {
+        "name": "Admin Trần",
+        "email": "admin2@teachbetter.com",
+        "role": "admin",
+        "bio": "Quản trị viên phụ trách nội dung",
+        "avatar_url": None
+    },
+    # Regular users
+    {
+        "name": "Lê Văn A",
+        "email": "levan.a@gmail.com",
+        "role": "user",
+        "bio": "Giáo viên Toán THPT",
+        "avatar_url": None
+    },
+    {
+        "name": "Trần Thị B",
+        "email": "tranthi.b@gmail.com",
+        "role": "user",
+        "bio": "Sinh viên Đại học Sư phạm Hà Nội",
+        "avatar_url": None
+    },
+    {
+        "name": "Phạm Văn C",
+        "email": "phamvan.c@gmail.com",
+        "role": "user",
+        "bio": "Giáo viên Tiếng Anh THCS",
+        "avatar_url": None
+    },
+    {
+        "name": "Nguyễn Thị D",
+        "email": "nguyenthi.d@gmail.com",
+        "role": "user",
+        "bio": "Gia sư môn Vật lý",
+        "avatar_url": None
+    },
+    {
+        "name": "Hoàng Văn E",
+        "email": "hoangvan.e@gmail.com",
+        "role": "user",
+        "bio": "Giáo viên Hóa học THPT Chuyên",
+        "avatar_url": None
+    },
+    {
+        "name": "Vũ Thị F",
+        "email": "vuthi.f@gmail.com",
+        "role": "user",
+        "bio": "Sinh viên năm cuối ngành Sư phạm Văn",
+        "avatar_url": None
+    },
+    {
+        "name": "Đặng Văn G",
+        "email": "dangvan.g@gmail.com",
+        "role": "user",
+        "bio": "Giáo viên Tin học",
+        "avatar_url": None
+    },
+    {
+        "name": "Bùi Thị H",
+        "email": "buithi.h@gmail.com",
+        "role": "user",
+        "bio": "Giáo viên Sinh học THCS",
+        "avatar_url": None
+    }
+]
+
+
+# ============ CATEGORIES DATA ============
 CATEGORIES = [
     {
         "name": "Toán học",
-        "description": "Các câu hỏi về toán học từ cơ bản đến nâng cao",
-        "post_count": 0
+        "description": "Các câu hỏi về đại số, hình học, giải tích và các chủ đề toán học khác"
     },
     {
         "name": "Tiếng Anh",
-        "description": "Học tiếng Anh, ngữ pháp, từ vựng và giao tiếp",
-        "post_count": 0
+        "description": "Ngữ pháp, từ vựng, kỹ năng đọc và viết tiếng Anh"
     },
     {
         "name": "Vật lý",
-        "description": "Khám phá các hiện tượng vật lý và định luật tự nhiên",
-        "post_count": 0
+        "description": "Cơ học, điện học, quang học và các hiện tượng vật lý"
     },
     {
         "name": "Hóa học",
-        "description": "Nghiên cứu về chất, phản ứng hóa học và ứng dụng",
-        "post_count": 0
+        "description": "Hóa học hữu cơ, vô cơ, phản ứng hóa học"
     },
     {
-        "name": "Lập trình",
-        "description": "Học lập trình, thuật toán và phát triển phần mềm",
-        "post_count": 0
-    },
-    {
-        "name": "Tiếng Nhật",
-        "description": "Học tiếng Nhật, kanji, ngữ pháp và văn hóa Nhật Bản",
-        "post_count": 0
-    },
-    {
-        "name": "Sinh học",
-        "description": "Khám phá về sự sống, sinh vật và môi trường",
-        "post_count": 0
-    },
-    {
-        "name": "Địa lý",
-        "description": "Tìm hiểu về địa hình, khí hậu và con người",
-        "post_count": 0
+        "name": "Ngữ văn",
+        "description": "Văn học Việt Nam, văn học nước ngoài, làm văn"
     },
     {
         "name": "Lịch sử",
-        "description": "Nghiên cứu các sự kiện lịch sử và văn minh nhân loại",
-        "post_count": 0
+        "description": "Lịch sử Việt Nam và lịch sử thế giới"
     },
     {
-        "name": "Phương pháp dạy học",
-        "description": "Chia sẻ kinh nghiệm và phương pháp giảng dạy hiệu quả",
-        "post_count": 0
+        "name": "Địa lý",
+        "description": "Địa lý tự nhiên và địa lý kinh tế - xã hội"
+    },
+    {
+        "name": "Sinh học",
+        "description": "Di truyền học, sinh thái học, giải phẫu sinh lý"
+    },
+    {
+        "name": "Tin học",
+        "description": "Lập trình, thuật toán, cơ sở dữ liệu và công nghệ thông tin"
+    },
+    {
+        "name": "Giáo dục công dân",
+        "description": "Đạo đức, pháp luật và kỹ năng sống"
     }
 ]
 
-# Users Data (5 users)
-USERS = [
-    {
-        "name": "Nguyễn Văn An",
-        "email": "an.nguyen@example.com",
-        "password": "password123",
-        "avatar_url": "https://i.pravatar.cc/150?img=1",
-        "bio": "Giáo viên Toán học với 10 năm kinh nghiệm. Đam mê chia sẻ kiến thức và phương pháp giải toán sáng tạo.",
-        "role": "user",
-        "status": "active"
-    },
-    {
-        "name": "Trần Thị Bình",
-        "email": "binh.tran@example.com",
-        "password": "password123",
-        "avatar_url": "https://i.pravatar.cc/150?img=5",
-        "bio": "Chuyên gia tiếng Anh với bằng TESOL. Yêu thích việc giúp học sinh cải thiện kỹ năng giao tiếp.",
-        "role": "user",
-        "status": "active"
-    },
-    {
-        "name": "Lê Minh Cường",
-        "email": "cuong.le@example.com",
-        "password": "password123",
-        "avatar_url": "https://i.pravatar.cc/150?img=12",
-        "bio": "Developer và giảng viên lập trình. Chuyên về Python, JavaScript và phát triển web.",
-        "role": "admin",
-        "status": "active"
-    },
-    {
-        "name": "Phạm Thu Dung",
-        "email": "dung.pham@example.com",
-        "password": "password123",
-        "avatar_url": "https://i.pravatar.cc/150?img=9",
-        "bio": "Giáo viên Vật lý nhiệt tình. Thích thực hành và thí nghiệm để học sinh hiểu bài sâu hơn.",
-        "role": "user",
-        "status": "active"
-    },
-    {
-        "name": "Hoàng Văn Em",
-        "email": "em.hoang@example.com",
-        "password": "password123",
-        "avatar_url": "https://i.pravatar.cc/150?img=15",
-        "bio": "Sinh viên năm 4 chuyên ngành Sư phạm. Đang tìm hiểu các phương pháp dạy học hiện đại.",
-        "role": "user",
-        "status": "active"
-    }
-]
 
-# Tags data - will be created dynamically
-TAG_TEMPLATES = {
-    "Toán học": ["Đại số", "Hình học", "Giải tích", "Tích phân", "Đạo hàm", "Phương trình"],
-    "Tiếng Anh": ["Ngữ pháp", "Từ vựng", "IELTS", "TOEIC", "Phát âm", "Giao tiếp"],
-    "Vật lý": ["Cơ học", "Nhiệt học", "Điện học", "Quang học", "Vật lý đại cương"],
-    "Hóa học": ["Hóa vô cơ", "Hóa hữu cơ", "Phản ứng", "Bảng tuần hoàn", "Cân bằng hóa học"],
-    "Lập trình": ["Python", "JavaScript", "React", "FastAPI", "MongoDB", "Thuật toán"],
-    "Tiếng Nhật": ["JLPT N3", "JLPT N2", "Kanji", "Ngữ pháp Nhật", "Từ vựng", "Hội thoại"],
-    "Sinh học": ["Tế bào", "Di truyền", "Sinh thái", "Tiến hóa", "Thực vật", "Động vật"],
-    "Địa lý": ["Địa hình", "Khí hậu", "Dân cư", "Kinh tế", "Môi trường"],
-    "Lịch sử": ["Lịch sử Việt Nam", "Lịch sử Thế giới", "Văn minh", "Chiến tranh"],
-    "Phương pháp dạy học": ["Dạy học tích cực", "Công nghệ giáo dục", "Đánh giá", "Quản lý lớp học"]
+# ============ TAGS DATA (mapped to categories) ============
+TAGS_BY_CATEGORY = {
+    "Toán học": [
+        {"name": "Đại số", "description": "Đại số cơ bản và nâng cao"},
+        {"name": "Hình học", "description": "Hình học phẳng và không gian"},
+        {"name": "Giải tích", "description": "Đạo hàm, tích phân, giới hạn"},
+        {"name": "Tổ hợp - Xác suất", "description": "Tổ hợp, hoán vị và xác suất"}
+    ],
+    "Tiếng Anh": [
+        {"name": "Grammar", "description": "Ngữ pháp tiếng Anh"},
+        {"name": "Vocabulary", "description": "Từ vựng tiếng Anh"},
+        {"name": "IELTS", "description": "Luyện thi IELTS"},
+        {"name": "TOEIC", "description": "Luyện thi TOEIC"}
+    ],
+    "Vật lý": [
+        {"name": "Cơ học", "description": "Động học, động lực học"},
+        {"name": "Điện học", "description": "Điện tích, điện trường, mạch điện"},
+        {"name": "Quang học", "description": "Ánh sáng, thấu kính, gương"},
+        {"name": "Nhiệt học", "description": "Nhiệt độ, nhiệt lượng, các quá trình nhiệt"}
+    ],
+    "Hóa học": [
+        {"name": "Hóa hữu cơ", "description": "Hợp chất hữu cơ"},
+        {"name": "Hóa vô cơ", "description": "Hợp chất vô cơ"},
+        {"name": "Bảng tuần hoàn", "description": "Nguyên tố hóa học"},
+        {"name": "Phản ứng hóa học", "description": "Cân bằng và tính toán hóa học"}
+    ],
+    "Ngữ văn": [
+        {"name": "Văn học cổ điển", "description": "Văn học trung đại Việt Nam"},
+        {"name": "Văn học hiện đại", "description": "Văn học Việt Nam từ 1930"},
+        {"name": "Nghị luận văn học", "description": "Cách viết bài nghị luận"},
+        {"name": "Văn học nước ngoài", "description": "Tác phẩm văn học thế giới"}
+    ],
+    "Lịch sử": [
+        {"name": "Lịch sử Việt Nam", "description": "Các thời kỳ lịch sử Việt Nam"},
+        {"name": "Lịch sử thế giới", "description": "Lịch sử các nước trên thế giới"},
+        {"name": "Cách mạng Việt Nam", "description": "Các phong trào cách mạng"}
+    ],
+    "Địa lý": [
+        {"name": "Địa lý tự nhiên", "description": "Khí hậu, địa hình, thủy văn"},
+        {"name": "Địa lý kinh tế", "description": "Kinh tế các vùng và ngành"},
+        {"name": "Địa lý dân cư", "description": "Dân số và phân bố dân cư"}
+    ],
+    "Sinh học": [
+        {"name": "Di truyền học", "description": "Gen, biến dị, đột biến"},
+        {"name": "Sinh thái học", "description": "Hệ sinh thái và môi trường"},
+        {"name": "Sinh học tế bào", "description": "Cấu trúc và chức năng tế bào"}
+    ],
+    "Tin học": [
+        {"name": "Python", "description": "Lập trình Python"},
+        {"name": "Thuật toán", "description": "Giải thuật và cấu trúc dữ liệu"},
+        {"name": "Web Development", "description": "Phát triển web"},
+        {"name": "Cơ sở dữ liệu", "description": "SQL và NoSQL"}
+    ],
+    "Giáo dục công dân": [
+        {"name": "Đạo đức", "description": "Giáo dục đạo đức"},
+        {"name": "Pháp luật", "description": "Kiến thức pháp luật cơ bản"},
+        {"name": "Kỹ năng sống", "description": "Kỹ năng mềm và phát triển bản thân"}
+    ]
 }
 
-# Posts data templates (will create 20 posts)
-POST_TEMPLATES = [
+
+# ============ POSTS DATA ============
+POSTS = [
+    # Toán học posts
     {
-        "title": "Cách giải phương trình bậc 2 hiệu quả nhất?",
-        "content": "Các bạn có thể chia sẻ phương pháp giải phương trình bậc 2 một cách dễ hiểu cho học sinh lớp 9 không? Tôi muốn tìm cách giải thích delta một cách trực quan hơn.",
+        "title": "Cách giải phương trình bậc hai dạng đặc biệt?",
+        "content": """Mình đang gặp khó khăn với dạng phương trình: ax² + bx + c = 0 khi a + b + c = 0.
+
+Có ai biết cách giải nhanh không ạ? Mình thấy công thức nghiệm delta dài quá.
+
+Ví dụ: 2x² - 3x + 1 = 0
+
+Mong các bạn hướng dẫn!""",
         "category": "Toán học",
-        "tags": ["Đại số", "Phương trình"]
+        "tags": ["Đại số"]
     },
     {
-        "title": "Phân biệt Present Perfect và Past Simple",
-        "content": "Học sinh của tôi thường nhầm lẫn giữa Present Perfect và Past Simple. Các thầy cô có mẹo nào để giúp các em phân biệt hai thì này không?",
+        "title": "Tính tích phân bằng phương pháp đổi biến",
+        "content": """Cho tích phân: ∫(0→1) x√(1-x²) dx
+
+Mình muốn hỏi cách đặt u = 1 - x² có đúng không? Và các bước tính chi tiết như thế nào?
+
+Cảm ơn mọi người!""",
+        "category": "Toán học",
+        "tags": ["Giải tích"]
+    },
+    # Tiếng Anh posts
+    {
+        "title": "Phân biệt 'Present Perfect' và 'Past Simple'",
+        "content": """Mình hay bị nhầm lẫn giữa hai thì này. Ví dụ:
+        
+- I have visited Paris. (Present Perfect)
+- I visited Paris last year. (Past Simple)
+
+Khi nào dùng thì nào? Có quy tắc gì dễ nhớ không ạ?""",
         "category": "Tiếng Anh",
-        "tags": ["Ngữ pháp", "IELTS"]
+        "tags": ["Grammar"]
     },
     {
-        "title": "Định luật Newton thứ 2 trong thực tế",
-        "content": "Làm sao để giải thích định luật F = ma cho học sinh một cách sinh động? Tôi muốn đưa ra ví dụ thực tế gần gũi với cuộc sống.",
+        "title": "Cách học từ vựng IELTS hiệu quả?",
+        "content": """Mình đang chuẩn bị thi IELTS và cần học khoảng 3000 từ vựng.
+
+Có ai có kinh nghiệm học từ vựng hiệu quả không? Dùng app nào tốt? Nên học theo chủ đề hay theo tần suất xuất hiện?
+
+Mục tiêu của mình là 7.0 trong 4 tháng.""",
+        "category": "Tiếng Anh",
+        "tags": ["IELTS", "Vocabulary"]
+    },
+    # Vật lý posts
+    {
+        "title": "Bài toán chuyển động ném xiên",
+        "content": """Một vật được ném xiên với vận tốc ban đầu v₀ = 20 m/s, góc ném α = 30°.
+
+Hỏi:
+1. Độ cao cực đại của vật?
+2. Tầm bay xa?
+3. Thời gian chuyển động?
+
+(Bỏ qua sức cản không khí, g = 10 m/s²)""",
         "category": "Vật lý",
         "tags": ["Cơ học"]
     },
     {
-        "title": "Cân bằng phương trình hóa học phức tạp",
-        "content": "Có phương pháp nào để cân bằng các phương trình hóa học phức tạp một cách nhanh chóng không? Đặc biệt là các phản ứng oxi hóa khử.",
-        "category": "Hóa học",
-        "tags": ["Phản ứng", "Cân bằng hóa học"]
-    },
-    {
-        "title": "Học Python nên bắt đầu từ đâu?",
-        "content": "Tôi muốn dạy học sinh học Python cơ bản. Các bạn khuyên nên bắt đầu từ kiến thức nào và sử dụng tài liệu gì?",
-        "category": "Lập trình",
-        "tags": ["Python", "Thuật toán"]
-    },
-    {
-        "title": "Cách học Kanji hiệu quả cho JLPT N3",
-        "content": "Các bạn có phương pháp nào để nhớ Kanji lâu và hiệu quả không? Tôi đang chuẩn bị thi JLPT N3 và cần học khoảng 650 chữ.",
-        "category": "Tiếng Nhật",
-        "tags": ["JLPT N3", "Kanji"]
-    },
-    {
-        "title": "Quy trình quang hợp ở thực vật",
-        "content": "Làm sao giải thích chu trình Calvin và pha sáng, pha tối cho học sinh dễ hiểu? Các em thường bị rối với sơ đồ phức tạp.",
-        "category": "Sinh học",
-        "tags": ["Thực vật", "Tế bào"]
-    },
-    {
-        "title": "Các vùng khí hậu nhiệt đới",
-        "content": "Cần tài liệu hoặc bản đồ minh họa về phân bố khí hậu nhiệt đới trên thế giới. Ai có thể chia sẻ được không?",
-        "category": "Địa lý",
-        "tags": ["Khí hậu", "Môi trường"]
-    },
-    {
-        "title": "Tầm quan trọng của Cách mạng tháng Tám",
-        "content": "Các thầy cô dạy lịch sử thường giảng bài này như thế nào để học sinh hiểu rõ ý nghĩa lịch sử?",
-        "category": "Lịch sử",
-        "tags": ["Lịch sử Việt Nam"]
-    },
-    {
-        "title": "Áp dụng dạy học tích cực trong lớp học",
-        "content": "Mình muốn biết các hoạt động dạy học tích cực phù hợp cho lớp 30-40 học sinh. Các bạn có kinh nghiệm gì không?",
-        "category": "Phương pháp dạy học",
-        "tags": ["Dạy học tích cực", "Quản lý lớp học"]
-    },
-    {
-        "title": "Tích phân từng phần - Kỹ thuật và bài tập",
-        "content": "Có những dạng bài tập nào hay về tích phân từng phần? Tôi cần để luyện tập cho học sinh lớp 12.",
-        "category": "Toán học",
-        "tags": ["Giải tích", "Tích phân"]
-    },
-    {
-        "title": "Từ vựng TOEIC thường gặp nhất",
-        "content": "Mọi người có list từ vựng TOEIC hay ho nào không? Đặc biệt là từ vựng trong phần Reading và Listening.",
-        "category": "Tiếng Anh",
-        "tags": ["TOEIC", "Từ vựng"]
-    },
-    {
-        "title": "Thí nghiệm về mạch điện đơn giản",
-        "content": "Các bạn có hướng dẫn làm thí nghiệm mạch điện cơ bản cho học sinh THCS không? Cần dụng cụ dễ tìm.",
+        "title": "Cách tính điện trở tương đương mạch cầu",
+        "content": """Cho mạch điện hình cầu với 5 điện trở bằng nhau R.
+
+Mình không biết cách xác định mạch cầu cân bằng và tính điện trở tương đương.
+
+Mong các bạn giải thích chi tiết!""",
         "category": "Vật lý",
         "tags": ["Điện học"]
     },
+    # Hóa học posts
     {
-        "title": "Phản ứng thế và phản ứng cộng trong hóa hữu cơ",
-        "content": "Học sinh hay nhầm lẫn giữa hai loại phản ứng này. Có cách nào giúp các em phân biệt dễ dàng không?",
+        "title": "Cân bằng phương trình phản ứng oxi hóa khử",
+        "content": """Fe + HNO₃ → Fe(NO₃)₃ + NO↑ + H₂O
+
+Mình cần cân bằng phương trình trên bằng phương pháp thăng bằng electron.
+
+Ai có thể hướng dẫn từng bước không ạ?""",
         "category": "Hóa học",
-        "tags": ["Hóa hữu cơ", "Phản ứng"]
+        "tags": ["Phản ứng hóa học"]
     },
     {
-        "title": "Build API với FastAPI và MongoDB",
-        "content": "Mình đang học FastAPI, có ai có kinh nghiệm tích hợp MongoDB không? Cần lời khuyên về cấu trúc project.",
-        "category": "Lập trình",
-        "tags": ["FastAPI", "MongoDB", "Python"]
+        "title": "Phân biệt các loại isomer trong hóa hữu cơ",
+        "content": """Mình đang học phần đồng phân trong hóa hữu cơ nhưng hay nhầm lẫn:
+
+- Đồng phân cấu tạo
+- Đồng phân hình học
+- Đồng phân quang học
+
+Có ai giải thích và cho ví dụ rõ ràng không?""",
+        "category": "Hóa học",
+        "tags": ["Hóa hữu cơ"]
+    },
+    # Ngữ văn posts
+    {
+        "title": "Phân tích nhân vật Chí Phèo trong tác phẩm cùng tên",
+        "content": """Mình cần làm bài phân tích nhân vật Chí Phèo.
+
+Các ý chính cần triển khai là gì? Làm sao để bài viết không bị lan man?
+
+Mọi người có thể chia sẻ dàn ý không ạ?""",
+        "category": "Ngữ văn",
+        "tags": ["Văn học hiện đại", "Nghị luận văn học"]
     },
     {
-        "title": "Ngữ pháp て-form trong tiếng Nhật",
-        "content": "て-form dùng trong những trường hợp nào? Các em học sinh thường mắc lỗi gì khi sử dụng dạng động từ này?",
-        "category": "Tiếng Nhật",
-        "tags": ["Ngữ pháp", "JLPT N2"]
+        "title": "Cách viết mở bài nghị luận xã hội hay?",
+        "content": """Mình thấy phần mở bài nghị luận xã hội rất quan trọng nhưng không biết viết sao cho hấp dẫn.
+
+Có những cách mở bài nào? Ví dụ cho đề: "Sống là cho đâu chỉ nhận riêng mình"?""",
+        "category": "Ngữ văn",
+        "tags": ["Nghị luận văn học"]
     },
+    # Lịch sử posts
     {
-        "title": "Di truyền học Mendel cơ bản",
-        "content": "Cách giảng bài về định luật phân li và định luật phân li độc lập sao cho dễ hiểu? Học sinh hay nhầm giữa F1 và F2.",
-        "category": "Sinh học",
-        "tags": ["Di truyền"]
-    },
-    {
-        "title": "Phát triển kinh tế vùng Đồng bằng sông Cửu Long",
-        "content": "Cần tài liệu phân tích về tiềm năng và thách thức phát triển kinh tế ở ĐBSCL. Ai có thể giúp không?",
-        "category": "Địa lý",
-        "tags": ["Kinh tế", "Dân cư"]
-    },
-    {
-        "title": "Chiến tranh thế giới thứ 2 - Nguyên nhân và hậu quả",
-        "content": "Làm sao để học sinh hiểu được những nguyên nhân sâu xa dẫn đến WW2 chứ không chỉ học thuộc lòng?",
+        "title": "Nguyên nhân thắng lợi cách mạng tháng 8/1945",
+        "content": """Bạn nào có thể tổng hợp các nguyên nhân chủ quan và khách quan dẫn đến thắng lợi của Cách mạng tháng Tám 1945?
+
+Mình cần chuẩn bị cho bài kiểm tra tuần tới.""",
         "category": "Lịch sử",
-        "tags": ["Lịch sử Thế giới", "Chiến tranh"]
+        "tags": ["Lịch sử Việt Nam", "Cách mạng Việt Nam"]
     },
     {
-        "title": "Sử dụng công nghệ trong giảng dạy",
-        "content": "Các ứng dụng, công cụ công nghệ nào hữu ích cho việc dạy học trực tuyến và blended learning?",
-        "category": "Phương pháp dạy học",
-        "tags": ["Công nghệ giáo dục", "Đánh giá"]
+        "title": "So sánh hai cuộc chiến tranh thế giới",
+        "content": """Mình cần so sánh Chiến tranh thế giới thứ nhất và thứ hai về:
+- Nguyên nhân
+- Diễn biến chính
+- Kết quả và hậu quả
+
+Mọi người giúp mình với!""",
+        "category": "Lịch sử",
+        "tags": ["Lịch sử thế giới"]
+    },
+    # Địa lý posts
+    {
+        "title": "Đặc điểm khí hậu nhiệt đới gió mùa Việt Nam",
+        "content": """Mình cần trình bày đặc điểm khí hậu nhiệt đới gió mùa của Việt Nam và ảnh hưởng đến sản xuất nông nghiệp.
+
+Có ai có tài liệu hoặc ý chính không ạ?""",
+        "category": "Địa lý",
+        "tags": ["Địa lý tự nhiên"]
+    },
+    {
+        "title": "Phân tích thế mạnh kinh tế vùng Đông Nam Bộ",
+        "content": """Vùng Đông Nam Bộ có những thế mạnh kinh tế gì?
+
+Tại sao vùng này lại là đầu tàu kinh tế của cả nước?""",
+        "category": "Địa lý",
+        "tags": ["Địa lý kinh tế"]
+    },
+    # Sinh học posts
+    {
+        "title": "Quy luật phân li độc lập của Mendel",
+        "content": """Mình không hiểu rõ quy luật phân li độc lập.
+
+Ví dụ: Nếu P: AaBb x AaBb thì tỉ lệ kiểu gen và kiểu hình ở F1 là bao nhiêu?
+
+Giải thích chi tiết giúp mình với!""",
+        "category": "Sinh học",
+        "tags": ["Di truyền học"]
+    },
+    {
+        "title": "Chuỗi thức ăn và lưới thức ăn trong hệ sinh thái",
+        "content": """Phân biệt chuỗi thức ăn và lưới thức ăn?
+
+Cho ví dụ về một lưới thức ăn trong hệ sinh thái rừng nhiệt đới.""",
+        "category": "Sinh học",
+        "tags": ["Sinh thái học"]
+    },
+    # Tin học posts
+    {
+        "title": "Cách viết hàm đệ quy tính giai thừa trong Python",
+        "content": """Mình mới học Python và muốn viết hàm đệ quy tính n!
+
+```python
+def factorial(n):
+    # ???
+```
+
+Mọi người hướng dẫn giúp mình với!""",
+        "category": "Tin học",
+        "tags": ["Python", "Thuật toán"]
+    },
+    {
+        "title": "Khác biệt giữa SQL và NoSQL?",
+        "content": """Mình đang tìm hiểu về database và thấy có 2 loại: SQL và NoSQL.
+
+Khi nào nên dùng SQL? Khi nào nên dùng NoSQL?
+
+Cho ví dụ cụ thể giúp mình với!""",
+        "category": "Tin học",
+        "tags": ["Cơ sở dữ liệu"]
+    },
+    # Giáo dục công dân posts
+    {
+        "title": "Quyền và nghĩa vụ cơ bản của công dân",
+        "content": """Theo Hiến pháp 2013, công dân Việt Nam có những quyền và nghĩa vụ cơ bản nào?
+
+Mình cần chuẩn bị cho buổi thảo luận nhóm.""",
+        "category": "Giáo dục công dân",
+        "tags": ["Pháp luật"]
+    },
+    {
+        "title": "Làm thế nào để rèn luyện kỹ năng giao tiếp?",
+        "content": """Mình khá nhút nhát và muốn cải thiện kỹ năng giao tiếp.
+
+Có bạn nào có kinh nghiệm không? Chia sẻ tips giúp mình với!""",
+        "category": "Giáo dục công dân",
+        "tags": ["Kỹ năng sống"]
     }
 ]
 
 
-async def seed_database():
-    """
-    Seed the database with initial data
-    """
-    try:
-        # Connect to MongoDB
-        client = AsyncIOMotorClient(settings.MONGODB_URL)
-        db = client[settings.MONGODB_DB_NAME]
+async def clear_collections(db):
+    """Clear existing data from collections"""
+    print("🧹 Clearing existing data...")
+    await db.users.delete_many({})
+    await db.categories.delete_many({})
+    await db.tags.delete_many({})
+    await db.posts.delete_many({})
+    await db.answers.delete_many({})
+    print("✅ Collections cleared!")
+
+
+async def seed_users(db):
+    """Seed users into database"""
+    print("\n👤 Seeding users...")
+    hashed_password = get_password_hash(DEFAULT_PASSWORD)
+    user_ids = {}
+    
+    for user in USERS:
+        user_doc = {
+            "name": user["name"],
+            "email": user["email"],
+            "hashed_password": hashed_password,
+            "avatar_url": user.get("avatar_url"),
+            "bio": user.get("bio"),
+            "role": user["role"],
+            "status": "active",
+            "violation_count": 0,
+            "ban_expires_at": None,
+            "ban_reason": None,
+            "bookmarks": [],
+            "bookmarked_post_ids": [],
+            "created_at": datetime.utcnow() - timedelta(days=random.randint(1, 90)),
+            "updated_at": datetime.utcnow()
+        }
+        result = await db.users.insert_one(user_doc)
+        user_ids[user["email"]] = result.inserted_id
+        print(f"  ✓ Created user: {user['name']} ({user['email']}) - Role: {user['role']}")
+    
+    print(f"✅ Created {len(USERS)} users!")
+    return user_ids
+
+
+async def seed_categories(db):
+    """Seed categories into database"""
+    print("\n📁 Seeding categories...")
+    category_names = {}
+    
+    for category in CATEGORIES:
+        category_doc = {
+            "name": category["name"],
+            "description": category["description"],
+            "post_count": 0,
+            "is_active": True,
+            "created_at": datetime.utcnow(),
+            "updated_at": datetime.utcnow()
+        }
+        result = await db.categories.insert_one(category_doc)
+        category_names[category["name"]] = result.inserted_id
+        print(f"  ✓ Created category: {category['name']}")
+    
+    print(f"✅ Created {len(CATEGORIES)} categories!")
+    return category_names
+
+
+async def seed_tags(db, user_ids):
+    """Seed tags into database"""
+    print("\n🏷️  Seeding tags...")
+    tag_ids = {}
+    admin_id = list(user_ids.values())[0]  # Use first admin to create tags
+    
+    for category_name, tags in TAGS_BY_CATEGORY.items():
+        for tag in tags:
+            tag_doc = {
+                "name": tag["name"],
+                "description": tag["description"],
+                "post_count": 0,
+                "is_active": True,
+                "created_by": admin_id,
+                "created_at": datetime.utcnow()
+            }
+            result = await db.tags.insert_one(tag_doc)
+            tag_ids[tag["name"]] = result.inserted_id
+            print(f"  ✓ Created tag: {tag['name']} (Category: {category_name})")
+    
+    total_tags = sum(len(tags) for tags in TAGS_BY_CATEGORY.values())
+    print(f"✅ Created {total_tags} tags!")
+    return tag_ids
+
+
+async def seed_posts(db, user_ids, tag_ids):
+    """Seed posts into database"""
+    print("\n📝 Seeding posts...")
+    
+    # Get list of regular users (not admins)
+    regular_user_emails = [u["email"] for u in USERS if u["role"] == "user"]
+    
+    for i, post in enumerate(POSTS):
+        # Randomly select an author from regular users
+        author_email = random.choice(regular_user_emails)
+        author_id = user_ids[author_email]
         
-        print(f"Connected to MongoDB: {settings.MONGODB_DB_NAME}")
+        # Get tag IDs for this post
+        post_tag_ids = [tag_ids[tag_name] for tag_name in post["tags"] if tag_name in tag_ids]
+        
+        post_doc = {
+            "title": post["title"],
+            "content": post["content"],
+            "author_id": author_id,
+            "category": post["category"],
+            "tag_ids": post_tag_ids,
+            "answer_count": 0,
+            "view_count": random.randint(10, 500),
+            "is_deleted": False,
+            "created_at": datetime.utcnow() - timedelta(days=random.randint(1, 30)),
+            "updated_at": datetime.utcnow()
+        }
+        result = await db.posts.insert_one(post_doc)
+        
+        # Update category post count
+        await db.categories.update_one(
+            {"name": post["category"]},
+            {"$inc": {"post_count": 1}}
+        )
+        
+        # Update tag post counts
+        for tag_id in post_tag_ids:
+            await db.tags.update_one(
+                {"_id": tag_id},
+                {"$inc": {"post_count": 1}}
+            )
+        
+        print(f"  ✓ Created post #{i+1}: {post['title'][:50]}... ({post['category']})")
+    
+    print(f"✅ Created {len(POSTS)} posts!")
+
+
+async def main():
+    """Main function to seed database"""
+    print("=" * 60)
+    print("🌱 TEACH BETTER - DATABASE SEEDING SCRIPT")
+    print("=" * 60)
+    print(f"\n📊 Data to be created:")
+    print(f"   - Users: {len(USERS)} (2 admins, 8 regular users)")
+    print(f"   - Categories: {len(CATEGORIES)}")
+    print(f"   - Tags: {sum(len(tags) for tags in TAGS_BY_CATEGORY.values())}")
+    print(f"   - Posts: {len(POSTS)}")
+    print(f"\n🔐 Default password: {DEFAULT_PASSWORD}")
+    print("=" * 60)
+    
+    # Connect to MongoDB
+    print("\n🔗 Connecting to MongoDB...")
+    client = AsyncIOMotorClient(MONGODB_URL)
+    db = client[MONGODB_DB_NAME]
+    
+    try:
+        # Test connection
+        await client.admin.command('ping')
+        print("✅ Connected to MongoDB!")
         
         # Clear existing data
-        print("\n🗑️  Clearing existing data...")
-        await db.users.delete_many({})
-        await db.categories.delete_many({})
-        await db.tags.delete_many({})
-        await db.posts.delete_many({})
-        await db.answers.delete_many({})
-        await db.notifications.delete_many({})
-        print("✅ Cleared all collections")
+        await clear_collections(db)
         
-        # 1. Seed Categories
-        print("\n📁 Seeding categories...")
-        category_ids = {}
-        for cat in CATEGORIES:
-            cat_doc = {
-                "_id": ObjectId(),
-                "name": cat["name"],
-                "description": cat["description"],
-                "post_count": cat["post_count"],
-                "created_at": datetime.now(timezone.utc),
-                "updated_at": datetime.now(timezone.utc)
-            }
-            await db.categories.insert_one(cat_doc)
-            category_ids[cat["name"]] = cat_doc["_id"]
-            print(f"  ✓ Created category: {cat['name']}")
+        # Seed data
+        user_ids = await seed_users(db)
+        category_ids = await seed_categories(db)
+        tag_ids = await seed_tags(db, user_ids)
+        await seed_posts(db, user_ids, tag_ids)
         
-        # 2. Seed Users
-        print("\n👥 Seeding users...")
-        user_ids = []
-        for user in USERS:
-            user_doc = {
-                "_id": ObjectId(),
-                "name": user["name"],
-                "email": user["email"],
-                "hashed_password": get_password_hash(user["password"]),
-                "avatar_url": user["avatar_url"],
-                "bio": user["bio"],
-                "role": user["role"],
-                "status": user["status"],
-                "bookmarked_post_ids": [],
-                "created_at": datetime.now(timezone.utc),
-                "updated_at": datetime.now(timezone.utc)
-            }
-            await db.users.insert_one(user_doc)
-            user_ids.append(user_doc["_id"])
-            print(f"  ✓ Created user: {user['name']} ({user['email']})")
-        
-        # 3. Seed Tags
-        print("\n🏷️  Seeding tags...")
-        tag_ids = {}
-        for category_name, tag_names in TAG_TEMPLATES.items():
-            tag_ids[category_name] = []
-            for tag_name in tag_names:
-                tag_doc = {
-                    "_id": ObjectId(),
-                    "name": tag_name,
-                    "description": f"Tag liên quan đến {category_name}",
-                    "post_count": 0,
-                    "created_by": random.choice(user_ids),
-                    "created_at": datetime.now(timezone.utc)
-                }
-                try:
-                    await db.tags.insert_one(tag_doc)
-                except Exception as e:
-                    if "E11000" in str(e):
-                        print(f"  ⚠️  Tag '{tag_name}' already exists, skipping...")
-                        continue
-                    else:
-                        raise e
-                tag_ids[category_name].append((tag_doc["_id"], tag_name))
-                print(f"  ✓ Created tag: {tag_name} (in {category_name})")
-        
-        # 4. Seed Posts
-        print("\n📝 Seeding posts...")
-        post_ids = []
-        for i, post_template in enumerate(POST_TEMPLATES):
-            # Random created time (last 30 days)
-            days_ago = random.randint(0, 30)
-            created_at = datetime.now(timezone.utc) - timedelta(days=days_ago)
-            
-            # Get tags for this category
-            category_tags = tag_ids.get(post_template["category"], [])
-            selected_tags = random.sample(category_tags, min(len(post_template["tags"]), len(category_tags)))
-            selected_tag_ids = [tag_id for tag_id, tag_name in selected_tags]
-            
-            post_doc = {
-                "_id": ObjectId(),
-                "title": post_template["title"],
-                "content": post_template["content"],
-                "author_id": random.choice(user_ids),
-                "category": post_template["category"],
-                "tag_ids": selected_tag_ids,
-                "answer_count": random.randint(0, 5),
-                "view_count": random.randint(10, 500),
-                "is_deleted": False,
-                "created_at": created_at,
-                "updated_at": created_at
-            }
-            await db.posts.insert_one(post_doc)
-            post_ids.append(post_doc["_id"])
-            
-            # Update category post_count
-            await db.categories.update_one(
-                {"name": post_template["category"]},
-                {"$inc": {"post_count": 1}}
-            )
-            
-            # Update tag post_count
-            await db.tags.update_many(
-                {"_id": {"$in": selected_tag_ids}},
-                {"$inc": {"post_count": 1}}
-            )
-            
-            print(f"  ✓ Created post {i+1}/20: {post_template['title'][:50]}...")
-        
-        # 5. Seed Answers for some posts
-        print("\n💬 Seeding answers...")
-        answer_count = 0
-        for post_id in random.sample(post_ids, 10):  # Add answers to 10 random posts
-            num_answers = random.randint(1, 3)
-            for _ in range(num_answers):
-                answer_doc = {
-                    "_id": ObjectId(),
-                    "post_id": post_id,
-                    "author_id": random.choice(user_ids),
-                    "content": "Đây là câu trả lời mẫu. Tôi nghĩ bạn nên thử cách tiếp cận này...",
-                    "is_accepted_solution": False,
-                    "votes": {
-                        "upvoted_by": [],
-                        "downvoted_by": [],
-                        "score": random.randint(0, 10)
-                    },
-                    "comments": [],
-                    "is_deleted": False,
-                    "created_at": datetime.now(timezone.utc),
-                    "updated_at": datetime.now(timezone.utc)
-                }
-                await db.answers.insert_one(answer_doc)
-                answer_count += 1
-        print(f"  ✓ Created {answer_count} answers")
-        
-        # 6. Add some bookmarks
-        print("\n🔖 Adding bookmarks...")
-        bookmark_count = 0
-        for user_id in user_ids:
-            bookmarked_posts = random.sample(post_ids, random.randint(1, 5))
-            await db.users.update_one(
-                {"_id": user_id},
-                {"$set": {"bookmarked_post_ids": bookmarked_posts}}
-            )
-            bookmark_count += len(bookmarked_posts)
-        print(f"  ✓ Added {bookmark_count} bookmarks")
-        
-        # Summary
-        print("\n" + "="*50)
-        print("✅ SEED DATA COMPLETED SUCCESSFULLY!")
-        print("="*50)
-        print(f"📊 Summary:")
-        print(f"  - Users: {len(USERS)}")
-        print(f"  - Categories: {len(CATEGORIES)}")
-        print(f"  - Tags: {sum(len(tags) for tags in TAG_TEMPLATES.values())}")
-        print(f"  - Posts: {len(POST_TEMPLATES)}")
-        print(f"  - Answers: {answer_count}")
-        print(f"  - Bookmarks: {bookmark_count}")
-        print("="*50)
-        
-        # Close connection
-        client.close()
+        print("\n" + "=" * 60)
+        print("🎉 SEEDING COMPLETE!")
+        print("=" * 60)
+        print("\n📋 Summary:")
+        print(f"   ✓ Users: {len(USERS)}")
+        print(f"   ✓ Categories: {len(CATEGORIES)}")
+        print(f"   ✓ Tags: {sum(len(tags) for tags in TAGS_BY_CATEGORY.values())}")
+        print(f"   ✓ Posts: {len(POSTS)}")
+        print(f"\n🔑 Login credentials:")
+        print(f"   Admin 1: admin@teachbetter.com / {DEFAULT_PASSWORD}")
+        print(f"   Admin 2: admin2@teachbetter.com / {DEFAULT_PASSWORD}")
+        print(f"   Users: levan.a@gmail.com, tranthi.b@gmail.com, ... / {DEFAULT_PASSWORD}")
         
     except Exception as e:
-        print(f"\n❌ Error seeding database: {e}")
+        print(f"\n❌ Error: {e}")
         raise
+    finally:
+        client.close()
+        print("\n🔌 Disconnected from MongoDB.")
 
 
 if __name__ == "__main__":
-    asyncio.run(seed_database())
-
+    asyncio.run(main())

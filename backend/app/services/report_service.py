@@ -41,6 +41,16 @@ class ReportService:
         if not target_exists:
             raise ValueError("Target not found")
 
+        # Check for self-reporting
+        is_self_report = await self._check_self_report(
+            report_data.report_type,
+            report_data.target_id,
+            reporter_id
+        )
+        
+        if is_self_report:
+            raise PermissionError("Cannot report your own content")
+
         report_dict = report_data.model_dump()
         report_dict["reporter_id"] = ObjectId(reporter_id)
         report_dict["target_id"] = ObjectId(report_data.target_id)
@@ -52,6 +62,36 @@ class ReportService:
         report_dict["_id"] = result.inserted_id
 
         return ReportModel(**report_dict)
+
+    async def _check_self_report(
+        self,
+        report_type: ReportType,
+        target_id: str,
+        reporter_id: str
+    ) -> bool:
+        """
+        Check if user is trying to report their own content
+        """
+        if not ObjectId.is_valid(target_id):
+            return False
+
+        obj_id = ObjectId(target_id)
+        reporter_obj_id = ObjectId(reporter_id)
+
+        if report_type == ReportType.POST:
+            target = await self.posts_collection.find_one({"_id": obj_id})
+            if target and target.get("author_id") == reporter_obj_id:
+                return True
+        elif report_type == ReportType.ANSWER:
+            target = await self.answers_collection.find_one({"_id": obj_id})
+            if target and target.get("author_id") == reporter_obj_id:
+                return True
+        elif report_type == ReportType.USER:
+            # Cannot report yourself
+            if obj_id == reporter_obj_id:
+                return True
+
+        return False
 
     async def _validate_target(
         self,

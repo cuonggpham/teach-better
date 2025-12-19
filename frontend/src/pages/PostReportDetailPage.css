@@ -352,8 +352,8 @@
 
 /* Attachments */
 .attachments-grid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 1rem;
 }
 
@@ -361,6 +361,18 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+.attachment-image {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+
+.attachment-link:hover .attachment-image {
+  transform: scale(1.05);
 }
 
 .attachment-label {

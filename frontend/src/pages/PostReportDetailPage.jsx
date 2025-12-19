@@ -262,23 +262,37 @@ const PostReportDetailPage = () => {
                         </Card>
 
                         {/* Attachments */}
-                        {report.evidence_url && (
+                        {(report.evidence_urls?.length > 0 || report.evidence_url) && (
                             <Card className="info-card">
                                 <h2 className="section-title">{t('report.attachments') || 'Attachments'}</h2>
 
                                 <div className="attachments-grid">
-                                    <div className="attachment-item">
-                                        <div className="attachment-label">{t('report.evidence_link') || 'Evidence Link'}</div>
-                                        <a
-                                            href={report.evidence_url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="attachment-link"
-                                        >
-                                            <span className="link-icon">🔗</span>
-                                            <span className="link-text">{report.evidence_url}</span>
-                                        </a>
-                                    </div>
+                                    {/* Handle new multi-image format */}
+                                    {report.evidence_urls?.map((url, index) => (
+                                        <div key={index} className="attachment-item">
+                                            <a
+                                                href={url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="attachment-link"
+                                            >
+                                                <img src={url} alt={`Evidence ${index + 1}`} className="attachment-image" />
+                                            </a>
+                                        </div>
+                                    ))}
+                                    {/* Backward compatibility: handle old single evidence_url */}
+                                    {!report.evidence_urls?.length && report.evidence_url && (
+                                        <div className="attachment-item">
+                                            <a
+                                                href={report.evidence_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="attachment-link"
+                                            >
+                                                <img src={report.evidence_url} alt="Evidence" className="attachment-image" />
+                                            </a>
+                                        </div>
+                                    )}
                                 </div>
                             </Card>
                         )}

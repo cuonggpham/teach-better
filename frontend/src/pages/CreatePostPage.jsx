@@ -150,18 +150,8 @@ const CreatePostPage = () => {
       return;
     }
 
-    if (formData.title.trim().length < 10) {
-      setErrors((prev) => ({ ...prev, title: t('post.title_min') }));
-      return;
-    }
-
     if (!formData.content.trim()) {
       setErrors((prev) => ({ ...prev, content: t('validation.required') }));
-      return;
-    }
-
-    if (formData.content.trim().length < 20) {
-      setErrors((prev) => ({ ...prev, content: t('post.content_min') }));
       return;
     }
 

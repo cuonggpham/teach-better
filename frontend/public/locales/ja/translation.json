@@ -468,7 +468,9 @@
       "reason_min_length": "理由は最低20文字必要です",
       "image_too_large": "画像が大きすぎます（最大5MB）",
       "invalid_image": "有効な画像ファイルを選択してください",
-      "upload_failed": "画像のアップロードに失敗しました"
+      "upload_failed": "画像のアップロードに失敗しました",
+      "max_images": "最大5枚の画像",
+      "self_report_not_allowed": "自分のコンテンツを報告することはできません"
     }
   },
   "admin": {

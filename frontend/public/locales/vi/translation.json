@@ -468,7 +468,9 @@
       "reason_min_length": "Lý do phải có ít nhất 20 ký tự",
       "image_too_large": "Ảnh quá lớn (tối đa 5MB)",
       "invalid_image": "Vui lòng chọn file ảnh hợp lệ",
-      "upload_failed": "Tải ảnh lên thất bại"
+      "upload_failed": "Tải ảnh lên thất bại",
+      "max_images": "Tối đa 5 ảnh",
+      "self_report_not_allowed": "Bạn không thể báo cáo nội dung của chính mình"
     }
   },
   "admin": {
