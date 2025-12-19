@@ -114,15 +114,16 @@ async def get_posts(
     """
     Get list of posts with filters and sorting
     """
-    # Get total count
+    # Get total count (pass db for author name search)
     total = await post_service.count_posts(
         author_id=author_id,
         tag_ids=tag_ids,
         category=category,
-        search=search
+        search=search,
+        db=db
     )
     
-    # Get posts
+    # Get posts (pass db for author name search)
     posts = await post_service.get_posts(
         skip=skip,
         limit=limit,
@@ -131,7 +132,8 @@ async def get_posts(
         category=category,
         sort_by=sort_by,
         sort_order=sort_order,
-        search=search
+        search=search,
+        db=db
     )
 
     # Convert to response models with author info and tags

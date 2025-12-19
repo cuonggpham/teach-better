@@ -63,31 +63,79 @@ class PostService:
         author_id: Optional[str] = None,
         tag_ids: Optional[List[str]] = None,
         category: Optional[str] = None,
-        search: Optional[str] = None
+        search: Optional[str] = None,
+        db = None
     ) -> int:
         """
-        Count total posts with filters
+        Count total posts with filters, including search by author name
         """
-        query = {"is_deleted": False}
-
-        if author_id and ObjectId.is_valid(author_id):
-            query["author_id"] = ObjectId(author_id)
-
-        if tag_ids:
-            query["tag_ids"] = {"$in": [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]}
-
-        if category:
-            query["category"] = category
-
-        if search:
-            # Case-insensitive search in title, content, and author name
-            query["$or"] = [
-                {"title": {"$regex": search, "$options": "i"}},
-                {"content": {"$regex": search, "$options": "i"}}
+        if search and db:
+            # Use aggregation to search by author name too
+            pipeline = [
+                {"$match": {"is_deleted": False}},
+                # Join with users collection
+                {
+                    "$lookup": {
+                        "from": "users",
+                        "localField": "author_id",
+                        "foreignField": "_id",
+                        "as": "author_info"
+                    }
+                },
+                {"$unwind": {"path": "$author_info", "preserveNullAndEmptyArrays": True}}
             ]
+            
+            # Build match conditions
+            match_conditions = []
+            
+            if author_id and ObjectId.is_valid(author_id):
+                match_conditions.append({"author_id": ObjectId(author_id)})
+            
+            if tag_ids:
+                valid_tag_ids = [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]
+                if valid_tag_ids:
+                    match_conditions.append({"tag_ids": {"$in": valid_tag_ids}})
+            
+            if category:
+                match_conditions.append({"category": category})
+            
+            # Search in title, content, and author name
+            search_conditions = [
+                {"title": {"$regex": search, "$options": "i"}},
+                {"content": {"$regex": search, "$options": "i"}},
+                {"author_info.name": {"$regex": search, "$options": "i"}}
+            ]
+            match_conditions.append({"$or": search_conditions})
+            
+            if match_conditions:
+                pipeline.append({"$match": {"$and": match_conditions}})
+            
+            # Count
+            pipeline.append({"$count": "total"})
+            
+            result = await self.collection.aggregate(pipeline).to_list(length=1)
+            return result[0]["total"] if result else 0
+        else:
+            # Original simple query without author name search
+            query = {"is_deleted": False}
 
-        count = await self.collection.count_documents(query)
-        return count
+            if author_id and ObjectId.is_valid(author_id):
+                query["author_id"] = ObjectId(author_id)
+
+            if tag_ids:
+                query["tag_ids"] = {"$in": [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]}
+
+            if category:
+                query["category"] = category
+
+            if search:
+                query["$or"] = [
+                    {"title": {"$regex": search, "$options": "i"}},
+                    {"content": {"$regex": search, "$options": "i"}}
+                ]
+
+            count = await self.collection.count_documents(query)
+            return count
 
     async def get_posts(
         self,
@@ -98,39 +146,95 @@ class PostService:
         category: Optional[str] = None,
         sort_by: str = "created_at",
         sort_order: int = -1,
-        search: Optional[str] = None
+        search: Optional[str] = None,
+        db = None
     ) -> List[PostModel]:
         """
-        Get list of posts with filters and sorting
+        Get list of posts with filters and sorting, including search by author name
         """
-        query = {"is_deleted": False}
-
-        if author_id and ObjectId.is_valid(author_id):
-            query["author_id"] = ObjectId(author_id)
-
-        if tag_ids:
-            query["tag_ids"] = {"$in": [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]}
-
-        if category:
-            query["category"] = category
-
-        if search:
-            # Case-insensitive search in title, content, and author name
-            query["$or"] = [
-                {"title": {"$regex": search, "$options": "i"}},
-                {"content": {"$regex": search, "$options": "i"}}
+        if search and db:
+            # Use aggregation to search by author name too
+            pipeline = [
+                {"$match": {"is_deleted": False}},
+                # Join with users collection
+                {
+                    "$lookup": {
+                        "from": "users",
+                        "localField": "author_id",
+                        "foreignField": "_id",
+                        "as": "author_info"
+                    }
+                },
+                {"$unwind": {"path": "$author_info", "preserveNullAndEmptyArrays": True}}
             ]
+            
+            # Build match conditions
+            match_conditions = []
+            
+            if author_id and ObjectId.is_valid(author_id):
+                match_conditions.append({"author_id": ObjectId(author_id)})
+            
+            if tag_ids:
+                valid_tag_ids = [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]
+                if valid_tag_ids:
+                    match_conditions.append({"tag_ids": {"$in": valid_tag_ids}})
+            
+            if category:
+                match_conditions.append({"category": category})
+            
+            # Search in title, content, and author name
+            search_conditions = [
+                {"title": {"$regex": search, "$options": "i"}},
+                {"content": {"$regex": search, "$options": "i"}},
+                {"author_info.name": {"$regex": search, "$options": "i"}}
+            ]
+            match_conditions.append({"$or": search_conditions})
+            
+            if match_conditions:
+                pipeline.append({"$match": {"$and": match_conditions}})
+            
+            # Sort, skip, limit
+            pipeline.append({"$sort": {sort_by: sort_order}})
+            pipeline.append({"$skip": skip})
+            pipeline.append({"$limit": limit})
+            
+            # Remove the author_info field we added for search
+            pipeline.append({"$project": {"author_info": 0}})
+            
+            posts = await self.collection.aggregate(pipeline).to_list(length=limit)
+            
+            print(f"[DEBUG] get_posts (with author search) found {len(posts)} posts")
+            
+            return [PostModel(**post) for post in posts]
+        else:
+            # Original simple query without author name search
+            query = {"is_deleted": False}
 
-        print(f"[DEBUG] get_posts query: {query}, sort_by: {sort_by}, sort_order: {sort_order}, skip: {skip}, limit: {limit}")
-        
-        cursor = self.collection.find(query).sort(sort_by, sort_order).skip(skip).limit(limit)
-        posts = await cursor.to_list(length=limit)
-        
-        print(f"[DEBUG] Found {len(posts)} posts")
-        for i, post in enumerate(posts[:5]):  # Show first 5 posts
-            print(f"  [{i}] Title: {post.get('title', 'No title')[:50]}, created_at: {post.get('created_at')}, is_deleted: {post.get('is_deleted', 'N/A')}")
+            if author_id and ObjectId.is_valid(author_id):
+                query["author_id"] = ObjectId(author_id)
 
-        return [PostModel(**post) for post in posts]
+            if tag_ids:
+                query["tag_ids"] = {"$in": [ObjectId(tag_id) for tag_id in tag_ids if ObjectId.is_valid(tag_id)]}
+
+            if category:
+                query["category"] = category
+
+            if search:
+                query["$or"] = [
+                    {"title": {"$regex": search, "$options": "i"}},
+                    {"content": {"$regex": search, "$options": "i"}}
+                ]
+
+            print(f"[DEBUG] get_posts query: {query}, sort_by: {sort_by}, sort_order: {sort_order}, skip: {skip}, limit: {limit}")
+            
+            cursor = self.collection.find(query).sort(sort_by, sort_order).skip(skip).limit(limit)
+            posts = await cursor.to_list(length=limit)
+            
+            print(f"[DEBUG] Found {len(posts)} posts")
+            for i, post in enumerate(posts[:5]):  # Show first 5 posts
+                print(f"  [{i}] Title: {post.get('title', 'No title')[:50]}, created_at: {post.get('created_at')}, is_deleted: {post.get('is_deleted', 'N/A')}")
+
+            return [PostModel(**post) for post in posts]
 
     async def update_post(self, post_id: str, post_data: PostUpdate, user_id: str) -> Optional[PostModel]:
         """

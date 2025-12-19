@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import { addComment, deleteComment } from '../../api/answersApi';
-import { Button, Input, Card } from '../ui';
-import { ReportButton } from '../forum';
+import { Button, Input } from '../ui';
+import { ReportButton, UserInfoPopup } from '../forum';
 import { formatDateTime } from '../../utils/formatters';
 import './CommentSection.css';
 
@@ -79,26 +79,43 @@ const CommentSection = ({ answerId, comments = [], onCommentAdded, onCommentDele
           <p className="no-comments">{t('comment.no_comments')}</p>
         ) : (
           comments.map((comment) => (
-            <Card key={comment.id} variant="outlined" padding="small" className="comment-item">
+            <div key={comment.id} className="comment-item">
               <div className="comment-header">
-                <span className="comment-author">{comment.author_name || t('comment.anonymous')}</span>
-                <span className="comment-date">{formatDateTime(comment.created_at, i18n.language)}</span>
+                {/* Avatar */}
+                <div className="comment-avatar">
+                  {comment.author_avatar_url ? (
+                    <img src={comment.author_avatar_url} alt={comment.author_name} />
+                  ) : (
+                    <div className="comment-avatar-placeholder">
+                      {(comment.author_name || '?').charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                {/* Info */}
+                <div className="comment-info">
+                  <UserInfoPopup userId={comment.author_id} userName={comment.author_name}>
+                    <span className="comment-author">{comment.author_name || t('comment.anonymous')}</span>
+                  </UserInfoPopup>
+                  <span className="comment-date">{formatDateTime(comment.created_at, i18n.language)}</span>
+                </div>
               </div>
               <p className="comment-content">{comment.content}</p>
               <div className="comment-actions">
                 {isAuthenticated && user && comment.author_id === user.id && (
-                  <Button
-                    variant="ghost"
-                    size="small"
+                  <button
                     onClick={() => handleDelete(comment.id)}
                     className="comment-delete"
                   >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                    </svg>
                     {t('common.delete')}
-                  </Button>
+                  </button>
                 )}
                 <ReportButton targetType="comment" targetId={comment.id} />
               </div>
-            </Card>
+            </div>
           ))
         )}
       </div>
