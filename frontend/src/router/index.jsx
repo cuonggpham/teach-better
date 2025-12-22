@@ -19,8 +19,11 @@ import UserManagement from '../pages/UserManagement';
 import UserDetail from '../pages/UserDetail';
 import PostReportDetailPage from '../pages/PostReportDetailPage';
 import ReportManagement from '../pages/ReportManagement';
+import ReportManagementHub from '../pages/ReportManagementHub';
+import UserReportManagement from '../pages/UserReportManagement';
 import UserReportDetailPage from '../pages/UserReportDetailPage';
 import AdminPostDetailPage from '../pages/AdminPostDetailPage';
+
 
 /**
  * Cấu hình React Router
@@ -108,6 +111,14 @@ const router = createBrowserRouter([
       {
         path: 'admin/posts/:postId',
         element: <AdminPostDetailPage />,
+      },
+      {
+        path: 'admin/report-hub',
+        element: <ReportManagementHub />,
+      },
+      {
+        path: 'admin/user-reports',
+        element: <UserReportManagement />,
       },
       {
         path: 'admin/reports',
