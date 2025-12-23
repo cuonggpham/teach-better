@@ -31,13 +31,13 @@ const DiagnosisHistoryPage = () => {
 
   // Subject options - matching the wireframe (教科 dropdown)
   const subjectOptions = [
-    { value: '', label: '教科' },
-    { value: 'math', label: '数学' },
-    { value: 'physics', label: '物理' },
-    { value: 'chemistry', label: '化学' },
-    { value: 'japanese', label: '国語' },
-    { value: 'english', label: '英語' },
-    { value: 'other', label: 'その他' },
+    { value: '', label: t('diagnosis.subject', '教科') },
+    { value: 'math', label: t('diagnosis.subjects.math', '数学') },
+    { value: 'physics', label: t('diagnosis.subjects.physics', '物理') },
+    { value: 'chemistry', label: t('diagnosis.subjects.chemistry', '化学') },
+    { value: 'japanese', label: t('diagnosis.subjects.japanese', '国語') },
+    { value: 'english', label: t('diagnosis.subjects.english', '英語') },
+    { value: 'other', label: t('diagnosis.subjects.other', 'その他') },
   ];
 
   // Fetch diagnoses
@@ -138,12 +138,12 @@ const DiagnosisHistoryPage = () => {
   // Nationality options for display
   const nationalityOptions = [
     { value: 'vietnam', label: 'Vietnam' },
-    { value: 'china', label: '中国' },
-    { value: 'korea', label: '韓国' },
-    { value: 'thailand', label: 'タイ' },
-    { value: 'indonesia', label: 'インドネシア' },
-    { value: 'philippines', label: 'フィリピン' },
-    { value: 'other', label: 'その他' },
+    { value: 'china', label: t('diagnosis.nationalities.china', '中国') },
+    { value: 'korea', label: t('diagnosis.nationalities.korea', '韓国') },
+    { value: 'thailand', label: t('diagnosis.nationalities.thailand', 'タイ') },
+    { value: 'indonesia', label: t('diagnosis.nationalities.indonesia', 'インドネシア') },
+    { value: 'philippines', label: t('diagnosis.nationalities.philippines', 'フィリピン') },
+    { value: 'other', label: t('diagnosis.nationalities.other', 'その他') },
   ];
 
   // Get nationality label from value
@@ -191,7 +191,7 @@ const DiagnosisHistoryPage = () => {
       <Container size="large">
         {/* Title - 診断履歴 */}
         <div className="history-title-box">
-          <h1>診断履歴</h1>
+          <h1>{t('diagnosis.history_title', '診断履歴')}</h1>
         </div>
 
         {/* Search and Filters Section */}
@@ -205,7 +205,7 @@ const DiagnosisHistoryPage = () => {
               </svg>
               <input
                 type="text"
-                placeholder="search"
+                placeholder={t('diagnosis.search_placeholder', '検索...')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="search-input"
@@ -226,7 +226,7 @@ const DiagnosisHistoryPage = () => {
           {/* Row 2: Date filters + Reset button */}
           <div className="filters-row-dates">
             <div className="date-filter-group">
-              <label className="date-label">開始日</label>
+              <label className="date-label">{t('diagnosis.start_date', '開始日')}</label>
               <div className="date-input-wrapper">
                 <input
                   type="date"
@@ -238,7 +238,7 @@ const DiagnosisHistoryPage = () => {
             </div>
 
             <div className="date-filter-group">
-              <label className="date-label">終了日</label>
+              <label className="date-label">{t('diagnosis.end_date', '終了日')}</label>
               <div className="date-input-wrapper">
                 <input
                   type="date"
@@ -253,7 +253,7 @@ const DiagnosisHistoryPage = () => {
               className="reset-button"
               onClick={handleReset}
             >
-              リセット
+              {t('diagnosis.reset', 'リセット')}
             </button>
           </div>
         </div>
@@ -268,16 +268,16 @@ const DiagnosisHistoryPage = () => {
             <table className="history-table">
               <thead>
                 <tr>
-                  <th>教科</th>
-                  <th>タイトル</th>
-                  <th>診断日</th>
-                  <th>操作</th>
+                  <th>{t('diagnosis.table.subject', '教科')}</th>
+                  <th>{t('diagnosis.table.title', 'タイトル')}</th>
+                  <th>{t('diagnosis.table.date', '診断日')}</th>
+                  <th>{t('diagnosis.table.actions', '操作')}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td colSpan="4" className="empty-cell">
-                    データがありません
+                    {t('diagnosis.no_data', 'データがありません')}
                   </td>
                 </tr>
               </tbody>
@@ -288,10 +288,10 @@ const DiagnosisHistoryPage = () => {
             <table className="history-table">
               <thead>
                 <tr>
-                  <th>教科</th>
-                  <th>タイトル</th>
-                  <th>診断日</th>
-                  <th>操作</th>
+                  <th>{t('diagnosis.table.subject', '教科')}</th>
+                  <th>{t('diagnosis.table.title', 'タイトル')}</th>
+                  <th>{t('diagnosis.table.date', '診断日')}</th>
+                  <th>{t('diagnosis.table.actions', '操作')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -300,13 +300,13 @@ const DiagnosisHistoryPage = () => {
                     <td>
                       <span className="subject-cell">{getSubjectLabel(diagnosis.subject)}</span>
                     </td>
-                    <td className="title-cell">{diagnosis.title || '教育方法に関する質問'}</td>
+                    <td className="title-cell">{diagnosis.title || t('diagnosis.mock_data.title_1', '教育方法に関する質問')}</td>
                     <td className="date-cell">{formatDisplayDate(diagnosis.created_at)}</td>
                     <td className="actions-cell">
                       <button
                         className="action-btn view-btn"
                         onClick={() => handleViewDetail(diagnosis)}
-                        title="詳細を見る"
+                        title={t('diagnosis.view_detail', '詳細を見る')}
                       >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
@@ -316,7 +316,7 @@ const DiagnosisHistoryPage = () => {
                       <button
                         className="action-btn delete-btn"
                         onClick={() => handleDeleteClick(diagnosis)}
-                        title="削除"
+                        title={t('diagnosis.delete', '削除')}
                       >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <polyline points="3 6 5 6 21 6" />
@@ -338,7 +338,7 @@ const DiagnosisHistoryPage = () => {
             setDetailModalOpen(false);
             setSelectedDiagnosis(null);
           }}
-          title="診断結果"
+          title={t('diagnosis.result_title', '診断結果')}
           size="large"
           className="diagnosis-result-modal"
         >
@@ -351,7 +351,7 @@ const DiagnosisHistoryPage = () => {
               {/* Section 1: Student Info Bar - 教科・学習者レベル・年齢・国籍 */}
               <div className="result-info-bar">
                 <div className="info-box">
-                  <span className="info-label">教科</span>
+                  <span className="info-label">{t('diagnosis.subject', '教科')}</span>
                   <div className="info-value-row">
                     <svg className="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -361,7 +361,7 @@ const DiagnosisHistoryPage = () => {
                   </div>
                 </div>
                 <div className="info-box">
-                  <span className="info-label">学習者レベル</span>
+                  <span className="info-label">{t('diagnosis.learner_level', '学習者レベル')}</span>
                   <div className="info-value-row">
                     <svg className="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" />
@@ -370,7 +370,7 @@ const DiagnosisHistoryPage = () => {
                   </div>
                 </div>
                 <div className="info-box">
-                  <span className="info-label">年齢</span>
+                  <span className="info-label">{t('diagnosis.age', '年齢')}</span>
                   <div className="info-value-row">
                     <svg className="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -380,7 +380,7 @@ const DiagnosisHistoryPage = () => {
                   </div>
                 </div>
                 <div className="info-box">
-                  <span className="info-label">国籍</span>
+                  <span className="info-label">{t('diagnosis.nationality', '国籍')}</span>
                   <div className="info-value-row">
                     <svg className="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
@@ -394,7 +394,7 @@ const DiagnosisHistoryPage = () => {
 
               {/* Section 2: Uploaded Files - ファイルをアップ */}
               <div className="result-section files-section">
-                <h3 className="section-title">ファイルをアップ</h3>
+                <h3 className="section-title">{t('diagnosis.uploaded_files', 'ファイルをアップ')}</h3>
                 <div className="files-grid">
                   {selectedDiagnosis.uploaded_files && selectedDiagnosis.uploaded_files.length > 0 ? (
                     selectedDiagnosis.uploaded_files.map((file, index) => (
@@ -465,7 +465,7 @@ const DiagnosisHistoryPage = () => {
               <div className="result-analysis-row">
                 {/* Difficulty Points - 理解しにくい点 */}
                 <div className="result-section difficulty-section">
-                  <h3 className="section-title warning-title">理解しにくい点</h3>
+                  <h3 className="section-title warning-title">{t('diagnosis.difficulty_points', '理解しにくい点')}</h3>
                   <ul className="difficulty-list">
                     {(selectedDiagnosis.difficulty_points || selectedDiagnosis.ai_result?.misunderstanding_points || [
                       '専門用語の定義が明確ではなく、混乱しやすい。',
@@ -482,10 +482,10 @@ const DiagnosisHistoryPage = () => {
                 {/* Comprehension Chart - 全体の理解しにくさ */}
                 <div className="result-section chart-section">
                   <h3 className="section-title">
-                    全体の理解しにくさ：
+                    {t('diagnosis.overall_difficulty', '全体の理解しにくさ')}：
                     <span className={`difficulty-level ${selectedDiagnosis.difficulty_level || 'high'}`}>
-                      {selectedDiagnosis.difficulty_level === 'low' ? '低い' :
-                        selectedDiagnosis.difficulty_level === 'medium' ? '普通' : '高い'}
+                      {selectedDiagnosis.difficulty_level === 'low' ? t('diagnosis.level_low', '低い') :
+                        selectedDiagnosis.difficulty_level === 'medium' ? t('diagnosis.level_medium', '普通') : t('diagnosis.level_high', '高い')}
                     </span>
                   </h3>
                   <div className="comprehension-chart">
@@ -504,9 +504,9 @@ const DiagnosisHistoryPage = () => {
                             />
                           </div>
                           <span className="chart-label">
-                            {key === 'logic' ? '論理性' :
-                              key === 'examples' ? '例示' :
-                                key === 'level_fit' ? 'レベル適合度' : key}
+                            {key === 'logic' ? t('diagnosis.chart.logic', '論理性') :
+                              key === 'examples' ? t('diagnosis.chart.examples', '例示') :
+                                key === 'level_fit' ? t('diagnosis.chart.level_fit', 'レベル適合度') : key}
                           </span>
                         </div>
                       ))}
@@ -517,7 +517,7 @@ const DiagnosisHistoryPage = () => {
 
               {/* Section 5: Suggestions - 最適な説明案 */}
               <div className="result-section suggestions-section">
-                <h3 className="section-title">最適な説明案</h3>
+                <h3 className="section-title">{t('diagnosis.suggestions', '最適な説明案')}</h3>
                 <ul className="suggestions-list">
                   {(selectedDiagnosis.suggestions || selectedDiagnosis.ai_result?.suggestions || [
                     '抽象的な部分を、具体例やイラストで補足する。',
@@ -537,10 +537,10 @@ const DiagnosisHistoryPage = () => {
               <div className="result-actions">
                 <Button
                   variant="outline"
-                  onClick={() => navigate('/test/create', { state: { diagnosisId: selectedDiagnosis._id } })}
+                  onClick={() => navigate(`/quiz/${selectedDiagnosis._id}`)}
                   className="create-test-btn"
                 >
-                  テストを作成
+                  {t('diagnosis.create_test', 'テストを作成')}
                 </Button>
                 <Button
                   variant="primary"
@@ -548,15 +548,15 @@ const DiagnosisHistoryPage = () => {
                     try {
                       const { saveDiagnosisResult } = await import('../api/diagnosisApi');
                       await saveDiagnosisResult(selectedDiagnosis._id, token);
-                      toast.success('結果を保存しました');
+                      toast.success(t('diagnosis.result_saved', '結果を保存しました'));
                     } catch (error) {
                       console.error('Save error:', error);
-                      toast.error('保存に失敗しました');
+                      toast.error(t('diagnosis.errors.save_failed', '保存に失敗しました'));
                     }
                   }}
                   className="save-result-btn"
                 >
-                  結果を保存
+                  {t('diagnosis.save_result', '結果を保存')}
                 </Button>
               </div>
             </div>
@@ -570,17 +570,17 @@ const DiagnosisHistoryPage = () => {
             setDeleteModalOpen(false);
             setSelectedDiagnosis(null);
           }}
-          title="削除の確認"
+          title={t('diagnosis.delete_confirm_title', '削除の確認')}
           size="small"
         >
           <div className="delete-confirm-content">
-            <p>この診断結果を削除してもよろしいですか？</p>
+            <p>{t('diagnosis.delete_confirm_message', 'この診断結果を削除してもよろしいですか？')}</p>
             <div className="delete-confirm-actions">
               <Button variant="ghost" onClick={() => setDeleteModalOpen(false)}>
-                キャンセル
+                {t('common.cancel', 'キャンセル')}
               </Button>
               <Button variant="danger" onClick={handleConfirmDelete}>
-                削除
+                {t('diagnosis.delete', '削除')}
               </Button>
             </div>
           </div>

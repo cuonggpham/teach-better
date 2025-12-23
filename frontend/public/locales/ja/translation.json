@@ -386,6 +386,34 @@
       "level_fit": "レベル適合度"
     }
   },
+  "quiz": {
+    "page_title": "クイズページ",
+    "title": "クイズ",
+    "generating": "クイズを生成しています...",
+    "error_title": "エラーが発生しました",
+    "no_questions": "クイズを生成できませんでした",
+    "back_to_diagnosis": "診断履歴に戻る",
+    "results_title": "クイズ結果",
+    "completed": "クイズ完了！",
+    "correct_answers": "正解数",
+    "score": "スコア",
+    "feedback": "フィードバック",
+    "question": "問題",
+    "your_answer": "あなたの回答",
+    "correct_answer": "正解",
+    "retry": "もう一度",
+    "enter_answer": "回答を入力してください...",
+    "previous": "前へ",
+    "next": "次へ",
+    "submitting": "提出中...",
+    "submit": "提出する",
+    "submit_success": "回答を提出しました",
+    "errors": {
+      "load_failed": "クイズの読み込みに失敗しました",
+      "incomplete": "すべての質問に回答してください",
+      "submit_failed": "回答の提出に失敗しました"
+    }
+  },
   "report": {
     "title": "違反を報告",
     "report": "報告",

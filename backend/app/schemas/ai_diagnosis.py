@@ -97,6 +97,16 @@ class QuestionAnswerSubmit(BaseModel):
     user_answer: str
 
 
+class FeedbackItem(BaseModel):
+    """
+    Feedback item schema
+    """
+    question_id: str
+    is_correct: bool
+    correct_answer: str
+    explanation: Optional[str] = None
+
+
 class DiagnosisEvaluation(BaseModel):
     """
     Diagnosis evaluation result schema
@@ -104,5 +114,5 @@ class DiagnosisEvaluation(BaseModel):
     total_questions: int
     correct_answers: int
     score_percentage: float
-    feedback: str
+    feedback: List[FeedbackItem]
 

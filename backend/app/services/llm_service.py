@@ -119,21 +119,25 @@ QUESTION_GENERATION_PROMPT_TEMPLATE_VI = """Dựa trên kết quả phân tích 
 - Quốc tịch: {nationality}  
 - Trình độ: {level}
 
-Hãy tạo {num_questions} câu hỏi tập trung vào các điểm dễ gây hiểu nhầm.
+Hãy tạo {num_questions} câu hỏi TRẮC NGHIỆM (multiple choice) tập trung vào các điểm dễ gây hiểu nhầm.
+
+**YÊU CẦU QUAN TRỌNG:**
+1. TẤT CẢ câu hỏi phải là dạng TRẮC NGHIỆM với 4 lựa chọn (A, B, C, D)
+2. Câu hỏi và các lựa chọn PHẢI ĐƯỢC VIẾT BẰNG CÙNG NGÔN NGỮ với nội dung bài giảng
+3. Nếu bài giảng bằng tiếng Việt, câu hỏi phải bằng tiếng Việt
+4. Nếu bài giảng bằng tiếng Nhật, câu hỏi phải bằng tiếng Nhật
+
 Trả về JSON với định dạng:
 {{
     "questions": [
         {{
             "question_text": "Câu hỏi",
-            "type": "multiple_choice" hoặc "short_answer",
+            "type": "multiple_choice",
             "options": ["A. Lựa chọn 1", "B. Lựa chọn 2", "C. Lựa chọn 3", "D. Lựa chọn 4"],
             "correct_answer": "A"
         }}
     ]
 }}
-
-Với câu hỏi multiple_choice, luôn có 4 options (A, B, C, D).
-Với câu hỏi short_answer, options là mảng rỗng [].
 
 Chỉ trả về JSON, không có text giải thích thêm."""
 
@@ -192,21 +196,25 @@ QUESTION_GENERATION_PROMPT_TEMPLATE_JA = """以下の授業分析結果に基づ
 - 国籍: {nationality}  
 - レベル: {level}
 
-誤解しやすいポイントに焦点を当てた{num_questions}問の質問を作成してください。
+誤解しやすいポイントに焦点を当てた{num_questions}問の選択式クイズを作成してください。
+
+**重要な要件:**
+1. すべての質問は4つの選択肢（A、B、C、D）を持つ選択式（multiple choice）でなければなりません
+2. 質問と選択肢は授業内容と同じ言語で書く必要があります
+3. 授業がベトナム語の場合、質問もベトナム語で
+4. 授業が日本語の場合、質問も日本語で
+
 以下の形式でJSONを返してください:
 {{
     "questions": [
         {{
             "question_text": "質問",
-            "type": "multiple_choice" または "short_answer",
+            "type": "multiple_choice",
             "options": ["A. 選択肢1", "B. 選択肢2", "C. 選択肢3", "D. 選択肢4"],
             "correct_answer": "A"
         }}
     ]
 }}
-
-multiple_choiceの質問には、常に4つの選択肢（A、B、C、D）があります。
-short_answerの質問には、optionsは空の配列[]です。
 
 JSONのみを返してください。追加の説明テキストは不要です。"""
 

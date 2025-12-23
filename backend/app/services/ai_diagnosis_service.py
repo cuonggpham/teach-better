@@ -21,7 +21,8 @@ from app.schemas.ai_diagnosis import (
     AIDiagnosisCreate,
     AIDiagnosisUpdate,
     QuestionAnswerSubmit,
-    DiagnosisEvaluation
+    DiagnosisEvaluation,
+    FeedbackItem
 )
 from app.services.llm_service import (
     call_llm,
@@ -469,17 +470,14 @@ class AIDiagnosisService:
             if not question:
                 continue
             
+            is_correct = False
+            explanation = ""
+            
             # For multiple choice, direct comparison
             if question.type == QuestionType.MULTIPLE_CHOICE:
                 is_correct = answer.user_answer.strip().upper() == question.correct_answer.strip().upper()
-                if is_correct:
-                    correct_count += 1
-                    feedbacks.append(f"Câu {answer.question_id[:8]}: Đúng!")
-                else:
-                    feedbacks.append(
-                        f"Câu {answer.question_id[:8]}: Sai. "
-                        f"Đáp án đúng là {question.correct_answer}"
-                    )
+                if not is_correct:
+                    explanation = f"Đáp án đúng là {question.correct_answer}"
             else:
                 # For short answer, use LLM to evaluate
                 prompt = build_evaluation_prompt(
@@ -492,29 +490,24 @@ class AIDiagnosisService:
                 response = await call_llm(prompt)
                 result = parse_llm_json_response(response)
                 
-                if result.get("is_correct"):
-                    correct_count += 1
-                feedbacks.append(
-                    f"Câu {answer.question_id[:8]}: {result.get('feedback', '')}"
-                )
+                is_correct = result.get("is_correct", False)
+                explanation = result.get("feedback", "")
+            
+            if is_correct:
+                correct_count += 1
+                
+            feedbacks.append(FeedbackItem(
+                question_id=str(question.id),
+                is_correct=is_correct,
+                correct_answer=question.correct_answer,
+                explanation=explanation
+            ))
         
         score_percentage = (correct_count / total_count * 100) if total_count > 0 else 0
-        
-        # Generate overall feedback
-        if score_percentage >= 80:
-            overall = "Xuất sắc! Bạn đã nắm vững nội dung bài giảng."
-        elif score_percentage >= 60:
-            overall = "Khá tốt! Cần ôn lại một số điểm."
-        elif score_percentage >= 40:
-            overall = "Cần cải thiện. Hãy xem lại nội dung bài giảng."
-        else:
-            overall = "Cần học lại bài. Liên hệ giáo viên để được hỗ trợ."
-        
-        feedback_text = overall + "\n\n" + "\n".join(feedbacks)
         
         return DiagnosisEvaluation(
             total_questions=total_count,
             correct_answers=correct_count,
             score_percentage=round(score_percentage, 2),
-            feedback=feedback_text
+            feedback=feedbacks
         )

@@ -386,6 +386,34 @@
       "level_fit": "Phù hợp trình độ"
     }
   },
+  "quiz": {
+    "page_title": "Trang trắc nghiệm",
+    "title": "Trắc nghiệm",
+    "generating": "Đang tạo câu hỏi...",
+    "error_title": "Đã xảy ra lỗi",
+    "no_questions": "Không thể tạo câu hỏi",
+    "back_to_diagnosis": "Quay lại lịch sử",
+    "results_title": "Kết quả trắc nghiệm",
+    "completed": "Hoàn thành!",
+    "correct_answers": "Số câu đúng",
+    "score": "Điểm số",
+    "feedback": "Phản hồi chi tiết",
+    "question": "Câu hỏi",
+    "your_answer": "Câu trả lời của bạn",
+    "correct_answer": "Đáp án đúng",
+    "retry": "Làm lại",
+    "enter_answer": "Nhập câu trả lời...",
+    "previous": "Trước",
+    "next": "Tiếp theo",
+    "submitting": "Đang nộp bài...",
+    "submit": "Nộp bài",
+    "submit_success": "Nộp bài thành công",
+    "errors": {
+      "load_failed": "Không thể tải câu hỏi",
+      "incomplete": "Vui lòng trả lời tất cả câu hỏi",
+      "submit_failed": "Nộp bài thất bại"
+    }
+  },
   "report": {
     "title": "Báo cáo vi phạm",
     "report": "Báo cáo",

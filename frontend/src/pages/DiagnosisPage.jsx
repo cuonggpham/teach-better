@@ -18,12 +18,10 @@ const DiagnosisPage = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const fileInputRef = useRef(null);
-  const documentInputRef = useRef(null);
 
   // Form state
   const [lessonContent, setLessonContent] = useState('');
   const [audioFile, setAudioFile] = useState(null);
-  const [documentFiles, setDocumentFiles] = useState([]);
   const [subject, setSubject] = useState('');
   const [nationality, setNationality] = useState('');
   const [level, setLevel] = useState('');
@@ -110,24 +108,7 @@ const DiagnosisPage = () => {
     }
   };
 
-  const handleDocumentUpload = (e) => {
-    const files = Array.from(e.target.files);
-    const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
-    const validFiles = files.filter(file => {
-      if (!validTypes.includes(file.type)) {
-        toast.error(t('diagnosis.errors.invalid_document', '有効なドキュメントファイルを選択してください（PDF, DOC, DOCX）'));
-        return false;
-      }
-      if (file.size > 20 * 1024 * 1024) {
-        toast.error(t('diagnosis.errors.file_too_large', 'ファイルが大きすぎます（最大20MB）'));
-        return false;
-      }
-      return true;
-    });
-
-    setDocumentFiles(prev => [...prev, ...validFiles]);
-  };
 
   const handleRemoveFile = () => {
     setAudioFile(null);
@@ -136,14 +117,12 @@ const DiagnosisPage = () => {
     }
   };
 
-  const handleRemoveDocument = (index) => {
-    setDocumentFiles(prev => prev.filter((_, i) => i !== index));
-  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!lessonContent.trim() && !audioFile && documentFiles.length === 0) {
+    if (!lessonContent.trim() && !audioFile) {
       toast.error(t('diagnosis.errors.content_required', '授業内容を入力するか、ファイルをアップロードしてください'));
       return;
     }
@@ -164,7 +143,6 @@ const DiagnosisPage = () => {
       const data = {
         lesson_content: lessonContent,
         audio_file: audioFile,
-        document_files: documentFiles,
         subject,
         nationality,
         level,
@@ -227,8 +205,10 @@ const DiagnosisPage = () => {
   };
 
   const handleCreateTest = () => {
-    // Navigate to test creation page with diagnosis result
-    navigate('/test/create', { state: { diagnosisId: analysisResult?._id } });
+    // Navigate to quiz page with diagnosis result
+    if (analysisResult?._id) {
+      navigate(`/quiz/${analysisResult._id}`);
+    }
   };
 
   const handleCloseResult = () => {
@@ -236,7 +216,6 @@ const DiagnosisPage = () => {
     setAnalysisResult(null);
     setLessonContent('');
     setAudioFile(null);
-    setDocumentFiles([]);
     setSubject('');
     setNationality('');
     setLevel('');
@@ -380,44 +359,7 @@ const DiagnosisPage = () => {
               )}
             </div>
 
-            {/* Document Upload */}
-            <div className="document-upload-section">
-              <input
-                type="file"
-                ref={documentInputRef}
-                accept=".pdf,.doc,.docx"
-                onChange={handleDocumentUpload}
-                multiple
-                style={{ display: 'none' }}
-                id="document-upload"
-              />
-              <label htmlFor="document-upload" className="document-upload-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="12" y1="18" x2="12" y2="12" />
-                  <line x1="9" y1="15" x2="15" y2="15" />
-                </svg>
-                {t('diagnosis.upload_document', 'ドキュメントをアップロード')}
-              </label>
 
-              {documentFiles.length > 0 && (
-                <div className="document-files-list">
-                  {documentFiles.map((file, index) => (
-                    <div key={index} className="document-file-item">
-                      {getFileIcon(file.name)}
-                      <span className="document-file-name">{file.name}</span>
-                      <button type="button" className="remove-document-btn" onClick={() => handleRemoveDocument(index)}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <line x1="18" y1="6" x2="6" y2="18" />
-                          <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
           </Card>
 
           {/* Student Background */}

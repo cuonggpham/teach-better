@@ -193,3 +193,75 @@ export const deleteDiagnosis = async (diagnosisId, token) => {
   // Note: axiosConfig.js response interceptor already returns response.data
   return response;
 };
+
+/**
+ * Generate quiz questions from diagnosis
+ * @param {string} diagnosisId - ID chẩn đoán
+ * @param {number} numQuestions - Number of questions to generate (default: 5)
+ * @param {string} token - Token xác thực
+ * @returns {Promise} - Diagnosis with generated questions
+ * 
+ * Expected Response:
+ * {
+ *   "_id": "string",
+ *   "generated_questions": [
+ *     {
+ *       "id": "string",
+ *       "question_text": "Question text here",
+ *       "question_type": "multiple_choice" | "short_answer",
+ *       "options": ["A", "B", "C", "D"],
+ *       "correct_answer": "A",
+ *       "explanation": "Explanation text"
+ *     }
+ *   ]
+ * }
+ */
+export const generateQuestions = async (diagnosisId, numQuestions = 5, token) => {
+  const response = await axiosInstance.post(
+    `/diagnoses/${diagnosisId}/generate-questions`,
+    { num_questions: numQuestions },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response;
+};
+
+/**
+ * Evaluate student answers
+ * @param {string} diagnosisId - ID chẩn đoán
+ * @param {Array} answers - Array of {question_id, answer} objects
+ * @param {string} token - Token xác thực
+ * @returns {Promise} - Evaluation results
+ * 
+ * Expected Response:
+ * {
+ *   "total_questions": 5,
+ *   "correct_answers": 3,
+ *   "score_percentage": 60.0,
+ *   "feedback": [
+ *     {
+ *       "question_id": "string",
+ *       "is_correct": true/false,
+ *       "correct_answer": "A",
+ *       "explanation": "Explanation text"
+ *     }
+ *   ]
+ * }
+ */
+export const evaluateAnswers = async (diagnosisId, answers, token) => {
+  const response = await axiosInstance.post(
+    `/diagnoses/${diagnosisId}/evaluate`,
+    { answers },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response;
+};
