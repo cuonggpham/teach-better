@@ -52,7 +52,9 @@ const ReportManagement = () => {
             }
 
             const data = await getAllReports(params);
-            setReports(data || []);
+            // Filter out user reports - this page only shows post/answer/comment reports
+            const filteredData = (data || []).filter(report => report.report_type !== 'user');
+            setReports(filteredData);
             setCurrentPage(0);
         } catch (error) {
             console.error('Failed to fetch reports:', error);
@@ -187,7 +189,6 @@ const ReportManagement = () => {
                                 <option value="post">{i18n.language === 'vi' ? 'Bài viết' : '投稿'}</option>
                                 <option value="answer">{i18n.language === 'vi' ? 'Câu trả lời' : '回答'}</option>
                                 <option value="comment">{i18n.language === 'vi' ? 'Bình luận' : 'コメント'}</option>
-                                <option value="user">{i18n.language === 'vi' ? 'Người dùng' : 'ユーザー'}</option>
                             </select>
                         </div>
 

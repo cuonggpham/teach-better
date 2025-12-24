@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional, List
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from enum import Enum
 from app.models.user import PyObjectId
 
@@ -54,10 +54,18 @@ class ReportModel(BaseModel):
     target_id: PyObjectId = Field(..., index=True)  # Dynamic reference
     reason_category: ReasonCategory
     reason_detail: str = Field(..., min_length=20)
-    evidence_urls: List[str] = Field(default_factory=list)  # Max 5 images
+    evidence_urls: Optional[List[str]] = Field(default_factory=list)  # Max 5 images
     status: ReportStatus = Field(default=ReportStatus.PENDING)
     resolution: Optional[ResolutionModel] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+    @field_validator('evidence_urls', mode='before')
+    @classmethod
+    def set_evidence_urls(cls, v):
+        """Convert None to empty list for evidence_urls"""
+        if v is None:
+            return []
+        return v
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -67,4 +75,5 @@ class ReportModel(BaseModel):
             datetime: lambda v: v.isoformat()
         }
     )
+
 
