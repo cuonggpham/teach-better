@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { getDiagnosisHistory, getDiagnosisDetail, deleteDiagnosis } from '../api/diagnosisApi';
+import { categoriesApi } from '../api/categoriesApi';
 import { Container, Card, Button, LoadingSpinner, Modal } from '../components/ui';
 import './DiagnosisHistoryPage.css';
 
@@ -29,16 +30,40 @@ const DiagnosisHistoryPage = () => {
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
 
-  // Subject options - matching the wireframe (教科 dropdown)
-  const subjectOptions = [
-    { value: '', label: t('diagnosis.subject', '教科') },
-    { value: 'math', label: t('diagnosis.subjects.math', '数学') },
-    { value: 'physics', label: t('diagnosis.subjects.physics', '物理') },
-    { value: 'chemistry', label: t('diagnosis.subjects.chemistry', '化学') },
-    { value: 'japanese', label: t('diagnosis.subjects.japanese', '国語') },
-    { value: 'english', label: t('diagnosis.subjects.english', '英語') },
-    { value: 'other', label: t('diagnosis.subjects.other', 'その他') },
-  ];
+  // Subject options state
+  const [subjectOptions, setSubjectOptions] = useState([
+    { value: '', label: t('diagnosis.subject', '教科') }
+  ]);
+
+  // Fetch categories on mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await categoriesApi.getCategories();
+        const categories = response.categories || [];
+        const options = categories.map(cat => ({
+          value: cat._id || cat.id,
+          label: cat.name
+        }));
+
+        // Add "Other" option if needed, but for filter usually we want all specific ones + "All" (which is empty value)
+        // Ensure "All Subjects" option is first
+        setSubjectOptions([
+          { value: '', label: t('diagnosis.subject', '教科') },
+          ...options,
+          { value: 'other', label: t('diagnosis.subjects.other', 'その他') }
+        ]);
+      } catch (error) {
+        console.error('Failed to fetch categories:', error);
+        // Fallback to default options if API fails
+        setSubjectOptions([
+          { value: '', label: t('diagnosis.subject', '教科') },
+          { value: 'other', label: t('diagnosis.subjects.other', 'その他') }
+        ]);
+      }
+    };
+    fetchCategories();
+  }, [t]);
 
   // Fetch diagnoses
   const fetchDiagnoses = async () => {
@@ -200,8 +225,6 @@ const DiagnosisHistoryPage = () => {
           <div className="filters-row-main">
             <div className="search-bar-wrapper">
               <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8" />
-                <path d="m21 21-4.35-4.35" />
               </svg>
               <input
                 type="text"
@@ -300,7 +323,12 @@ const DiagnosisHistoryPage = () => {
                     <td>
                       <span className="subject-cell">{getSubjectLabel(diagnosis.subject)}</span>
                     </td>
-                    <td className="title-cell">{diagnosis.title || t('diagnosis.mock_data.title_1', '教育方法に関する質問')}</td>
+                    <td className="title-cell">
+                      {diagnosis.input && diagnosis.input.content
+                        ? (diagnosis.input.content.length > 50 ? diagnosis.input.content.substring(0, 50) + '...' : diagnosis.input.content)
+                        : (diagnosis.title || t('diagnosis.mock_data.title_1', '教育方法に関する質問'))
+                      }
+                    </td>
                     <td className="date-cell">{formatDisplayDate(diagnosis.created_at)}</td>
                     <td className="actions-cell">
                       <button
@@ -357,7 +385,7 @@ const DiagnosisHistoryPage = () => {
                       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                       <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
                     </svg>
-                    <span className="info-value">{selectedDiagnosis.subject || 'IT'}</span>
+                    <span className="info-value">{getSubjectLabel(selectedDiagnosis.subject) || 'IT'}</span>
                   </div>
                 </div>
                 <div className="info-box">
@@ -392,74 +420,25 @@ const DiagnosisHistoryPage = () => {
                 </div>
               </div>
 
-              {/* Section 2: Uploaded Files - ファイルをアップ */}
-              <div className="result-section files-section">
-                <h3 className="section-title">{t('diagnosis.uploaded_files', 'ファイルをアップ')}</h3>
-                <div className="files-grid">
-                  {selectedDiagnosis.uploaded_files && selectedDiagnosis.uploaded_files.length > 0 ? (
-                    selectedDiagnosis.uploaded_files.map((file, index) => (
-                      <div key={index} className="file-card">
-                        <div className={`file-icon-box ${file.name?.endsWith('.pdf') ? 'pdf' : 'doc'}`}>
-                          {file.name?.endsWith('.pdf') ? (
-                            <>
-                              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                              </svg>
-                              <span className="file-type">PDF</span>
-                            </>
-                          ) : (
-                            <>
-                              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="16" y1="13" x2="8" y2="13" />
-                                <line x1="16" y1="17" x2="8" y2="17" />
-                              </svg>
-                              <span className="file-type">DOC</span>
-                            </>
-                          )}
-                        </div>
-                        <div className="file-info">
-                          <span className="file-name">{file.name || 'File-name.pdf'}</span>
-                          <span className="file-meta">{file.uploaded_by || 'User'}, {file.uploaded_at || 'Uploaded on January 1, 2023 at'}</span>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <>
-                      <div className="file-card">
-                        <div className="file-icon-box pdf">
-                          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                            <polyline points="14 2 14 8 20 8" />
-                          </svg>
-                          <span className="file-type">PDF</span>
-                        </div>
-                        <div className="file-info">
-                          <span className="file-name">File-name.pdf</span>
-                          <span className="file-meta">User, Uploaded on January 1, 2023 at</span>
-                        </div>
-                      </div>
-                      <div className="file-card">
-                        <div className="file-icon-box doc">
-                          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                            <polyline points="14 2 14 8 20 8" />
-                            <line x1="16" y1="13" x2="8" y2="13" />
-                            <line x1="16" y1="17" x2="8" y2="17" />
-                          </svg>
-                          <span className="file-type">DOC</span>
-                        </div>
-                        <div className="file-info">
-                          <span className="file-name">File-doc.docx</span>
-                          <span className="file-meta">User, Uploaded on January 1, 2023 at</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
+              {/* Section 1.5: Lesson Content - 授業内容 */}
+              {selectedDiagnosis.input && selectedDiagnosis.input.content && selectedDiagnosis.input.type === 'text' && (
+                <div className="result-section content-section">
+                  <h3 className="section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '8px', verticalAlign: 'text-bottom' }}>
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <line x1="16" y1="13" x2="8" y2="13" />
+                      <line x1="16" y1="17" x2="8" y2="17" />
+                      <polyline points="10 9 9 9 8 9" />
+                    </svg>
+                    {t('diagnosis.lesson_content', '授業内容')}
+                  </h3>
+                  <div className="content-box-readonly">
+                    {selectedDiagnosis.input.content}
+                  </div>
                 </div>
-              </div>
+              )}
+
 
               {/* Section 3 & 4: Difficulty Points + Chart Row */}
               <div className="result-analysis-row">
@@ -488,26 +467,22 @@ const DiagnosisHistoryPage = () => {
                         selectedDiagnosis.difficulty_level === 'medium' ? t('diagnosis.level_medium', '普通') : t('diagnosis.level_high', '高い')}
                     </span>
                   </h3>
-                  <div className="comprehension-chart">
-                    <div className="chart-y-axis">
-                      <span>10</span>
-                      <span>5</span>
-                      <span>0</span>
-                    </div>
+                  <div className="comprehension-chart horizontal">
                     <div className="chart-bars">
                       {Object.entries(selectedDiagnosis.comprehension_scores || { logic: 60, examples: 40, level_fit: 80 }).map(([key, value]) => (
                         <div key={key} className="chart-bar-group">
-                          <div className="chart-bar-container">
-                            <div
-                              className="chart-bar"
-                              style={{ height: `${value}%` }}
-                            />
-                          </div>
                           <span className="chart-label">
                             {key === 'logic' ? t('diagnosis.chart.logic', '論理性') :
                               key === 'examples' ? t('diagnosis.chart.examples', '例示') :
                                 key === 'level_fit' ? t('diagnosis.chart.level_fit', 'レベル適合度') : key}
                           </span>
+                          <div className="chart-bar-container">
+                            <div
+                              className="chart-bar"
+                              style={{ width: `${value}%` }}
+                            />
+                          </div>
+                          <span className="chart-value">{value}</span>
                         </div>
                       ))}
                     </div>

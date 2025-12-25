@@ -493,30 +493,7 @@ const DiagnosisPage = () => {
               </div>
             </div>
 
-            {/* Uploaded Files */}
-            {analysisResult.uploaded_files && analysisResult.uploaded_files.length > 0 && (
-              <div className="result-section files-section">
-                <h3 className="result-section-title">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
-                  {t('diagnosis.uploaded_files', 'ファイルをアップ')}
-                </h3>
-                <div className="uploaded-files-grid">
-                  {analysisResult.uploaded_files.map((file, index) => (
-                    <div key={index} className="uploaded-file-card">
-                      {getFileIcon(file.name)}
-                      <div className="file-details">
-                        <span className="file-name">{file.name}</span>
-                        <span className="file-meta">{file.uploaded_by} · {file.uploaded_at}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+
 
             {/* Difficulty Points & Chart - Side by Side */}
             <div className="result-analysis-row">

@@ -214,16 +214,7 @@ const QuizPage = () => {
                         <div className="results-icon">🎉</div>
                         <h2 className="results-title">{t('quiz.completed', 'クイズ完了！')}</h2>
 
-                        <div className="score-display">
-                            <div className="score-item">
-                                <div className="score-value">{results.correct_answers}/{results.total_questions}</div>
-                                <div className="score-label">{t('quiz.correct_answers', '正解数')}</div>
-                            </div>
-                            <div className="score-item">
-                                <div className="score-value percentage">{Math.round(results.score_percentage)}%</div>
-                                <div className="score-label">{t('quiz.score', 'スコア')}</div>
-                            </div>
-                        </div>
+
 
                         {results.feedback && results.feedback.length > 0 && (
                             <div className="feedback-section">

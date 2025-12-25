@@ -316,41 +316,7 @@ const UserReportDetailPage = () => {
                     ) : (
                         <div className="action-buttons">
                             <button
-                                className="action-btn warning-btn"
-                                onClick={() => handleProcessReport('no_action')}
-                                disabled={processing}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="12" y1="8" x2="12" y2="12" />
-                                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                                </svg>
-                                {i18n.language === 'vi' ? 'Cảnh báo' : '警告'}
-                            </button>
-                            <button
-                                className="action-btn temp-lock-btn"
-                                onClick={() => handleProcessReport('ban_user_3_days')}
-                                disabled={processing}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <polyline points="12 6 12 12 16 14" />
-                                </svg>
-                                {i18n.language === 'vi' ? 'Khóa tạm thời' : '一時ロック'}
-                            </button>
-                            <button
-                                className="action-btn perm-lock-btn"
-                                onClick={() => handleProcessReport('ban_user_permanent')}
-                                disabled={processing}
-                            >
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-                                </svg>
-                                {i18n.language === 'vi' ? 'Khóa vĩnh viễn' : '永久ロック'}
-                            </button>
-                            <button
-                                className="action-btn reject-btn"
+                                className="action-btn-compact reject-btn"
                                 onClick={() => handleProcessReport('no_action')}
                                 disabled={processing}
                             >
@@ -358,8 +324,44 @@ const UserReportDetailPage = () => {
                                     <line x1="18" y1="6" x2="6" y2="18" />
                                     <line x1="6" y1="6" x2="18" y2="18" />
                                 </svg>
-                                {i18n.language === 'vi' ? 'Từ chối' : '却下'}
+                                <span>{i18n.language === 'vi' ? 'Từ chối' : '却下'}</span>
                             </button>
+                            <div className="punishment-buttons">
+                                <button
+                                    className="action-btn-compact warning-btn"
+                                    onClick={() => handleProcessReport('no_action')}
+                                    disabled={processing}
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="12" y1="8" x2="12" y2="12" />
+                                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                                    </svg>
+                                    <span>{i18n.language === 'vi' ? 'Cảnh báo' : '警告'}</span>
+                                </button>
+                                <button
+                                    className="action-btn-compact temp-lock-btn"
+                                    onClick={() => handleProcessReport('ban_user_3_days')}
+                                    disabled={processing}
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <polyline points="12 6 12 12 16 14" />
+                                    </svg>
+                                    <span>{i18n.language === 'vi' ? 'Khóa tạm thời' : '一時ロック'}</span>
+                                </button>
+                                <button
+                                    className="action-btn-compact perm-lock-btn"
+                                    onClick={() => handleProcessReport('ban_user_permanent')}
+                                    disabled={processing}
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                                    </svg>
+                                    <span>{i18n.language === 'vi' ? 'Khóa vĩnh viễn' : '永久ロック'}</span>
+                                </button>
+                            </div>
                         </div>
                     )}
                 </Card>

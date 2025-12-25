@@ -48,37 +48,52 @@ async def call_llm(prompt: str) -> str:
 # Language Detection
 # =============================================================================
 
+
+# =============================================================================
+# Language Detection
+# =============================================================================
+
 import re
 
 def detect_language(text: str) -> str:
     """
-    Detect if text is primarily Japanese or Vietnamese.
+    Detect if text is primarily Vietnamese or should default to Japanese.
     
     Args:
         text: Input text to analyze
         
     Returns:
-        'ja' for Japanese, 'vi' for Vietnamese/other
+        'vi' for Vietnamese, 'ja' for everything else
     """
     if not text:
+        return 'ja'
+    
+    # Simple heuristic for Vietnamese: look for specific Vietnamese characters
+    # that are not common in other languages (especially tones)
+    # This is a basic check, can be improved if needed
+    vietnamese_pattern = re.compile(r'[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]', re.IGNORECASE)
+    
+    vietnamese_chars = len(vietnamese_pattern.findall(text))
+    
+    # If we find distinct Vietnamese characters, assume it's Vietnamese
+    # We use a threshold of 1 to be sensitive to identifying Vietnamese intent
+    if vietnamese_chars > 0:
+        return 'vi'
+        
+    # Check for common Vietnamese words if no accents found (unaccented Vietnamese)
+    # or just to bolster confidence
+    common_vi_words = {'là', 'của', 'và', 'các', 'những', 'trong', 'với', 'cho', 'không', 'có'}
+    words = text.lower().split()
+    word_overlap = set(words).intersection(common_vi_words)
+    
+    if len(word_overlap) > 2:
         return 'vi'
     
-    # Japanese character ranges
-    # Hiragana: \u3040-\u309F
-    # Katakana: \u30A0-\u30FF
-    # Kanji: \u4E00-\u9FFF (CJK Unified Ideographs)
-    japanese_pattern = re.compile(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]')
+    # specific check: if user explicitely asks in vietnamese or context implies it
+    # But per requirements: "Vietnamese input -> Vietnamese result, others -> Japanese"
+    # So if it's English, French, Chinese, Japanese -> 'ja'
     
-    japanese_chars = len(japanese_pattern.findall(text))
-    total_chars = len(text.replace(' ', '').replace('\n', ''))
-    
-    if total_chars == 0:
-        return 'vi'
-    
-    # If more than 10% of non-space characters are Japanese, consider it Japanese
-    japanese_ratio = japanese_chars / total_chars
-    
-    return 'ja' if japanese_ratio > 0.1 else 'vi'
+    return 'ja'
 
 
 # =============================================================================
@@ -95,13 +110,13 @@ Hãy phân tích nội dung bài giảng sau đây và xác định các vấn �
 - Quốc tịch: {nationality}
 - Trình độ: {level}
 
-Hãy phân tích và trả về JSON với định dạng chính xác sau:
+Hãy phân tích và trả về JSON với định dạng chính xác sau (TOÀN BỘ NỘI DUNG TRONG JSON PHẢI LÀ TIẾNG VIỆT):
 {{
     "misunderstanding_points": [
-        "Liệt kê các điểm dễ gây hiểu nhầm hoặc khó tiếp thu, mỗi điểm là một string"
+        "Liệt kê các điểm dễ gây hiểu nhầm hoặc khó tiếp thu, mỗi điểm là một string (bằng tiếng Việt)"
     ],
-    "simulation": "Mô phỏng chi tiết cách học viên có thể hiểu sai nội dung, dựa trên background của họ",
-    "suggestions": "Đề xuất phiên bản giải thích tối ưu, phù hợp với trình độ và nền tảng văn hóa của học viên"
+    "simulation": "Mô phỏng chi tiết cách học viên có thể hiểu sai nội dung, dựa trên background của họ (bằng tiếng Việt)",
+    "suggestions": "Đề xuất phiên bản giải thích tối ưu, phù hợp với trình độ và nền tảng văn hóa của học viên (bằng tiếng Việt)"
 }}
 
 Chỉ trả về JSON, không có text giải thích thêm."""
@@ -123,17 +138,16 @@ Hãy tạo {num_questions} câu hỏi TRẮC NGHIỆM (multiple choice) tập tr
 
 **YÊU CẦU QUAN TRỌNG:**
 1. TẤT CẢ câu hỏi phải là dạng TRẮC NGHIỆM với 4 lựa chọn (A, B, C, D)
-2. Câu hỏi và các lựa chọn PHẢI ĐƯỢC VIẾT BẰNG CÙNG NGÔN NGỮ với nội dung bài giảng
-3. Nếu bài giảng bằng tiếng Việt, câu hỏi phải bằng tiếng Việt
-4. Nếu bài giảng bằng tiếng Nhật, câu hỏi phải bằng tiếng Nhật
+2. Câu hỏi và các lựa chọn PHẢI ĐƯỢC VIẾT BẰNG TIẾNG VIỆT (bất kể ngôn ngữ bài giảng là gì, nếu prompt này được gọi nghĩa là cần tiếng Việt)
+3. Đảm bảo ngôn ngữ tự nhiên, dễ hiểu.
 
 Trả về JSON với định dạng:
 {{
     "questions": [
         {{
-            "question_text": "Câu hỏi",
+            "question_text": "Câu hỏi (Tiếng Việt)",
             "type": "multiple_choice",
-            "options": ["A. Lựa chọn 1", "B. Lựa chọn 2", "C. Lựa chọn 3", "D. Lựa chọn 4"],
+            "options": ["A. Lựa chọn 1 (Tiếng Việt)", "B. Lựa chọn 2 (Tiếng Việt)", "C. Lựa chọn 3 (Tiếng Việt)", "D. Lựa chọn 4 (Tiếng Việt)"],
             "correct_answer": "A"
         }}
     ]
@@ -149,17 +163,17 @@ EVALUATION_PROMPT_TEMPLATE_VI = """Đánh giá câu trả lời của học viê
 **Câu trả lời của học viên:** {user_answer}
 **Loại câu hỏi:** {question_type}
 
-Hãy đánh giá và trả về JSON:
+Hãy đánh giá và trả về JSON (Kết quả bằng TIẾNG VIỆT):
 {{
     "is_correct": true hoặc false,
-    "feedback": "Giải thích ngắn gọn tại sao đúng/sai và gợi ý cải thiện nếu sai"
+    "feedback": "Giải thích ngắn gọn tại sao đúng/sai và gợi ý cải thiện nếu sai (Bằng tiếng Việt)"
 }}
 
 Chỉ trả về JSON, không có text giải thích thêm."""
 
 
 # =============================================================================
-# Prompt Templates - Japanese
+# Prompt Templates - Japanese (Default for all non-Vietnamese languages)
 # =============================================================================
 
 DIAGNOSIS_PROMPT_TEMPLATE_JA = """あなたは長年の教育経験を持つ教育専門家です。
@@ -172,13 +186,13 @@ DIAGNOSIS_PROMPT_TEMPLATE_JA = """あなたは長年の教育経験を持つ教�
 - 国籍: {nationality}
 - レベル: {level}
 
-分析を行い、以下の形式で正確なJSONを返してください:
+分析を行い、以下の形式で正確なJSONを返してください（JSON内のすべてのテキストは日本語で記述してください）:
 {{
     "misunderstanding_points": [
-        "誤解しやすい点や理解しにくい点をリストアップしてください。各項目は文字列です"
+        "誤解しやすい点や理解しにくい点をリストアップしてください。各項目は日本語の文字列です"
     ],
-    "simulation": "学習者が内容をどのように誤解する可能性があるかを、その背景に基づいて詳細にシミュレーションしてください",
-    "suggestions": "学習者のレベルと文化的背景に適した、最適化された説明バージョンを提案してください"
+    "simulation": "学習者が内容をどのように誤解する可能性があるかを詳細にシミュレーションしてください（日本語）",
+    "suggestions": "学習者のレベルと文化的背景に適した、最適化された説明バージョンを提案してください（日本語）"
 }}
 
 JSONのみを返してください。追加の説明テキストは不要です。"""
@@ -200,17 +214,16 @@ QUESTION_GENERATION_PROMPT_TEMPLATE_JA = """以下の授業分析結果に基づ
 
 **重要な要件:**
 1. すべての質問は4つの選択肢（A、B、C、D）を持つ選択式（multiple choice）でなければなりません
-2. 質問と選択肢は授業内容と同じ言語で書く必要があります
-3. 授業がベトナム語の場合、質問もベトナム語で
-4. 授業が日本語の場合、質問も日本語で
+2. 質問と選択肢はすべて【日本語】で書いてください（授業の言語に関わらず、結果は日本語です）
+3. 自然で分かりやすい日本語を使用してください
 
 以下の形式でJSONを返してください:
 {{
     "questions": [
         {{
-            "question_text": "質問",
+            "question_text": "質問（日本語）",
             "type": "multiple_choice",
-            "options": ["A. 選択肢1", "B. 選択肢2", "C. 選択肢3", "D. 選択肢4"],
+            "options": ["A. 選択肢1（日本語）", "B. 選択肢2（日本語）", "C. 選択肢3（日本語）", "D. 選択肢4（日本語）"],
             "correct_answer": "A"
         }}
     ]
@@ -226,10 +239,10 @@ EVALUATION_PROMPT_TEMPLATE_JA = """学習者の回答を評価してください
 **学習者の回答:** {user_answer}
 **質問タイプ:** {question_type}
 
-評価を行い、以下のJSONを返してください:
+評価を行い、以下のJSONを返してください（結果は日本語で）:
 {{
     "is_correct": true または false,
-    "feedback": "なぜ正解/不正解かを簡潔に説明し、不正解の場合は改善のヒントを提供してください"
+    "feedback": "なぜ正解/不正解かを簡潔に説明し、不正解の場合は改善のヒントを提供してください（日本語）"
 }}
 
 JSONのみを返してください。追加の説明テキストは不要です。"""
@@ -360,8 +373,8 @@ def parse_llm_json_response(response: str) -> dict:
         json_str = re.sub(r',\s*]', ']', json_str)
         
         # Replace smart quotes with regular quotes
-        json_str = json_str.replace('"', '"').replace('"', '"')
-        json_str = json_str.replace(''', "'").replace(''', "'")
+        json_str = json_str.replace('“', '"').replace('”', '"')
+        json_str = json_str.replace("‘", "'").replace("’", "'")
         
         # Try to fix unescaped double quotes inside string values
         # This regex finds quoted strings and escapes internal unescaped quotes
