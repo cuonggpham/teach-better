@@ -117,7 +117,10 @@ async def get_reports(
         )
 
     # Convert to response models
+    # Convert to response models
     result = []
+    user_target_ids = []
+
     for report in reports:
         report_dict = report.model_dump(by_alias=True)
         report_dict["_id"] = str(report_dict["_id"])
@@ -127,7 +130,17 @@ async def get_reports(
         if report_dict.get("resolution") and report_dict["resolution"].get("admin_id"):
             report_dict["resolution"]["admin_id"] = str(report_dict["resolution"]["admin_id"])
         
+        if report.report_type == ReportType.USER:
+            user_target_ids.append(str(report.target_id))
+            
         result.append(Report(**report_dict))
+
+    # Enrich with user details
+    if user_target_ids:
+        user_map = await report_service.get_user_names(user_target_ids)
+        for r in result:
+            if r.report_type == ReportType.USER and r.target_id in user_map:
+                r.target_info = {"name": user_map[r.target_id]}
 
     return result
 

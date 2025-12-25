@@ -330,7 +330,8 @@ class ReportService:
                     "content": target.get("content", "")[:200],  # Preview
                     "author_id": str(target["author_id"]),
                     "author_name": author.get("name", "Unknown") if author else "Unknown",
-                    "is_deleted": target.get("is_deleted", False)
+                    "is_deleted": target.get("is_deleted", False),
+                    "created_at": target.get("created_at")
                 }
         elif report_type == ReportType.USER:
             target = await self.users_collection.find_one({"_id": target_id})
@@ -497,3 +498,24 @@ class ReportService:
         else:
             return ActionTaken.NO_ACTION
 
+
+    async def get_user_names(self, user_ids: List[str]) -> dict:
+        """
+        Get names for a list of user IDs
+        Returns map of {user_id: user_name}
+        """
+        if not user_ids:
+            return {}
+            
+        object_ids = [ObjectId(uid) for uid in user_ids if ObjectId.is_valid(uid)]
+        
+        if not object_ids:
+            return {}
+            
+        cursor = self.users_collection.find(
+            {"_id": {"$in": object_ids}},
+            {"_id": 1, "name": 1, "email": 1}
+        )
+        
+        users = await cursor.to_list(length=None)
+        return {str(user["_id"]): user.get("name", user.get("email", "Unknown")) for user in users}

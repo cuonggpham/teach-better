@@ -45,9 +45,9 @@ class ReportBase(BaseModel):
     """
     report_type: ReportType
     target_id: str
-    reason_category: ReasonCategory
+    reason_category: Optional[ReasonCategory] = None  # Optional for user reports
     reason_detail: str = Field(..., min_length=20)
-    evidence_urls: List[str] = Field(default_factory=list)  # Max 5 images
+    evidence_urls: List[str] = Field(default_factory=list)  # Max 5 images, optional
 
 
 class ReportCreate(ReportBase):
@@ -91,7 +91,10 @@ class Report(ReportInDB):
     """
     Report response schema
     """
-    pass
+    """
+    Report response schema
+    """
+    target_info: Optional[dict] = None
 
 
 class ReportWithDetails(Report):

@@ -52,7 +52,7 @@ class ReportModel(BaseModel):
     reporter_id: PyObjectId = Field(..., index=True)
     report_type: ReportType
     target_id: PyObjectId = Field(..., index=True)  # Dynamic reference
-    reason_category: ReasonCategory
+    reason_category: Optional[ReasonCategory] = None  # Optional for user reports
     reason_detail: str = Field(..., min_length=20)
     evidence_urls: Optional[List[str]] = Field(default_factory=list)  # Max 5 images
     status: ReportStatus = Field(default=ReportStatus.PENDING)

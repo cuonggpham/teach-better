@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { getReportDetails, processReport } from '../api/reportsApi';
-import { Container, Card, LoadingSpinner, Button } from '../components/ui';
+import { Container, Card, LoadingSpinner } from '../components/ui';
 import './PostReportDetailPage.css';
 
 /**
- * PostReportDetailPage - Trang chi tiết báo cáo bài viết
+ * PostReportDetailPage - Trang chi tiết báo cáo bài viết (Post Report Detail Page)
  */
 const PostReportDetailPage = () => {
     const { reportId } = useParams();
@@ -19,16 +19,13 @@ const PostReportDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
     const [reportData, setReportData] = useState(null);
-    const [actionNotes, setActionNotes] = useState('');
 
     useEffect(() => {
-        // Check if user is admin
         if (!isAuthenticated || user?.role !== 'admin') {
             toast.error(t('admin.access_denied'));
             navigate('/home');
             return;
         }
-
         fetchReportDetails();
     }, [reportId]);
 
@@ -39,51 +36,44 @@ const PostReportDetailPage = () => {
             setReportData(data);
         } catch (error) {
             console.error('Failed to fetch report details:', error);
-            toast.error(t('report.fetch_error') || 'Failed to fetch report details');
-            navigate('/admin');
+            toast.error(t('report.fetch_error'));
+            navigate('/admin/report-hub');
         } finally {
             setLoading(false);
         }
     };
 
     const handleProcessReport = async (action) => {
-        if (!actionNotes.trim() || actionNotes.trim().length < 10) {
-            toast.error(t('report.reason_required') || 'Please provide a reason (minimum 10 characters)');
-            return;
-        }
-
         setProcessing(true);
         try {
             const result = await processReport(reportId, {
                 action: action,
-                reason: actionNotes.trim()
+                reason: t('admin.action_processed')
             });
-
-            toast.success(result.message || t('report.processed_successfully') || 'Report processed successfully');
-
-            // Refresh report data
+            toast.success(result.message || t('report.processed_successfully'));
             await fetchReportDetails();
-            setActionNotes('');
         } catch (error) {
             console.error('Failed to process report:', error);
-            toast.error(error.response?.data?.detail || t('report.process_error') || 'Failed to process report');
+            toast.error(error.response?.data?.detail || t('report.process_error'));
         } finally {
             setProcessing(false);
         }
     };
 
     const formatDate = (dateString) => {
+        if (!dateString) return t('common.not_set');
         const date = new Date(dateString);
-        return date.toLocaleString(i18n.language, {
+        return date.toLocaleString(i18n.language === 'vi' ? 'vi-VN' : 'ja-JP', {
             year: 'numeric',
-            month: 'long',
-            day: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
             hour: '2-digit',
             minute: '2-digit'
         });
     };
 
     const formatTimeAgo = (dateString) => {
+        if (!dateString) return t('common.not_set');
         const date = new Date(dateString);
         const now = new Date();
         const diff = now - date;
@@ -92,36 +82,20 @@ const PostReportDetailPage = () => {
         const days = Math.floor(diff / 86400000);
 
         if (minutes < 60) {
-            return `${minutes} ${t('time.minutes_ago') || 'minutes ago'}`;
+            return `${minutes}${t('time.minutes_ago')}`;
         }
         if (hours < 24) {
-            return `${hours} ${t('time.hours_ago') || 'hours ago'}`;
+            return `${hours}${t('time.hours_ago')}`;
         }
         if (days < 7) {
-            return `${days} ${t('time.days_ago') || 'days ago'}`;
+            return `${days}${t('time.days_ago')}`;
         }
         return formatDate(dateString);
     };
 
     const getReasonCategoryLabel = (category) => {
-        const labels = {
-            spam: t('report.reason.spam') || 'Spam',
-            inappropriate: t('report.reason.inappropriate') || 'Inappropriate Content',
-            harassment: t('report.reason.harassment') || 'Harassment',
-            offensive: t('report.reason.offensive') || 'Offensive Content',
-            misleading: t('report.reason.misleading') || 'Misleading Information',
-            other: t('report.reason.other') || 'Other'
-        };
-        return labels[category] || category;
-    };
-
-    const getStatusBadgeClass = (status) => {
-        const statusClasses = {
-            pending: 'status-pending',
-            resolved: 'status-resolved',
-            dismissed: 'status-dismissed'
-        };
-        return statusClasses[status] || 'status-pending';
+        const categoryKey = `report.reason.${category}`;
+        return t(categoryKey, { defaultValue: category });
     };
 
     if (loading) {
@@ -137,7 +111,7 @@ const PostReportDetailPage = () => {
             <div className="post-report-detail">
                 <Container>
                     <div className="error-message">
-                        {t('report.not_found') || 'Report not found'}
+                        {t('report.not_found')}
                     </div>
                 </Container>
             </div>
@@ -152,265 +126,188 @@ const PostReportDetailPage = () => {
             <Container size="large">
                 {/* Header */}
                 <div className="page-header">
-                    <div className="header-left">
-                        <div className="header-icon">🚩</div>
-                        <h1 className="page-title">{t('report.detail_title') || 'Post Report Details'}</h1>
-                    </div>
-                    <div className={`status-badge ${getStatusBadgeClass(report.status)}`}>
-                        {report.status.toUpperCase()}
-                    </div>
+                    <h1 className="page-title">
+                        {t('report.post_report_detail')}
+                    </h1>
+                    <button className="back-btn" onClick={() => navigate('/admin/report-hub')}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                        {t('report.back_to_list')}
+                    </button>
                 </div>
 
-                <div className="content-grid">
-                    {/* Left Column */}
-                    <div className="left-column">
-                        {/* Reporter Information */}
-                        <Card className="info-card">
-                            <h2 className="section-title">{t('report.reporter_info') || 'Reporter Information'}</h2>
-                            <div className="info-grid">
-                                <div className="info-item">
-                                    <div className="info-label">{t('user.username') || 'Username'}</div>
-                                    <div className="info-value">{reporter?.name || reporter?.email || 'Unknown'}</div>
-                                </div>
-                                <div className="info-item">
-                                    <div className="info-label">{t('user.user_id') || 'User ID'}</div>
-                                    <div className="info-value user-id">{report.reporter_id}</div>
-                                </div>
-                                <div className="info-item">
-                                    <div className="info-label">{t('report.report_date') || 'Report Date'}</div>
-                                    <div className="info-value">{formatDate(report.created_at)}</div>
-                                </div>
+                {/* Reporter Information Section */}
+                <Card className="report-card">
+                    <h2 className="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        {t('report.reporter_info')}
+                    </h2>
+                    <div className="info-grid">
+                        <div className="info-item">
+                            <span className="info-label">{t('user.username')}</span>
+                            <span className="info-value">{reporter?.name || reporter?.email || t('common.not_set')}</span>
+                        </div>
+                        <div className="info-item">
+                            <span className="info-label">{t('report.report_date')}</span>
+                            <span className="info-value">{formatDate(report.created_at)}</span>
+                        </div>
+                    </div>
+                </Card>
+
+                {/* Post Information Section */}
+                <Card className="report-card">
+                    <h2 className="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <line x1="16" y1="13" x2="8" y2="13" />
+                            <line x1="16" y1="17" x2="8" y2="17" />
+                        </svg>
+                        {t('report.post_info')}
+                    </h2>
+                    <div className="post-content">
+                        <div className="post-header">
+                            <h3 className="post-title">{target?.title || t('post.untitled')}</h3>
+                            <span className="post-time">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                                {formatTimeAgo(target?.created_at)}
+                            </span>
+                        </div>
+                        <p className="post-summary">
+                            {target?.content?.substring(0, 200) || t('report.no_content')}
+                            {target?.content?.length > 200 && '...'}
+                        </p>
+                    </div>
+                </Card>
+
+                {/* Report Reason Section */}
+                <Card className="report-card">
+                    <h2 className="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        {t('report.reason_title')}
+                    </h2>
+                    <div className="reason-content">
+                        <div className="reason-category-badge">
+                            {getReasonCategoryLabel(report.reason_category)}
+                        </div>
+                        <div className="reason-detail">
+                            <span className="detail-label">{t('report.detailed_description')}</span>
+                            <p className="detail-content">
+                                {report.reason_detail || t('report.no_detail')}
+                            </p>
+                        </div>
+                    </div>
+                </Card>
+
+                {/* Attachments Section */}
+                <Card className="report-card">
+                    <h2 className="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                        </svg>
+                        {t('report.attachments')}
+                    </h2>
+                    <div className="attachments-content">
+                        {report.evidence_urls && report.evidence_urls.length > 0 ? (
+                            <div className="evidence-gallery">
+                                {report.evidence_urls.map((url, index) => (
+                                    <div key={index} className="evidence-item">
+                                        <a href={url} target="_blank" rel="noopener noreferrer">
+                                            <img
+                                                src={url}
+                                                alt={`${t('report.evidence')} ${index + 1}`}
+                                                className="evidence-image"
+                                            />
+                                        </a>
+                                    </div>
+                                ))}
                             </div>
-                        </Card>
-
-                        {/* Post Information */}
-                        <Card className="info-card">
-                            <h2 className="section-title">{t('report.post_info') || 'Post Information'}</h2>
-
-                            {report.report_type === 'post' && target ? (
-                                <div className="post-info">
-                                    <div className="post-header">
-                                        <h3 className="post-title">{target.title || t('post.untitled')}</h3>
-                                        <div className="post-meta">
-                                            <span className="post-time">{formatTimeAgo(target.created_at)}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="post-summary">
-                                        {target.content?.substring(0, 200)}
-                                        {target.content?.length > 200 && '...'}
-                                    </div>
-
-                                    <div className="post-stats">
-                                        <div className="stat-item">
-                                            <span className="stat-icon">💬</span>
-                                            <span className="stat-text">{target.comment_count || 0} {t('post.comments') || 'comments'}</span>
-                                        </div>
-                                        <div className="stat-item">
-                                            <span className="stat-icon">👁️</span>
-                                            <span className="stat-text">{target.view_count || 0} {t('post.views') || 'views'}</span>
-                                        </div>
-                                    </div>
-
-                                    {target.tags && target.tags.length > 0 && (
-                                        <div className="post-tags">
-                                            {target.tags.map((tag, index) => (
-                                                <span key={index} className="tag">{tag}</span>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {target.related_comments && target.related_comments.length > 0 && (
-                                        <div className="related-comments">
-                                            <h4 className="comments-title">{t('report.related_comments') || 'Related Comments'}</h4>
-                                            {target.related_comments.slice(0, 3).map((comment, index) => (
-                                                <div key={index} className="comment-excerpt">
-                                                    <div className="comment-author">{comment.author_name}</div>
-                                                    <div className="comment-text">{comment.content?.substring(0, 100)}...</div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <div className="target-info">
-                                    <div className="info-item">
-                                        <div className="info-label">{t('report.target_type') || 'Target Type'}</div>
-                                        <div className="info-value">{report.report_type}</div>
-                                    </div>
-                                    <div className="info-item">
-                                        <div className="info-label">{t('report.target_id') || 'Target ID'}</div>
-                                        <div className="info-value user-id">{report.target_id}</div>
-                                    </div>
-                                </div>
-                            )}
-                        </Card>
-
-                        {/* Report Reason */}
-                        <Card className="info-card">
-                            <h2 className="section-title">{t('report.reason_title') || 'Report Reason'}</h2>
-
-                            <div className="reason-category">
-                                <span className="category-label">{t('report.category') || 'Category'}:</span>
-                                <span className="category-value">{getReasonCategoryLabel(report.reason_category)}</span>
+                        ) : (
+                            <div className="no-attachments">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                    <polyline points="21 15 16 10 5 21" />
+                                </svg>
+                                <span>{t('report.no_attachments', 'Không có ảnh đính kèm')}</span>
                             </div>
-
-                            <div className="reason-detail">
-                                <div className="detail-label">{t('report.detailed_description') || 'Detailed Description'}</div>
-                                <div className="detail-content">{report.reason_detail}</div>
-                            </div>
-                        </Card>
-
-                        {/* Attachments */}
-                        {(report.evidence_urls?.length > 0 || report.evidence_url) && (
-                            <Card className="info-card">
-                                <h2 className="section-title">{t('report.attachments') || 'Attachments'}</h2>
-
-                                <div className="attachments-grid">
-                                    {/* Handle new multi-image format */}
-                                    {report.evidence_urls?.map((url, index) => (
-                                        <div key={index} className="attachment-item">
-                                            <a
-                                                href={url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="attachment-link"
-                                            >
-                                                <img src={url} alt={`Evidence ${index + 1}`} className="attachment-image" />
-                                            </a>
-                                        </div>
-                                    ))}
-                                    {/* Backward compatibility: handle old single evidence_url */}
-                                    {!report.evidence_urls?.length && report.evidence_url && (
-                                        <div className="attachment-item">
-                                            <a
-                                                href={report.evidence_url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="attachment-link"
-                                            >
-                                                <img src={report.evidence_url} alt="Evidence" className="attachment-image" />
-                                            </a>
-                                        </div>
-                                    )}
-                                </div>
-                            </Card>
                         )}
                     </div>
+                </Card>
 
-                    {/* Right Column - Action Panel */}
-                    <div className="right-column">
-                        <Card className="action-card">
-                            <h2 className="section-title">{t('report.management_actions') || 'Management Actions'}</h2>
+                {/* Action Buttons */}
+                {!isResolved && (
+                    <Card className="report-card action-card">
+                        <h2 className="section-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                                <path d="M12 8v4l3 3" />
+                            </svg>
+                            {t('report.actions', 'Hành động')}
+                        </h2>
+                        <div className="action-buttons">
+                            <button
+                                className="action-btn-compact delete-btn"
+                                onClick={() => handleProcessReport('delete_post')}
+                                disabled={processing}
+                                title={t('report.delete_post')}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <polyline points="3 6 5 6 21 6" />
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                                <span>{t('report.delete_post')}</span>
+                            </button>
+                            <button
+                                className="action-btn-compact warn-btn"
+                                onClick={() => handleProcessReport('warn_user')}
+                                disabled={processing}
+                                title={t('report.warn_user')}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                    <line x1="12" y1="9" x2="12" y2="13" />
+                                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                                </svg>
+                                <span>{t('report.warn_user')}</span>
+                            </button>
+                            <button
+                                className="action-btn-compact reject-btn"
+                                onClick={() => handleProcessReport('no_action')}
+                                disabled={processing}
+                                title={t('report.reject_report')}
+                            >
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="15" y1="9" x2="9" y2="15" />
+                                    <line x1="9" y1="9" x2="15" y2="15" />
+                                </svg>
+                                <span>{t('report.reject_report')}</span>
+                            </button>
+                        </div>
+                    </Card>
+                )}
 
-                            {isResolved ? (
-                                <div className="resolution-info">
-                                    <div className="resolution-status">
-                                        <span className="resolution-icon">✅</span>
-                                        <span className="resolution-text">
-                                            {t('report.already_resolved') || 'This report has been resolved'}
-                                        </span>
-                                    </div>
-
-                                    {report.resolution && (
-                                        <>
-                                            <div className="resolution-item">
-                                                <div className="resolution-label">{t('report.action_taken') || 'Action Taken'}</div>
-                                                <div className="resolution-value">{report.resolution.action_taken}</div>
-                                            </div>
-                                            {report.resolution.notes && (
-                                                <div className="resolution-item">
-                                                    <div className="resolution-label">{t('report.notes') || 'Notes'}</div>
-                                                    <div className="resolution-value">{report.resolution.notes}</div>
-                                                </div>
-                                            )}
-                                            {report.resolution.resolved_at && (
-                                                <div className="resolution-item">
-                                                    <div className="resolution-label">{t('report.resolved_at') || 'Resolved At'}</div>
-                                                    <div className="resolution-value">{formatDate(report.resolution.resolved_at)}</div>
-                                                </div>
-                                            )}
-                                        </>
-                                    )}
-                                </div>
-                            ) : (
-                                <>
-                                    <div className="action-notes">
-                                        <label htmlFor="action-notes" className="notes-label">
-                                            {t('report.action_reason') || 'Action Reason'} *
-                                        </label>
-                                        <textarea
-                                            id="action-notes"
-                                            className="notes-textarea"
-                                            placeholder={t('report.reason_placeholder') || 'Explain the reason for this action (minimum 10 characters)...'}
-                                            value={actionNotes}
-                                            onChange={(e) => setActionNotes(e.target.value)}
-                                            rows={4}
-                                            disabled={processing}
-                                        />
-                                        <div className="notes-hint">
-                                            {actionNotes.length}/10 {t('common.characters') || 'characters'}
-                                        </div>
-                                    </div>
-
-                                    <div className="action-buttons">
-                                        <Button
-                                            variant="danger"
-                                            onClick={() => handleProcessReport('delete_post')}
-                                            disabled={processing || actionNotes.trim().length < 10}
-                                            className="action-button"
-                                        >
-                                            <span className="button-icon">🗑️</span>
-                                            <span className="button-text">{t('report.delete_post') || 'Delete Post'}</span>
-                                        </Button>
-
-                                        <Button
-                                            variant="warning"
-                                            onClick={() => handleProcessReport('ban_user_3_days')}
-                                            disabled={processing || actionNotes.trim().length < 10}
-                                            className="action-button"
-                                        >
-                                            <span className="button-icon">⚠️</span>
-                                            <span className="button-text">{t('report.ban_3_days') || 'Ban User (3 Days)'}</span>
-                                        </Button>
-
-                                        <Button
-                                            variant="warning"
-                                            onClick={() => handleProcessReport('ban_user_7_days')}
-                                            disabled={processing || actionNotes.trim().length < 10}
-                                            className="action-button"
-                                        >
-                                            <span className="button-icon">⛔</span>
-                                            <span className="button-text">{t('report.ban_7_days') || 'Ban User (7 Days)'}</span>
-                                        </Button>
-
-                                        <Button
-                                            variant="danger"
-                                            onClick={() => handleProcessReport('ban_user_permanent')}
-                                            disabled={processing || actionNotes.trim().length < 10}
-                                            className="action-button"
-                                        >
-                                            <span className="button-icon">🚫</span>
-                                            <span className="button-text">{t('report.ban_permanent') || 'Ban Permanently'}</span>
-                                        </Button>
-
-                                        <div className="divider"></div>
-
-                                        <Button
-                                            variant="ghost"
-                                            onClick={() => handleProcessReport('no_action')}
-                                            disabled={processing || actionNotes.trim().length < 10}
-                                            className="action-button reject-button"
-                                        >
-                                            <span className="button-icon">❌</span>
-                                            <span className="button-text">{t('report.reject_report') || 'Reject Report'}</span>
-                                        </Button>
-                                    </div>
-                                </>
-                            )}
-                        </Card>
+                {isResolved && (
+                    <div className="resolved-notice">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                            <polyline points="22 4 12 14.01 9 11.01" />
+                        </svg>
+                        {t('report.already_resolved')}
                     </div>
-                </div>
+                )}
             </Container>
         </div>
     );
