@@ -14,7 +14,6 @@ import PostManagement from '../components/ui/PostManagement';
 import CategoryPage from '../pages/CategoryPage';
 import DiagnosisPage from '../pages/DiagnosisPage';
 import DiagnosisHistoryPage from '../pages/DiagnosisHistoryPage';
-import QuizPage from '../pages/QuizPage';
 import AdminDashboard from '../pages/AdminDashboard';
 import UserManagement from '../pages/UserManagement';
 import UserDetail from '../pages/UserDetail';
@@ -140,10 +139,6 @@ const router = createBrowserRouter([
       {
         path: 'diagnosis/history',
         element: <DiagnosisHistoryPage />,
-      },
-      {
-        path: 'quiz/:diagnosisId',
-        element: <QuizPage />,
       },
     ],
   },

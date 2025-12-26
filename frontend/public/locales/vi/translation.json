@@ -9,7 +9,11 @@
     "bookmark": "Đã lưu",
     "profile": "Hồ sơ",
     "settings": "Cài đặt",
-    "logout": "Đăng xuất"
+    "logout": "Đăng xuất",
+    "user_management": "Quản lý người dùng",
+    "post_management": "Quản lý bài viết",
+    "category_management": "Quản lý danh mục",
+    "report_management": "Quản lý báo cáo"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -347,16 +351,6 @@
       "upper_intermediate": "Trung cao cấp",
       "advanced": "Cao cấp"
     },
-    "errors": {
-      "content_required": "Vui lòng nhập nội dung bài giảng hoặc tải lên file ghi âm",
-      "nationality_required": "Vui lòng chọn quốc tịch",
-      "level_required": "Vui lòng chọn trình độ",
-      "invalid_audio": "Vui lòng chọn file âm thanh hợp lệ",
-      "file_too_large": "File quá lớn (tối đa 50MB)",
-      "analysis_failed": "Phân tích thất bại. Vui lòng thử lại.",
-      "fetch_failed": "Không thể tải dữ liệu",
-      "delete_failed": "Xóa thất bại"
-    },
     "mock_result": {
       "summary": "Nội dung bài giảng tổng thể tốt. Từ vựng và ngữ pháp phù hợp với trình độ học viên.",
       "strength_1": "Giải thích rõ ràng",
@@ -383,10 +377,20 @@
     "create_test": "Tạo bài kiểm tra",
     "save_result": "Lưu kết quả",
     "result_saved": "Đã lưu kết quả",
+    "quiz_preview_title": "Xem trước Quiz",
+    "quiz_preview_desc": "10 câu hỏi quiz dựa trên bài giảng của bạn",
+    "download_quiz": "Tải xuống Quiz",
+    "generating_quiz": "Đang tạo quiz...",
+    "quiz_generated": "Quiz đã được tạo!",
+    "download_success": "Tải xuống thành công",
     "chart": {
       "logic": "Tính logic",
       "examples": "Ví dụ minh họa",
       "level_fit": "Phù hợp trình độ"
+    },
+    "errors": {
+      "save_failed": "Lưu kết quả thất bại",
+      "quiz_generation_failed": "Không thể tạo quiz. Vui lòng thử lại."
     }
   },
   "quiz": {

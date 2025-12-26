@@ -86,12 +86,31 @@ const Navbar = () => {
           <li>
             <Link to="/">{t('navigation.home')}</Link>
           </li>
-          <li>
-            <Link to="/forum">{t('navigation.forum')}</Link>
-          </li>
-          <li>
-            <Link to="/diagnosis">{t('navigation.diagnosis')}</Link>
-          </li>
+          {user?.role === 'admin' ? (
+            <>
+              <li>
+                <Link to="/admin/users">{t('navigation.user_management')}</Link>
+              </li>
+              <li>
+                <Link to="/admin/posts">{t('navigation.post_management')}</Link>
+              </li>
+              <li>
+                <Link to="/admin/categories">{t('navigation.category_management')}</Link>
+              </li>
+              <li>
+                <Link to="/admin/report-hub">{t('navigation.report_management')}</Link>
+              </li>
+            </>
+          ) : (
+            <>
+              <li>
+                <Link to="/forum">{t('navigation.forum')}</Link>
+              </li>
+              <li>
+                <Link to="/diagnosis">{t('navigation.diagnosis')}</Link>
+              </li>
+            </>
+          )}
         </ul>
 
         <div className="navbar-actions">

@@ -202,7 +202,7 @@
 
 .user-report-management .table-header {
     display: grid;
-    grid-template-columns: 130px 140px 1fr 150px 100px 120px;
+    grid-template-columns: 130px 1fr 150px 100px 120px;
     gap: 0.75rem;
     padding: 0.875rem 1rem;
     background: linear-gradient(145deg, #fce4ec, #fff5f8);
@@ -223,7 +223,7 @@
 
 .user-report-management .table-row {
     display: grid;
-    grid-template-columns: 130px 140px 1fr 150px 100px 120px;
+    grid-template-columns: 130px 1fr 150px 100px 120px;
     gap: 0.75rem;
     padding: 1rem;
     background: #fafafa;
@@ -241,7 +241,6 @@
 }
 
 .user-report-management .col-user,
-.user-report-management .col-category,
 .user-report-management .col-reason,
 .user-report-management .col-date,
 .user-report-management .col-status,
@@ -265,10 +264,7 @@
     border: 1px solid rgba(236, 64, 122, 0.15);
 }
 
-.user-report-management .col-category {
-    font-weight: 600;
-    color: #ad1457;
-}
+
 
 /* Reason Text */
 .user-report-management .reason-text {
@@ -408,15 +404,9 @@
         justify-self: end;
     }
 
-    .user-report-management .col-category {
+    .user-report-management .col-date {
         grid-column: 1;
         grid-row: 2;
-    }
-
-    .user-report-management .col-date {
-        grid-column: 2;
-        grid-row: 2;
-        justify-self: end;
     }
 
     .user-report-management .col-reason {

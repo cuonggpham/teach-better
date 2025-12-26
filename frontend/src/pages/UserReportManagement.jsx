@@ -194,7 +194,6 @@ const UserReportManagement = () => {
                             <div className="reports-table">
                                 <div className="table-header">
                                     <div className="col-user">{i18n.language === 'vi' ? 'Người bị báo cáo' : '報告対象'}</div>
-                                    <div className="col-category">{i18n.language === 'vi' ? 'Danh mục' : 'カテゴリー'}</div>
                                     <div className="col-reason">{i18n.language === 'vi' ? 'Lý do' : '理由'}</div>
                                     <div className="col-date">{i18n.language === 'vi' ? 'Ngày báo cáo' : '報告日'}</div>
                                     <div className="col-status">{i18n.language === 'vi' ? 'Trạng thái' : 'ステータス'}</div>
@@ -212,9 +211,6 @@ const UserReportManagement = () => {
                                                     </svg>
                                                     <span>{report.target_info?.name || (i18n.language === 'vi' ? 'Người dùng' : 'ユーザー')}</span>
                                                 </div>
-                                            </div>
-                                            <div className="col-category">
-                                                {getReasonCategoryLabel(report.reason_category)}
                                             </div>
                                             <div className="col-reason">
                                                 <span className="reason-text">

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { createDiagnosis, saveDiagnosisResult } from '../api/diagnosisApi';
+import { createDiagnosis, saveDiagnosisResult, generateQuestions } from '../api/diagnosisApi';
 import { categoriesApi } from '../api/categoriesApi';
 import { Container, Card, Button, LoadingSpinner, Modal } from '../components/ui';
 import './DiagnosisPage.css';
@@ -30,6 +30,11 @@ const DiagnosisPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [analysisResult, setAnalysisResult] = useState(null);
   const [showResultModal, setShowResultModal] = useState(false);
+
+  // Quiz preview state
+  const [quizQuestions, setQuizQuestions] = useState([]);
+  const [showQuizPreview, setShowQuizPreview] = useState(false);
+  const [isGeneratingQuiz, setIsGeneratingQuiz] = useState(false);
 
   // Subject options - fetched from categories API
   const [subjectOptions, setSubjectOptions] = useState([]);
@@ -204,11 +209,67 @@ const DiagnosisPage = () => {
     }
   };
 
-  const handleCreateTest = () => {
-    // Navigate to quiz page with diagnosis result
-    if (analysisResult?._id) {
-      navigate(`/quiz/${analysisResult._id}`);
+  const handleCreateTest = async () => {
+    // Generate quiz questions and show preview modal
+    if (!analysisResult?._id) return;
+
+    setIsGeneratingQuiz(true);
+    try {
+      const result = await generateQuestions(analysisResult._id, 10, token);
+      setQuizQuestions(result.generated_questions || []);
+      setShowQuizPreview(true);
+      toast.success(t('diagnosis.quiz_generated', 'Quiz đã được tạo!'));
+    } catch (error) {
+      console.error('Quiz generation error:', error);
+      toast.error(t('diagnosis.errors.quiz_generation_failed', 'Không thể tạo quiz. Vui lòng thử lại.'));
+    } finally {
+      setIsGeneratingQuiz(false);
     }
+  };
+
+  const handleDownloadQuiz = () => {
+    if (!quizQuestions || quizQuestions.length === 0) return;
+
+    // Format quiz content
+    const formatDate = () => {
+      const now = new Date();
+      return now.toLocaleDateString('vi-VN');
+    };
+
+    let content = '='.repeat(50) + '\n';
+    content += `QUIZ - ${getSubjectLabel(analysisResult?.subject || subject)} - ${formatDate()}\n`;
+    content += '='.repeat(50) + '\n\n';
+
+    quizQuestions.forEach((q, index) => {
+      content += `Câu hỏi ${index + 1}: ${q.question_text}\n`;
+
+      if (q.options && q.options.length > 0) {
+        q.options.forEach((option, optIdx) => {
+          const letter = String.fromCharCode(65 + optIdx);
+          content += `${letter}. ${option}\n`;
+        });
+      }
+
+      content += `\nĐáp án đúng: ${q.correct_answer}\n`;
+      content += '\n' + '-'.repeat(50) + '\n\n';
+    });
+
+    content += '='.repeat(50) + '\n';
+    content += 'Được tạo bởi TeachBetter AI\n';
+    content += '='.repeat(50);
+
+    // Create download
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `quiz-${analysisResult?.subject || 'general'}-${new Date().toISOString().split('T')[0]}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast.success(t('diagnosis.download_success', 'Tải xuống thành công'));
   };
 
   const handleCloseResult = () => {
@@ -319,14 +380,6 @@ const DiagnosisPage = () => {
 
             {/* Audio Upload */}
             <div className="audio-upload-section">
-              <input
-                type="file"
-                ref={fileInputRef}
-                accept="audio/*"
-                onChange={handleFileUpload}
-                style={{ display: 'none' }}
-                id="audio-upload"
-              />
               {audioFile ? (
                 <div className="audio-file-preview">
                   <div className="audio-file-info">
@@ -348,14 +401,18 @@ const DiagnosisPage = () => {
                   </button>
                 </div>
               ) : (
-                <label htmlFor="audio-upload" className="audio-upload-btn">
+                <button
+                  type="button"
+                  className="audio-upload-btn"
+                  onClick={() => toast.info(t('common.coming_soon', 'Chức năng này sẽ được thực hiện sau'))}
+                >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="17 8 12 3 7 8" />
                     <line x1="12" y1="3" x2="12" y2="15" />
                   </svg>
                   {t('diagnosis.upload_audio', '録音ファイルをアップロード')}
-                </label>
+                </button>
               )}
             </div>
 
@@ -620,6 +677,70 @@ const DiagnosisPage = () => {
             </div>
           </div>
         )}
+      </Modal>
+
+      {/* Quiz Preview Modal */}
+      <Modal
+        isOpen={showQuizPreview}
+        onClose={() => setShowQuizPreview(false)}
+        title={t('diagnosis.quiz_preview_title', 'Xem trước Quiz')}
+        size="large"
+        className="quiz-preview-modal"
+      >
+        <div className="quiz-preview-content">
+          <p className="quiz-preview-desc">
+            {t('diagnosis.quiz_preview_desc', '10 câu hỏi quiz dựa trên bài giảng của bạn')}
+          </p>
+
+          <div className="quiz-questions-list">
+            {quizQuestions.map((question, index) => (
+              <div key={question.id || index} className="quiz-question-item">
+                <div className="question-header">
+                  <h4>{t('quiz.question', 'Câu hỏi')} {index + 1}</h4>
+                </div>
+                <p className="question-text">{question.question_text}</p>
+
+                {question.options && question.options.length > 0 && (
+                  <div className="question-options">
+                    {question.options.map((option, optIdx) => {
+                      const letter = String.fromCharCode(65 + optIdx);
+                      const isCorrect = option === question.correct_answer;
+                      return (
+                        <div
+                          key={optIdx}
+                          className={`option-preview ${isCorrect ? 'correct-option' : ''}`}
+                        >
+                          <span className="option-letter">{letter}.</span>
+                          <span className="option-text">{option}</span>
+                          {isCorrect && (
+                            <span className="correct-badge">✓ Đáp án đúng</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {(!question.options || question.options.length === 0) && (
+                  <div className="short-answer-preview">
+                    <strong>{t('quiz.correct_answer', 'Đáp án đúng')}:</strong> {question.correct_answer}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div className="quiz-preview-actions">
+            <Button variant="primary" onClick={handleDownloadQuiz}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              {t('diagnosis.download_quiz', 'Tải xuống Quiz')}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );

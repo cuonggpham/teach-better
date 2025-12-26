@@ -9,7 +9,11 @@
     "bookmark": "ブックマーク",
     "profile": "プロフィール",
     "settings": "設定",
-    "logout": "ログアウト"
+    "logout": "ログアウト",
+    "user_management": "ユーザー管理",
+    "post_management": "投稿管理",
+    "category_management": "カテゴリ管理",
+    "report_management": "報告管理"
   },
   "auth": {
     "login": "ログイン",
