@@ -65,6 +65,7 @@
     "dismissed": "報告が却下されました",
     "reason_too_short": "報告理由は20文字以上必要です",
     "self_report_not_allowed": "自分のコンテンツを報告することはできません",
+    "processed_successfully": "報告の処理に成功しました",
     "types": {
       "spam": "スパム",
       "inappropriate": "不適切なコンテンツ",
@@ -84,5 +85,10 @@
       "deleted_content": "違反コンテンツを削除しました",
       "no_action": "アクションなし"
     }
+  },
+  "notification": {
+    "report_resolved": "あなたの報告は確認され、対応が実施されました：{action_taken}",
+    "post_deleted": "あなたの投稿「{post_title}」はコミュニティガイドライン違反のため削除されました。理由：{reason}",
+    "account_banned": "あなたのアカウントは{ban_duration}の間ロックされました。理由：{reason}"
   }
 }

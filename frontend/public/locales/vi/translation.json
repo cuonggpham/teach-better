@@ -208,7 +208,10 @@
     "just_now": "Vừa xong",
     "minutes_ago": "phút trước",
     "hours_ago": "giờ trước",
-    "days_ago": "ngày trước"
+    "days_ago": "ngày trước",
+    "report_resolved": "Báo cáo của bạn đã được xem xét và hành động đã được thực hiện: {action_taken}",
+    "post_deleted": "Bài viết '{post_title}' của bạn đã bị xóa do vi phạm quy định cộng đồng. Lý do: {reason}",
+    "account_banned": "Tài khoản của bạn đã bị khóa trong {ban_duration}. Lý do: {reason}"
   },
   "errors": {
     "not_found": "Không tìm thấy bài viết"

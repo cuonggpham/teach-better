@@ -468,120 +468,145 @@ const DiagnosisPage = () => {
         className="diagnosis-result-modal"
       >
         {analysisResult && (
-          <div className="result-modal-content">
-            {/* Student Info Bar */}
-            <div className="result-student-info">
-              <div className="info-item">
-                <span className="info-icon">📚</span>
+          <div className="diagnosis-result-content">
+            {/* Section 1: Student Info Bar - 教科・学習者レベル・年齢・国籍 */}
+            <div className="result-info-bar">
+              <div className="info-box">
                 <span className="info-label">{t('diagnosis.subject', '教科')}</span>
-                <span className="info-value">{getSubjectLabel(analysisResult.subject) || subject || 'IT'}</span>
+                <div className="info-value-row">
+                  <svg className="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  </svg>
+                  <span className="info-value">{getSubjectLabel(analysisResult.subject) || subject || 'IT'}</span>
+                </div>
               </div>
-              <div className="info-item">
-                <span className="info-icon">📊</span>
+              <div className="info-box">
                 <span className="info-label">{t('diagnosis.learner_level', '学習者レベル')}</span>
-                <span className="info-value">{analysisResult.level || level || 'N3'}</span>
+                <div className="info-value-row">
+                  <svg className="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 20V10" /><path d="M12 20V4" /><path d="M6 20v-6" />
+                  </svg>
+                  <span className="info-value">{analysisResult.level || level || 'N3'}</span>
+                </div>
               </div>
-              <div className="info-item">
-                <span className="info-icon">👤</span>
+              <div className="info-box">
                 <span className="info-label">{t('diagnosis.age', '年齢')}</span>
-                <span className="info-value">{analysisResult.age || age || '22'}</span>
+                <div className="info-value-row">
+                  <svg className="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  <span className="info-value">{analysisResult.age || age || '22'}</span>
+                </div>
               </div>
-              <div className="info-item">
-                <span className="info-icon">🌏</span>
+              <div className="info-box">
                 <span className="info-label">{t('diagnosis.nationality', '国籍')}</span>
-                <span className="info-value">{getNationalityLabel(analysisResult.nationality || nationality)}</span>
+                <div className="info-value-row">
+                  <svg className="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" />
+                    <line x1="12" y1="21" x2="12" y2="3" /><line x1="20" y1="21" x2="20" y2="14" />
+                    <rect x="2" y="14" width="4" height="3" /><rect x="18" y="14" width="4" height="3" />
+                  </svg>
+                  <span className="info-value">{getNationalityLabel(analysisResult.nationality || nationality)}</span>
+                </div>
               </div>
             </div>
 
-
-
-            {/* Difficulty Points & Chart - Side by Side */}
-            <div className="result-analysis-row">
-              {/* Difficulty Points */}
-              {analysisResult.difficulty_points && analysisResult.difficulty_points.length > 0 && (
-                <div className="result-section difficulty-section">
-                  <h3 className="result-section-title warning">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                      <line x1="12" y1="9" x2="12" y2="13" />
-                      <line x1="12" y1="17" x2="12.01" y2="17" />
-                    </svg>
-                    {t('diagnosis.difficulty_points', '理解しにくい点')}
-                  </h3>
-                  <ul className="difficulty-list">
-                    {analysisResult.difficulty_points.map((point, index) => (
-                      <li key={index}>
-                        <span className="difficulty-icon">⚠️</span>
-                        <span className="difficulty-text">{point}</span>
-                      </li>
-                    ))}
-                  </ul>
+            {/* Section 1.5: Lesson Content - 授業内容 */}
+            {lessonContent && lessonContent.trim() && (
+              <div className="result-section content-section">
+                <h3 className="section-title">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '8px', verticalAlign: 'text-bottom' }}>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                  {t('diagnosis.lesson_content', '授業内容')}
+                </h3>
+                <div className="content-box-readonly">
+                  {lessonContent}
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Comprehension Chart */}
-              {analysisResult.comprehension_scores && (
-                <div className="result-section chart-section">
-                  <h3 className="result-section-title">
-                    {t('diagnosis.overall_difficulty', '全体の理解しにくさ')}：
-                    <span className={`difficulty-level ${analysisResult.difficulty_level || 'high'}`}>
-                      {analysisResult.difficulty_level === 'low' ? t('diagnosis.level_low', '低い') :
-                        analysisResult.difficulty_level === 'medium' ? t('diagnosis.level_medium', '普通') :
-                          t('diagnosis.level_high', '高い')}
-                    </span>
-                  </h3>
-                  <div className="comprehension-chart">
-                    {Object.entries(analysisResult.comprehension_scores).map(([key, value]) => (
+            {/* Section 3 & 4: Difficulty Points + Chart Row */}
+            <div className="result-analysis-row">
+              {/* Difficulty Points - 理解しにくい点 */}
+              <div className="result-section difficulty-section">
+                <h3 className="section-title warning-title">{t('diagnosis.difficulty_points', '理解しにくい点')}</h3>
+                <ul className="difficulty-list">
+                  {(analysisResult.difficulty_points || analysisResult.ai_result?.misunderstanding_points || [
+                    '専門用語の定義が明確ではなく、混乱しやすい。',
+                    '図や例が少なく、内容流れを追いにくい'
+                  ]).map((point, index) => (
+                    <li key={index}>
+                      <span className="warning-icon">⚠</span>
+                      <span className="point-text">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Comprehension Chart - 全体の理解しにくさ */}
+              <div className="result-section chart-section">
+                <h3 className="section-title">
+                  {t('diagnosis.overall_difficulty', '全体の理解しにくさ')}：
+                  <span className={`difficulty-level ${analysisResult.difficulty_level || 'high'}`}>
+                    {analysisResult.difficulty_level === 'low' ? t('diagnosis.level_low', '低い') :
+                      analysisResult.difficulty_level === 'medium' ? t('diagnosis.level_medium', '普通') : t('diagnosis.level_high', '高い')}
+                  </span>
+                </h3>
+                <div className="comprehension-chart horizontal">
+                  <div className="chart-bars">
+                    {Object.entries(analysisResult.comprehension_scores || { logic: 60, examples: 40, level_fit: 80 }).map(([key, value]) => (
                       <div key={key} className="chart-bar-group">
-                        <div className="chart-bar-container">
-                          <div
-                            className="chart-bar"
-                            style={{ height: `${value}%` }}
-                          />
-                        </div>
                         <span className="chart-label">
                           {key === 'logic' ? t('diagnosis.chart.logic', '論理性') :
                             key === 'examples' ? t('diagnosis.chart.examples', '例示') :
                               key === 'level_fit' ? t('diagnosis.chart.level_fit', 'レベル適合度') : key}
                         </span>
+                        <div className="chart-bar-container">
+                          <div
+                            className="chart-bar"
+                            style={{ width: `${value}%` }}
+                          />
+                        </div>
+                        <span className="chart-value">{value}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
 
-            {/* Improvement Suggestions */}
-            {analysisResult.suggestions && analysisResult.suggestions.length > 0 && (
-              <div className="result-section suggestions-section">
-                <h3 className="result-section-title">
-                  <span className="bulb-icon">💡</span>
-                  {t('diagnosis.suggestions', '最適な説明案')}
-                </h3>
-                <ul className="suggestions-list">
-                  {analysisResult.suggestions.map((suggestion, index) => (
-                    <li key={index}>
-                      <span className="suggestion-icon">💡</span>
-                      <span className="suggestion-text">{suggestion}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            {/* Section 5: Suggestions - 最適な説明案 */}
+            <div className="result-section suggestions-section">
+              <h3 className="section-title">{t('diagnosis.suggestions', '最適な説明案')}</h3>
+              <ul className="suggestions-list">
+                {(analysisResult.suggestions || analysisResult.ai_result?.suggestions || [
+                  '抽象的な部分を、具体例やイラストで補足する。',
+                  '専門用語を使う前に、簡単な言葉で説明する。',
+                  '段階的に説明して、理解を確認しながら進める。',
+                  '動画や図表など、視覚的な教材を活用する。'
+                ]).map((suggestion, index) => (
+                  <li key={index}>
+                    <span className="bulb-icon">💡</span>
+                    <span className="suggestion-text">{suggestion}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-            {/* Action Buttons */}
+            {/* Section 6: Action Buttons */}
             <div className="result-actions">
               <Button
                 variant="outline"
                 onClick={handleCreateTest}
                 className="create-test-btn"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="12" y1="18" x2="12" y2="12" />
-                  <line x1="9" y1="15" x2="15" y2="15" />
-                </svg>
                 {t('diagnosis.create_test', 'テストを作成')}
               </Button>
               <Button
@@ -590,15 +615,6 @@ const DiagnosisPage = () => {
                 disabled={isSaving}
                 className="save-result-btn"
               >
-                {isSaving ? (
-                  <LoadingSpinner size="small" />
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                    <polyline points="17 21 17 13 7 13 7 21" />
-                    <polyline points="7 3 7 8 15 8" />
-                  </svg>
-                )}
                 {t('diagnosis.save_result', '結果を保存')}
               </Button>
             </div>

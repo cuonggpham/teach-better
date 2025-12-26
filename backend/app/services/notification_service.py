@@ -4,6 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from bson import ObjectId
 
 from app.models.notification import NotificationModel, NotificationType
+from app.i18n.i18n import get_i18n
 
 
 class NotificationService:
@@ -83,15 +84,24 @@ class NotificationService:
         self,
         user_id: str,
         ban_duration: str,
-        reason: str
+        reason: str,
+        locale: str = "vi"
     ) -> NotificationModel:
         """
         Create notification for banned user
         """
+        i18n = get_i18n()
+        message = i18n.get(
+            "notification.account_banned",
+            locale=locale,
+            ban_duration=ban_duration,
+            reason=reason
+        )
+        
         notification_dict = {
             "user_id": ObjectId(user_id),
             "type": NotificationType.ACCOUNT_BANNED,
-            "message": f"Your account has been banned for {ban_duration}. Reason: {reason}",
+            "message": message,
             "link": None,
             "is_read": False,
             "created_at": datetime.utcnow()
@@ -106,15 +116,24 @@ class NotificationService:
         self,
         user_id: str,
         post_title: str,
-        reason: str
+        reason: str,
+        locale: str = "vi"
     ) -> NotificationModel:
         """
         Create notification for post deletion
         """
+        i18n = get_i18n()
+        message = i18n.get(
+            "notification.post_deleted",
+            locale=locale,
+            post_title=post_title,
+            reason=reason
+        )
+        
         notification_dict = {
             "user_id": ObjectId(user_id),
             "type": NotificationType.POST_DELETED,
-            "message": f"Your post '{post_title}' has been deleted for violating community guidelines. Reason: {reason}",
+            "message": message,
             "link": None,
             "is_read": False,
             "created_at": datetime.utcnow()
@@ -128,15 +147,23 @@ class NotificationService:
     async def create_report_resolved_notification(
         self,
         user_id: str,
-        action_taken: str
+        action_taken: str,
+        locale: str = "vi"
     ) -> NotificationModel:
         """
         Create notification for reporter when report is resolved
         """
+        i18n = get_i18n()
+        message = i18n.get(
+            "notification.report_resolved",
+            locale=locale,
+            action_taken=action_taken
+        )
+        
         notification_dict = {
             "user_id": ObjectId(user_id),
             "type": NotificationType.REPORT_RESOLVED,
-            "message": f"Your report has been reviewed and action has been taken: {action_taken}",
+            "message": message,
             "link": None,
             "is_read": False,
             "created_at": datetime.utcnow()

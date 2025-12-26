@@ -66,6 +66,7 @@
     "dismissed": "Báo cáo đã bị bỏ qua",
     "reason_too_short": "Lý do báo cáo phải có ít nhất 20 ký tự",
     "self_report_not_allowed": "Bạn không thể báo cáo nội dung của chính mình",
+    "processed_successfully": "Xử lý báo cáo thành công",
     "types": {
       "spam": "Spam",
       "inappropriate": "Nội dung không phù hợp",
@@ -85,5 +86,10 @@
       "deleted_content": "Đã xóa nội dung vi phạm",
       "no_action": "Không có hành động"
     }
+  },
+  "notification": {
+    "report_resolved": "Báo cáo của bạn đã được xem xét và hành động đã được thực hiện: {action_taken}",
+    "post_deleted": "Bài viết '{post_title}' của bạn đã bị xóa do vi phạm quy định cộng đồng. Lý do: {reason}",
+    "account_banned": "Tài khoản của bạn đã bị khóa trong {ban_duration}. Lý do: {reason}"
   }
 }

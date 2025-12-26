@@ -208,7 +208,10 @@
     "just_now": "たった今",
     "minutes_ago": "分前",
     "hours_ago": "時間前",
-    "days_ago": "日前"
+    "days_ago": "日前",
+    "report_resolved": "あなたの報告は確認され、対応が実施されました：{action_taken}",
+    "post_deleted": "あなたの投稿「{post_title}」はコミュニティガイドライン違反のため削除されました。理由：{reason}",
+    "account_banned": "あなたのアカウントは{ban_duration}の間ロックされました。理由：{reason}"
   },
   "errors": {
     "not_found": "投稿が見つかりません"
